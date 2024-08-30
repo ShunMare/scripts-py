@@ -9,8 +9,8 @@ from openpyxl.utils.exceptions import IllegalCharacterError
 import pygetwindow as gw
 
 # グローバル定数
-WAIT_TIME_AFTER_PROMPT_LONG = 70  # プロンプト入力後の待機時間（秒）
-WAIT_TIME_AFTER_PROMPT_SHORT = 30  # プロンプト入力後の待機時間（秒）
+WAIT_TIME_AFTER_PROMPT_LONG = 150  # プロンプト入力後の待機時間（秒）
+WAIT_TIME_AFTER_PROMPT_SHORT = 80  # プロンプト入力後の待機時間（秒）
 WAIT_TIME_AFTER_RELOAD = 10  # ページリロード後の待機時間（秒）
 WAIT_TIME_AFTER_SWITCH = 2  # ウィンドウ切り替え後の待機時間（秒）
 
@@ -87,7 +87,7 @@ def generate_and_process_prompts(group, start_row):
         return
 
     # 最初のプロンプトを生成
-    initial_prompt = f"{theme}について書きたい"
+    initial_prompt = f"{theme}について書きたい。これまでの内容は入れないで、また一から書いて"
     if heading:
         initial_prompt += f"、見出しは{heading}です"
     initial_prompt += "。以下の指示に従って作成してください：\n"
@@ -95,9 +95,10 @@ def generate_and_process_prompts(group, start_row):
     initial_prompt += "• 下記の内容以外から情報を出さないでください（ハルシネーション防止のため）。\n"
     initial_prompt += "• 見出しの番号は除いてください。\n\n"
     initial_prompt += "• タイトルは記載しないで、見出しはh2（##）、h3（###）、h4（####）で構成してください。\n\n"
+    initial_prompt += "• 最後の文章に記事に合う絵文字を３つ付けてください。\n\n"
     initial_prompt += "• 下記の内容を参照してください。\n"
     initial_prompt += "参照内容：\n" + evidences[0]
-    # プロンプトをクリップボードにコピー
+    # プロンプトをクリップボードにコピーして、Edgeに貼り付け
     pyperclip.copy(initial_prompt)
     print("Initial prompt copied to clipboard.")
 
@@ -111,6 +112,8 @@ def generate_and_process_prompts(group, start_row):
     # プロンプトを貼り付けて実行
     pyautogui.hotkey("ctrl", "v")
     time.sleep(1)
+    pyautogui.press("tab")
+    time.sleep(0.5)
     pyautogui.press("enter")
     time.sleep(WAIT_TIME_AFTER_PROMPT_LONG)
     for _ in range(3):
@@ -124,7 +127,7 @@ def generate_and_process_prompts(group, start_row):
         # Ctrl+R でページをリロード
         pyautogui.hotkey("ctrl", "r")
         time.sleep(WAIT_TIME_AFTER_RELOAD)
-        additional_prompt = f"下記の内容を上記に加えて\n{evidence}"
+        additional_prompt = f"下記の内容を上記に加えて。省略せずに全部書いて。\n{evidence}"
         pyperclip.copy(additional_prompt)
         print("Additional prompt copied to clipboard.")
 
@@ -134,8 +137,16 @@ def generate_and_process_prompts(group, start_row):
         # プロンプトを貼り付けて実行
         pyautogui.hotkey("ctrl", "v")
         time.sleep(1)
+        pyautogui.press("tab")
+        time.sleep(0.5)
         pyautogui.press("enter")
         time.sleep(WAIT_TIME_AFTER_PROMPT_LONG)
+        for _ in range(3):
+            pyautogui.hotkey("shift", "tab")
+            time.sleep(0.5)
+        pyautogui.hotkey("space")
+        time.sleep(WAIT_TIME_AFTER_PROMPT_SHORT)
+        # 生成を続ける2回押してみる
         for _ in range(3):
             pyautogui.hotkey("shift", "tab")
             time.sleep(0.5)
@@ -199,12 +210,14 @@ def generate_and_process_prompts(group, start_row):
             time.sleep(WAIT_TIME_AFTER_RELOAD)
             pyautogui.hotkey("ctrl", "v")
             time.sleep(1)
+            pyautogui.press("tab")
+            time.sleep(0.5)
             pyautogui.press("enter")
             time.sleep(WAIT_TIME_AFTER_PROMPT_SHORT)
             pyautogui.hotkey("ctrl", "r")
             time.sleep(WAIT_TIME_AFTER_RELOAD)
 
-            for _ in range(6):
+            for _ in range(7):
                 pyautogui.hotkey("shift", "tab")
                 time.sleep(0.5)
             pyautogui.hotkey("space")
@@ -215,12 +228,32 @@ def generate_and_process_prompts(group, start_row):
                 f"Generated {prompt} pasted to Excel (row {flag_row}, column {column})"
             )
 
-        generate_and_paste_metadata("上記のタイトルを考えて", title_column)
+        generate_and_paste_metadata(f"上記のタイトルを考えて。下記のキーワードを入れて\n---\n{theme}", title_column)
         generate_and_paste_metadata("パーマリンクを考えて", link_column)
         generate_and_paste_metadata(
-            "上記のメタディスクリプションを考えて", description_column
+            "上記のメタディスクリプションを長めに考えて", description_column
+        )
+        generate_and_paste_metadata(
+            "もう少し短くして", description_column
         )
         generate_and_paste_metadata("上記のメタキーワードを考えてください。,で区切って書いてください。", keywords_column)
+
+        # 画像生成のプロンプト
+        image_prompt = "記事に合う横長の画像を作ってください。"
+        pyperclip.copy(image_prompt)
+        print(f"Image generation prompt: {image_prompt}")
+
+        activate_edge()
+        pyautogui.hotkey("ctrl", "r")
+        time.sleep(WAIT_TIME_AFTER_RELOAD)
+        pyautogui.hotkey("ctrl", "v")
+        time.sleep(1)
+        pyautogui.press("tab")
+        time.sleep(0.5)
+        pyautogui.press("enter")
+        time.sleep(WAIT_TIME_AFTER_PROMPT_SHORT)
+
+        print("Image generation prompt sent. Image should be generated but not saved.")
 
         if save_to_excel(wb, excel_path):
             print(f"All content pasted to Excel (row {flag_row})")
