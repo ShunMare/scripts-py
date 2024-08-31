@@ -8,21 +8,19 @@ import openpyxl
 from openpyxl.utils.exceptions import IllegalCharacterError
 import pygetwindow as gw
 
-# グローバル定数
-WAIT_TIME_AFTER_PROMPT_LONG = 150  # プロンプト入力後の待機時間（秒）
-WAIT_TIME_AFTER_PROMPT_SHORT = 80  # プロンプト入力後の待機時間（秒）
-WAIT_TIME_AFTER_RELOAD = 10  # ページリロード後の待機時間（秒）
-WAIT_TIME_AFTER_SWITCH = 2  # ウィンドウ切り替え後の待機時間（秒）
-
 # .envファイルから環境変数を読み込む
 load_dotenv()
 
 # Excelファイルのパスを環境変数から取得
-excel_path = os.getenv("EXCEL_FILE_PATH")
-print(f"Excel file path: {excel_path}")
+EXCEL_FILE_PATH = os.getenv("EXCEL_FILE_PATH")
+WAIT_TIME_AFTER_PROMPT_LONG = int(os.getenv("WAIT_TIME_AFTER_PROMPT_LONG"))
+WAIT_TIME_AFTER_PROMPT_SHORT = int(os.getenv("WAIT_TIME_AFTER_PROMPT_SHORT"))
+WAIT_TIME_AFTER_RELOAD = int(os.getenv("WAIT_TIME_AFTER_RELOAD"))
+WAIT_TIME_AFTER_SWITCH = int(os.getenv("WAIT_TIME_AFTER_SWITCH"))
+print(f"Excel file path: {EXCEL_FILE_PATH}")
 
 # Excelファイルを読み込む
-df = pd.read_excel(excel_path)
+df = pd.read_excel(EXCEL_FILE_PATH)
 
 # 列名を小文字に変換
 df.columns = df.columns.str.lower()
@@ -58,6 +56,17 @@ def save_to_excel(wb, path, retries=3):
     print(f"Failed to save Excel file after {retries} attempts.")
     return False
 
+def move_to_generate_button():
+    for _ in range(3):
+        pyautogui.hotkey("shift", "tab")
+        time.sleep(0.5)
+    print("move to generate button")
+
+def move_to_copy_button():
+    for _ in range(7):
+        pyautogui.hotkey("shift", "tab")
+        time.sleep(0.5)
+    print("move to copy button")
 
 def generate_and_process_prompts(group, start_row):
     first_row = group.iloc[0]
@@ -116,9 +125,7 @@ def generate_and_process_prompts(group, start_row):
     time.sleep(0.5)
     pyautogui.press("enter")
     time.sleep(WAIT_TIME_AFTER_PROMPT_LONG)
-    for _ in range(3):
-        pyautogui.hotkey("shift", "tab")
-        time.sleep(0.5)
+    move_to_generate_button()
     pyautogui.hotkey("space")
     time.sleep(WAIT_TIME_AFTER_PROMPT_SHORT)
 
@@ -141,32 +148,23 @@ def generate_and_process_prompts(group, start_row):
         time.sleep(0.5)
         pyautogui.press("enter")
         time.sleep(WAIT_TIME_AFTER_PROMPT_LONG)
-        for _ in range(3):
-            pyautogui.hotkey("shift", "tab")
-            time.sleep(0.5)
-        pyautogui.hotkey("space")
-        time.sleep(WAIT_TIME_AFTER_PROMPT_SHORT)
-        # 生成を続ける2回押してみる
-        for _ in range(3):
-            pyautogui.hotkey("shift", "tab")
-            time.sleep(0.5)
-        pyautogui.hotkey("space")
-        time.sleep(WAIT_TIME_AFTER_PROMPT_SHORT)
+        # 生成を続ける２回繰り返す
+        for _ in range(2):
+            move_to_generate_button()
+            pyautogui.hotkey("space")
+            time.sleep(WAIT_TIME_AFTER_PROMPT_LONG)
 
     # Ctrl+R でページをリロード
     pyautogui.hotkey("ctrl", "r")
     time.sleep(WAIT_TIME_AFTER_RELOAD)
 
-    # Excelに戻る
-    for _ in range(6):
-        pyautogui.hotkey("shift", "tab")
-        time.sleep(0.5)
+    move_to_copy_button()
     pyautogui.hotkey("space")
 
     # "md"列に貼り付け
     generated_content = pyperclip.paste()
     try:
-        wb = openpyxl.load_workbook(excel_path)
+        wb = openpyxl.load_workbook(EXCEL_FILE_PATH)
         ws = wb.active
 
         # 'md'列が存在するか確認し、なければ作成
@@ -217,9 +215,7 @@ def generate_and_process_prompts(group, start_row):
             pyautogui.hotkey("ctrl", "r")
             time.sleep(WAIT_TIME_AFTER_RELOAD)
 
-            for _ in range(7):
-                pyautogui.hotkey("shift", "tab")
-                time.sleep(0.5)
+            move_to_copy_button()
             pyautogui.hotkey("space")
 
             metadata_content = pyperclip.paste()
@@ -255,7 +251,7 @@ def generate_and_process_prompts(group, start_row):
 
         print("Image generation prompt sent. Image should be generated but not saved.")
 
-        if save_to_excel(wb, excel_path):
+        if save_to_excel(wb, EXCEL_FILE_PATH):
             print(f"All content pasted to Excel (row {flag_row})")
         else:
             print(f"Failed to save content to Excel (row {flag_row})")
