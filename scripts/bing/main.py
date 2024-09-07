@@ -92,35 +92,10 @@ def generate_and_process_prompts(group, start_row, column_indices):
         return
 
     for direction in directions:
-        bing_content_generator.send_evidence(theme=theme, direction=direction, isFirst=True)
+        bing_content_generator.send_evidence(
+            theme=theme, direction=direction, isFirst=True
+        )
 
-    # 各種コンテンツの生成
-    # evidence_contents = [
-    #     bing_content_generator.get_evidence(theme, direction, isFirst=(idx == 0))
-    #     for idx, direction in enumerate(directions)
-    # ]
-
-    # Excelに保存する処理
-    # flag_row = start_row + 2
-    # for idx, evidence in enumerate(evidence_contents):
-    #     success = excel_handler.update_cells(
-    #         target_index=flag_row + idx,
-    #         target_indices=[column_indices["evidence"]],
-    #         values=[evidence],
-    #         row_flag=True,
-    #     )
-
-    #     if not success:
-    #         print(f"Failed to update row {flag_row + idx}")
-
-    # excel_handler.save_to_excel()
-
-
-# Edge を開く
-# edge_handler.open_url_in_browser(BING_PATH)
-# bing_handler.press_sign_in_button()
-# bing_handler.press_sign_in_button()
-# bing_handler.press_conversation_style_button()
 
 # グループごとに処理を実行
 grouped = pd.read_excel(EXCEL_FILE_PATH).groupby(lambda idx: idx // GROUP_SIZE)
