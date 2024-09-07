@@ -100,7 +100,6 @@ def generate_and_process_prompts(group, start_row, column_indices):
 # グループごとに処理を実行
 grouped = pd.read_excel(EXCEL_FILE_PATH).groupby(lambda idx: idx // GROUP_SIZE)
 
-
 for i, (_, group) in enumerate(grouped):
     start_row = i * GROUP_SIZE
     print(f"\nProcessing group starting at row {start_row}")

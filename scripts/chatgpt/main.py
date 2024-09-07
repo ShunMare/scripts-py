@@ -2,6 +2,24 @@ import os
 import sys
 import pandas as pd
 from dotenv import load_dotenv
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+dotenv_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), ".env")
+sys.path.append(project_root)
+
+# 環境変数を読み込む（既存の環境変数を上書きする）
+load_dotenv(dotenv_path, override=True)
+EXCEL_FILE_PATH = os.getenv("EXCEL_FILE_PATH", "")
+WAIT_TIME_AFTER_PROMPT_LONG = int(os.getenv("WAIT_TIME_AFTER_PROMPT_LONG", 200))
+WAIT_TIME_AFTER_PROMPT_SHORT = int(os.getenv("WAIT_TIME_AFTER_PROMPT_SHORT", 100))
+WAIT_TIME_AFTER_RELOAD = int(os.getenv("WAIT_TIME_AFTER_RELOAD", 5))
+SHORT_WAIT_TIME = float(os.getenv("SHORT_WAIT_TIME", 0.5))
+CHATGPT_MODEL_TYPE = os.getenv("CHATGPT_MODEL_TYPE", "4o")
+IS_IMAGE_GENERATION_ENABLED = (
+    os.getenv("IS_IMAGE_GENERATION_ENABLED", "false").lower() == "true"
+)
+GROUP_SIZE = 10
+
 from handlers.excel_handler import ExcelHandler
 from handlers.edge_handler import EdgeHandler
 from handlers.keyboard_handler import KeyboardHandler
@@ -15,33 +33,6 @@ from utils.data_retriever import (
     check_flag_and_evidences,
 )
 from generators.chatgpt_content_generator import ChatGPTContentGenerator
-
-project_root = os.path.abspath(os.path.dirname(__file__))
-dotenv_path = os.path.join(project_root, ".env")
-sys.path.append(project_root)
-print(f"Looking for .env file at: {dotenv_path}")
-
-# .envファイルの内容を表示
-if os.path.exists(dotenv_path):
-    print("Contents of .env file:")
-    with open(dotenv_path, "r", encoding="utf-8") as f:
-        print(f.read())
-else:
-    print(f".env file not found at {dotenv_path}")
-
-# 環境変数を読み込む（既存の環境変数を上書きする）
-load_dotenv(dotenv_path, override=True)
-# 定数の設定
-EXCEL_FILE_PATH = os.getenv("EXCEL_FILE_PATH")
-WAIT_TIME_AFTER_PROMPT_LONG = int(os.getenv("WAIT_TIME_AFTER_PROMPT_LONG", 20))
-WAIT_TIME_AFTER_PROMPT_SHORT = int(os.getenv("WAIT_TIME_AFTER_PROMPT_SHORT", 5))
-WAIT_TIME_AFTER_RELOAD = int(os.getenv("WAIT_TIME_AFTER_RELOAD", 5))
-SHORT_WAIT_TIME = float(os.getenv("SHORT_WAIT_TIME", 0.5))
-GROUP_SIZE = 10
-CHATGPT_MODEL_TYPE = os.getenv("CHATGPT_MODEL_TYPE", "4o")
-IS_IMAGE_GENERATION_ENABLED = (
-    os.getenv("IS_IMAGE_GENERATION_ENABLED", "false").lower() == "true"
-)
 
 # 各種ハンドラーのインスタンスを作成
 excel_handler = ExcelHandler(EXCEL_FILE_PATH)
@@ -109,7 +100,7 @@ def generate_and_process_prompts(group, start_row, column_indices):
 
     # 各種コンテンツの生成
     md_content = chatgpt_content_generator.get_md(theme, heading, evidences)
-    title_content = chatgpt_content_generator.get_title(theme)  # themeを渡す
+    title_content = chatgpt_content_generator.get_title(theme)
     chatgpt_handler.send_prompt_and_generate_content(
         os.getenv("LONG_DESCRIPTION_PROMPT"), 0
     )
