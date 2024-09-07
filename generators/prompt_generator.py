@@ -26,7 +26,7 @@ class PromptGenerator:
             initial_prompt += "参照内容：\n"
         pyperclip.copy(initial_prompt)
         logging.info('Initial prompt created and copied to clipboard')
-        print(f"Initial prompt created: {initial_prompt}")
+        print(f"Initial prompt created")
         return initial_prompt  # Return the prompt if needed
 
     def generate_additional_prompt(self, evidence):
@@ -36,6 +36,6 @@ class PromptGenerator:
         )
         pyperclip.copy(additional_prompt)
         logging.info('Additional prompt created and copied to clipboard')
-        print(f"Additional prompt created: {additional_prompt}")
+        print(f"Additional prompt created")
         return additional_prompt  # Return the prompt if needed
 

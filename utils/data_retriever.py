@@ -52,6 +52,33 @@ def get_evidences(excel_handler, column_indices, group):
     return evidences
 
 
+def get_directions(excel_handler, column_indices, group):
+    """指示を取得する"""
+    directions = []
+    for row_index in range(group.index[0] + 2, group.index[-1] + 3):
+        evidence_value = excel_handler.ws.cell(
+            row=row_index, column=column_indices["direction"]
+        ).value
+        print(f"Raw direction value: {evidence_value}")
+        if not excel_handler.is_cell_empty_or_match(
+            row_index, column_indices["direction"]
+        ):
+            directions.append(str(evidence_value))
+    return directions
+
+
+def check_flag_and_directions(flag, directions, first_row_index):
+    """フラグと指示の両方をチェックし、条件を満たさない場合は処理をスキップする"""
+    if flag == "":
+        print(f"Skipping group: No valid flag found. First row: {first_row_index}")
+        return False
+    if len(directions) == 0:
+        print(f"Skipping group: No directions found. First row: {first_row_index}")
+        return False
+    print("Flag and directions are valid.")
+    return True
+
+
 def check_flag_and_evidences(flag, evidences, first_row_index):
     """フラグとエビデンスの両方をチェックし、条件を満たさない場合は処理をスキップする"""
     if flag == "":

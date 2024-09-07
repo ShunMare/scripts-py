@@ -1,4 +1,5 @@
 import os
+import sys
 import pandas as pd
 from dotenv import load_dotenv
 from handlers.excel_handler import ExcelHandler
@@ -13,10 +14,23 @@ from utils.data_retriever import (
     get_evidences,
     check_flag_and_evidences,
 )
-from generators.content_generator import ContentGenerator
+from generators.chatgpt_content_generator import ChatGPTContentGenerator
 
-load_dotenv()
+project_root = os.path.abspath(os.path.dirname(__file__))
+dotenv_path = os.path.join(project_root, ".env")
+sys.path.append(project_root)
+print(f"Looking for .env file at: {dotenv_path}")
 
+# .envファイルの内容を表示
+if os.path.exists(dotenv_path):
+    print("Contents of .env file:")
+    with open(dotenv_path, "r", encoding="utf-8") as f:
+        print(f.read())
+else:
+    print(f".env file not found at {dotenv_path}")
+
+# 環境変数を読み込む（既存の環境変数を上書きする）
+load_dotenv(dotenv_path, override=True)
 # 定数の設定
 EXCEL_FILE_PATH = os.getenv("EXCEL_FILE_PATH")
 WAIT_TIME_AFTER_PROMPT_LONG = int(os.getenv("WAIT_TIME_AFTER_PROMPT_LONG", 20))
@@ -34,7 +48,13 @@ excel_handler = ExcelHandler(EXCEL_FILE_PATH)
 edge_handler = EdgeHandler(wait_time_after_switch=WAIT_TIME_AFTER_RELOAD)
 keyboard_handler = KeyboardHandler(short_wait_time=SHORT_WAIT_TIME)
 chatgpt_handler = ChatGPTHandler(
-    short_wait_time=SHORT_WAIT_TIME, model_type=CHATGPT_MODEL_TYPE
+    edge_handler=edge_handler,
+    keyboard_handler=keyboard_handler,
+    wait_time_after_reload=WAIT_TIME_AFTER_RELOAD,
+    wait_time_after_prompt_short=WAIT_TIME_AFTER_PROMPT_SHORT,
+    wait_time_after_prompt_long=WAIT_TIME_AFTER_PROMPT_LONG,
+    short_wait_time=SHORT_WAIT_TIME,
+    model_type=CHATGPT_MODEL_TYPE,
 )
 prompt_generator = PromptGenerator(
     keyboard_handler,
@@ -42,7 +62,7 @@ prompt_generator = PromptGenerator(
     WAIT_TIME_AFTER_PROMPT_SHORT,
     WAIT_TIME_AFTER_PROMPT_LONG,
 )
-content_generator = ContentGenerator(
+chatgpt_content_generator = ChatGPTContentGenerator(
     edge_handler,
     keyboard_handler,
     chatgpt_handler,
@@ -88,16 +108,16 @@ def generate_and_process_prompts(group, start_row, column_indices):
         return
 
     # 各種コンテンツの生成
-    md_content = content_generator.get_md(theme, heading, evidences)
-    title_content = content_generator.get_title(theme)  # themeを渡す
-    content_generator.send_prompt_and_generate_content(
+    md_content = chatgpt_content_generator.get_md(theme, heading, evidences)
+    title_content = chatgpt_content_generator.get_title(theme)  # themeを渡す
+    chatgpt_handler.send_prompt_and_generate_content(
         os.getenv("LONG_DESCRIPTION_PROMPT"), 0
     )
-    description_content = content_generator.get_description()
-    keywords_content = content_generator.get_keywords()
-    permalink_content = content_generator.get_permalink()
+    description_content = chatgpt_content_generator.get_description()
+    keywords_content = chatgpt_content_generator.get_keywords()
+    permalink_content = chatgpt_content_generator.get_permalink()
     if IS_IMAGE_GENERATION_ENABLED:
-        content_generator.send_prompt_and_generate_content(os.getenv("IMAGE_PROMPT"), 0)
+        chatgpt_handler.send_prompt_and_generate_content(os.getenv("IMAGE_PROMPT"), 0)
 
     # Excelに保存する処理
     flag_row = start_row + 2
