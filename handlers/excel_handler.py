@@ -85,22 +85,28 @@ class ExcelHandler:
 
     def find_matching_index(self, index, search_string, is_row_flag):
         """
-        行または列を指定して検索し、一致するインデックスを返す。
+        行または列を指定して検索し、完全に一致するインデックスを返す。
 
         :param index: 行番号または列番号 (1から始まる)
         :param search_string: 検索する文字列
         :param is_row_flag: Trueなら行で検索、Falseなら列で検索
-        :return: 一致する列番号または行番号
+        :return: 完全に一致する列番号または行番号、一致しない場合はNone
         """
         if is_row_flag:
             for col in range(1, self.ws.max_column + 1):
                 cell_value = self.ws.cell(row=index, column=col).value
-                if cell_value and search_string in str(cell_value):
+                if (
+                    cell_value is not None
+                    and str(cell_value).strip() == str(search_string).strip()
+                ):
                     return col
         else:
             for row in range(1, self.ws.max_row + 1):
                 cell_value = self.ws.cell(row=row, column=index).value
-                if cell_value and search_string in str(cell_value):
+                if (
+                    cell_value is not None
+                    and str(cell_value).strip() == str(search_string).strip()
+                ):
                     return row
         return None
 

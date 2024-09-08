@@ -66,6 +66,16 @@ def get_directions(excel_handler, column_indices, group):
             directions.append(str(evidence_value))
     return directions
 
+def check_flag_and_theme(flag, theme, first_row_index):
+    """フラグとテーマの両方をチェックし、条件を満たさない場合は処理をスキップする"""
+    if flag == "":
+        print(f"Skipping group: No valid flag found. First row: {first_row_index}")
+        return False
+    if theme == "":
+        print(f"Skipping group: No theme found. First row: {first_row_index}")
+        return False
+    print("Flag and theme are valid.")
+    return True
 
 def check_flag_and_directions(flag, directions, first_row_index):
     """フラグと指示の両方をチェックし、条件を満たさない場合は処理をスキップする"""

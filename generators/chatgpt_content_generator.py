@@ -79,3 +79,11 @@ class ChatGPTContentGenerator:
         )
         logging.info("Keywords content generated")
         return keywords
+
+    def get_heading(self, raw_heading):
+        """見出しを生成して取得する"""
+        heading = self.chatgpt_handler.get_content(
+            raw_heading, repeat_count=0
+        )
+        logging.info("heading content generated")
+        return heading
