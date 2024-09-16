@@ -44,8 +44,6 @@ excel_manager = ExcelManager(EXCEL_FILE_PATH)
 edge_handler = EdgeHandler(wait_time_after_switch=WAIT_TIME_AFTER_RELOAD)
 keyboard_handler = KeyboardHandler(short_wait_time=SHORT_WAIT_TIME)
 chatgpt_handler = ChatGPTHandler(
-    edge_handler=edge_handler,
-    keyboard_handler=keyboard_handler,
     wait_time_after_reload=WAIT_TIME_AFTER_RELOAD,
     wait_time_after_prompt_short=WAIT_TIME_AFTER_PROMPT_SHORT,
     wait_time_after_prompt_long=WAIT_TIME_AFTER_PROMPT_LONG,
@@ -63,9 +61,6 @@ logger = setup_logger(__name__)
 
 def generate_and_process_prompts(start_row, columns):
     """指定されたグループのプロンプトを生成し、処理する"""
-    flag = excel_manager.cell_handler.get_cell_value(
-        excel_manager.current_sheet, start_row, columns["flag"]
-    )
     theme = excel_manager.cell_handler.get_cell_value(
         excel_manager.current_sheet, start_row, columns["theme"]
     )
@@ -75,9 +70,7 @@ def generate_and_process_prompts(start_row, columns):
     evidences = excel_manager.cell_handler.get_range_values(
         excel_manager.current_sheet, start_row, columns["evidence"], GROUP_SIZE
     )
-    if ValueValidator.is_single_value_valid(
-        flag
-    ) and not ValueValidator.has_any_valid_value_in_array(evidences):
+    if not ValueValidator.has_any_valid_value_in_array(evidences):
         return
 
     edge_handler.open_url_in_browser(CHATGPT_PATH)
@@ -96,7 +89,7 @@ def generate_and_process_prompts(start_row, columns):
                 theme, heading, evidence, initial_prompt
             )
         else:
-            prompt = prompt_generator.generate_additional_prompt(evidence)
+            prompt = prompt_generator.create_additional_prompt(evidence)
         chatgpt_handler.send_prompt_and_generate_content(prompt, repeat_count=2)
     md_content = chatgpt_handler.get_generated_content()
 
@@ -127,11 +120,11 @@ def generate_and_process_prompts(start_row, columns):
     if IS_IMAGE_GENERATION_ENABLED:
         chatgpt_handler.send_prompt_and_generate_content(IMAGE_PROMPT, repeat_count=0)
 
-    excel_manager.update_cell(2, columns["md"], md_content)
-    excel_manager.update_cell(2, columns["title"], title_content)
-    excel_manager.update_cell(2, columns["description"], description_content)
-    excel_manager.update_cell(2, columns["keywords"], keywords_content)
-    excel_manager.update_cell(2, columns["link"], link_content)
+    excel_manager.update_cell(start_row, columns["md"], md_content)
+    excel_manager.update_cell(start_row, columns["title"], title_content)
+    excel_manager.update_cell(start_row, columns["description"], description_content)
+    excel_manager.update_cell(start_row, columns["keywords"], keywords_content)
+    excel_manager.update_cell(start_row, columns["link"], link_content)
 
     excel_manager.save_workbook()
 
@@ -168,8 +161,12 @@ def main():
     )
     for i in range(flag_end_row):
         start_row = i * GROUP_SIZE + EXCEL_START_ROW
-        logger.prominent_log(f"Processing group starting at row {start_row}")
-        generate_and_process_prompts(start_row, columns)
+        flag = excel_manager.cell_handler.get_cell_value(
+            excel_manager.current_sheet, start_row, columns["flag"]
+        )
+        if ValueValidator.is_single_value_valid(flag):
+            logger.prominent_log(f"Processing group starting at row {start_row}")
+            generate_and_process_prompts(start_row, columns)
 
 
 if __name__ == "__main__":

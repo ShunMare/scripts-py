@@ -84,20 +84,18 @@ class BingHandler:
         logger.info("Generated content copied from clipboard")
         return generated_content
 
-    def send_prompt(self, prompt, isFirst):
+    def send_prompt(self, prompt):
         """プロンプトを送信し、生成ボタンを押す処理を行う"""
         edge_handler.activate_edge()
         pyperclip.copy(prompt)
-        if not isFirst:
-            self.move_to_inout_box()
         self.paste_and_send_message()
         logger.info(f"Prompt sent")
         time.sleep(self.wait_time_after_prompt_long)
         logger.info(f"Waited for {self.wait_time_after_prompt_long} seconds")
 
-    def get_content(self, prompt, isFirst):
+    def get_content(self, prompt):
         """プロンプトを送信し、生成されたコンテンツを返す"""
-        self.send_prompt(prompt, isFirst)
+        self.send_prompt(prompt)
         content = self.get_generated_content()
         logger.info("Content retrieved")
         return content

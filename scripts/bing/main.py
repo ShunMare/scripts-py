@@ -6,8 +6,6 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..
 dotenv_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), ".env")
 sys.path.append(project_root)
 
-
-# 環境変数を取得し、デフォルト値を設定
 load_dotenv(dotenv_path, override=True)
 EXCEL_FILE_PATH = os.getenv("EXCEL_FILE_PATH", "")
 WAIT_TIME_AFTER_PROMPT_LONG = int(os.getenv("WAIT_TIME_AFTER_PROMPT_LONG", 200))
@@ -19,90 +17,85 @@ BING_PATH = os.getenv("BING_PATH", "https://www.bing.com/chat?form=NTPCHB")
 EDGE_DRIVER_PATH = os.getenv("EDGE_DRIVER_PATH", "")
 GROUP_SIZE = 10
 
-import pandas as pd
-from handlers.excel_handler import ExcelHandler
-from handlers.edge_handler import EdgeHandler
-from handlers.keyboard_handler import KeyboardHandler
-from handlers.bing_handler import BingHandler
-from generators.prompt_generator import PromptGenerator
-from utils.data_retriever import (
-    get_flag,
-    get_theme,
-    get_directions,
-    check_flag_and_directions,
-)
-from generators.bing_content_generator import BingContentGenerator
+from src.excel_operations.excel_manager import ExcelManager
+from src.web_operations.edge_handler import EdgeHandler
+from src.ai_operations.bing_handler import BingHandler
+from src.text_operations.prompt_generator import PromptGenerator
+from src.util_operations.validator import ValueValidator
+from src.log_operations.log_handlers import setup_logger
 
-# 各種ハンドラーのインスタンスを作成
-excel_handler = ExcelHandler(EXCEL_FILE_PATH)
-edge_handler = EdgeHandler(
-    driver_path=EDGE_DRIVER_PATH,
-    wait_time_after_switch=WAIT_TIME_AFTER_SWITCH,
+logger = setup_logger(__name__)
+excel_manager = ExcelManager(EXCEL_FILE_PATH)
+edge_handler = EdgeHandler(wait_time_after_switch=WAIT_TIME_AFTER_RELOAD)
+prompt_generator = PromptGenerator(
+    WAIT_TIME_AFTER_PROMPT_SHORT,
+    WAIT_TIME_AFTER_PROMPT_LONG,
 )
-keyboard_handler = KeyboardHandler(short_wait_time=SHORT_WAIT_TIME)
 bing_handler = BingHandler(
-    edge_handler,
-    keyboard_handler,
     wait_time_after_reload=WAIT_TIME_AFTER_RELOAD,
     wait_time_after_prompt_short=WAIT_TIME_AFTER_PROMPT_SHORT,
     wait_time_after_prompt_long=WAIT_TIME_AFTER_PROMPT_LONG,
     short_wait_time=SHORT_WAIT_TIME,
 )
-prompt_generator = PromptGenerator(
-    keyboard_handler,
-    bing_handler,
-    WAIT_TIME_AFTER_PROMPT_SHORT,
-    wait_time_after_prompt_long=WAIT_TIME_AFTER_PROMPT_LONG,
-)
-bing_content_generator = BingContentGenerator(
-    edge_handler=edge_handler,
-    keyboard_handler=keyboard_handler,
-    bing_handler=bing_handler,
-    prompt_generator=prompt_generator,
-    wait_time_after_reload=WAIT_TIME_AFTER_RELOAD,
-    wait_time_after_prompt_short=WAIT_TIME_AFTER_PROMPT_SHORT,
-    wait_time_after_prompt_long=WAIT_TIME_AFTER_PROMPT_LONG,
-)
-
-# Excelファイルを読み込み、列情報を事前に取得
-wb, ws = excel_handler.load_excel()
-if not wb or not ws:
-    print("Failed to load Excel workbook.")
-    exit()
-
-# 各列のインデックスを取得
-column_indices = {
-    "flag": excel_handler.find_matching_index(1, "flag", is_row_flag=True),
-    "theme": excel_handler.find_matching_index(1, "theme", is_row_flag=True),
-    "direction": excel_handler.find_matching_index(1, "direction", is_row_flag=True),
-    "evidence": excel_handler.find_matching_index(1, "evidence", is_row_flag=True),
-}
+GROUP_SIZE = 10
+EXCEL_INDEX_ROW = 1
+EXCEL_START_ROW = EXCEL_INDEX_ROW + 1
 
 
-# データ処理関数
-def generate_and_process_prompts(group, start_row, column_indices):
+def generate_and_process_prompts(start_row, columns):
     """指定されたグループのプロンプトを生成し、処理する"""
-    edge_handler.open_url_in_browser(BING_PATH)
-    first_row = int(group.index[0]) + 2
-
-    flag = get_flag(excel_handler, first_row, column_indices)
-    theme = get_theme(excel_handler, first_row, column_indices)
-    directions = get_directions(excel_handler, column_indices, group)
-    if not check_flag_and_directions(flag, directions, first_row):
+    theme = excel_manager.cell_handler.get_cell_value(
+        excel_manager.current_sheet, start_row, columns["theme"]
+    )
+    directions = excel_manager.cell_handler.get_range_values(
+        worksheet=excel_manager.current_sheet,
+        start_row=start_row,
+        column=columns["direction"],
+        num_rows=GROUP_SIZE,
+    )
+    if not ValueValidator.has_any_valid_value_in_array(directions):
         return
 
+    edge_handler.open_url_in_browser(BING_PATH)
+
+    logger.info("sent direction")
     for direction in directions:
-        bing_content_generator.send_evidence(
-            theme=theme, direction=direction, isFirst=True
+        if ValueValidator.is_single_value_valid(direction):
+            prompt = prompt_generator.replace_marker(
+                prompt=direction, theme=theme, heading=""
+            )
+            bing_handler.send_prompt(prompt=prompt)
+
+
+def main():
+    if not excel_manager.load_workbook():
+        return
+
+    excel_manager.set_active_sheet(excel_manager.get_sheet_names()[0])
+    search_strings = ["flag", "theme", "direction"]
+    column_indices = excel_manager.search_handler.find_multiple_matching_indices(
+        worksheet=excel_manager.current_sheet,
+        index=EXCEL_INDEX_ROW,
+        search_strings=search_strings,
+        is_row_flag=True,
+    )
+    columns = dict(zip(search_strings, column_indices))
+
+    if ValueValidator.has_any_invalid_value_in_array(list(columns.values())):
+        return
+
+    flag_end_row = excel_manager.cell_handler.get_last_row_of_column(
+        worksheet=excel_manager.current_sheet, column=columns["flag"]
+    )
+    for i in range(flag_end_row):
+        start_row = i * GROUP_SIZE + EXCEL_START_ROW
+        flag = excel_manager.cell_handler.get_cell_value(
+            excel_manager.current_sheet, start_row, columns["flag"]
         )
+        if ValueValidator.is_single_value_valid(flag):
+            logger.prominent_log(f"Processing group starting at row {start_row}")
+            generate_and_process_prompts(start_row, columns)
 
 
-# グループごとに処理を実行
-grouped = pd.read_excel(EXCEL_FILE_PATH).groupby(lambda idx: idx // GROUP_SIZE)
-
-for i, (_, group) in enumerate(grouped):
-    start_row = i * GROUP_SIZE
-    print(f"\nProcessing group starting at row {start_row}")
-    generate_and_process_prompts(group, start_row, column_indices)
-
-print("\nAll prompts have been processed and results saved to Excel.")
+if __name__ == "__main__":
+    main()

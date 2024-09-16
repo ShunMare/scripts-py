@@ -15,12 +15,7 @@ class PromptGenerator:
         logger.info("PromptGenerator initialized")
 
     def create_initial_prompt(self, theme, heading, evidence, initial_prompt):
-        initial_prompt = text_replacer.replace(
-            text=initial_prompt, target_text="{theme}", replacement_text=theme
-        )
-        initial_prompt = text_replacer.replace(
-            text=initial_prompt, target_text="{heading}", replacement_text=heading
-        )
+        initial_prompt = self.replace_marker(initial_prompt, theme, heading)
         if pd.notna(evidence):
             evidence_text = f"参照内容：\n{evidence}"
         initial_prompt += evidence_text
@@ -28,7 +23,7 @@ class PromptGenerator:
         logger.info("Initial prompt created and copied to clipboard")
         return initial_prompt
 
-    def generate_additional_prompt(self, evidence):
+    def create_additional_prompt(self, evidence):
         """追加の証拠を元にコンテンツを生成する"""
         additional_prompt = (
             f"下記の内容を上記に加えて。省略せずに全部書いて。\n{evidence}"
@@ -36,3 +31,15 @@ class PromptGenerator:
         pyperclip.copy(additional_prompt)
         logger.info("Additional prompt created and copied to clipboard")
         return additional_prompt
+
+    def replace_marker(self, prompt, theme, heading):
+        """プロンプトの中のマーカーを置換する"""
+        if prompt is None:
+            prompt = ""
+        prompt = text_replacer.replace(
+            text=prompt, target_text="{theme}", replacement_text=theme
+        )
+        prompt = text_replacer.replace(
+            text=prompt, target_text="{heading}", replacement_text=heading
+        )
+        return prompt

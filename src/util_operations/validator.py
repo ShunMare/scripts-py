@@ -1,7 +1,11 @@
 from typing import List, Any, Callable
 from src.log_operations.log_handlers import setup_logger
+from src.text_operations.text_replacer import TextReplacer
+from src.text_operations.text_handler import TextHandler
 
 logger = setup_logger(__name__)
+text_replacer = TextReplacer()
+text_handler = TextHandler()
 
 
 class ValueValidator:
@@ -23,10 +27,15 @@ class ValueValidator:
         :param custom_check: カスタム検証関数（オプション）。値を受け取り、Falseを返せば無効と判断
         :return: 値が有効な場合はTrue、そうでない場合はFalse
         """
+        if value is not None:
+            display_value = text_replacer.replace(
+                text=value, target_value="\n", replacement_text=""
+            )
+            display_value = text_handler.extract_substring(text=value, start=1, length=10)
         if value in invalid_values or (custom_check and not custom_check(value)):
-            logger.warning(f"無効な値が見つかりました: {value}")
+            logger.warning(f"Invalid value found: {display_value}")
             return False
-        logger.info("値は有効です")
+        logger.info(f"Value is valid: {display_value}")
         return True
 
     @staticmethod
@@ -44,18 +53,16 @@ class ValueValidator:
         :return: 全ての要素が有効な場合はTrue、そうでない場合はFalse
         """
         if not array:
-            logger.warning("空の配列が渡されました")
+            logger.warning("Empty array was passed")
             return False
 
         for index, item in enumerate(array):
             if not ValueValidator.is_single_value_valid(
                 item, invalid_values, custom_check
             ):
-                logger.warning(
-                    f"無効な要素が見つかりました: インデックス {index}, 値 {item}"
-                )
+                logger.warning(f"Invalid element found: index {index}, value {item}")
                 return False
-        logger.info("全ての要素が有効です")
+        logger.info("All elements are valid")
         return True
 
     @staticmethod
@@ -81,9 +88,9 @@ class ValueValidator:
         ]
 
         if not invalid_indices:
-            logger.info("無効な要素は見つかりませんでした")
+            logger.info("No invalid elements found")
         else:
-            logger.info(f"{len(invalid_indices)}個の無効な要素が見つかりました")
+            logger.info(f"Found {len(invalid_indices)} invalid elements")
 
         return invalid_indices
 

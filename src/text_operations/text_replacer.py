@@ -135,7 +135,9 @@ class TextReplacer:
         return before + replaced_after
 
     @staticmethod
-    def replace(text: str, target_text: str, replacement_text: Optional[str]) -> str:
+    def replace(
+        text: Optional[str], target_text: Optional[str], replacement_text: Optional[str]
+    ) -> Optional[str]:
         """
         指定されたテキストに対して単純な置換を行い、結果を返す。
         replacement_text が None の場合、空文字列で置換する。
@@ -146,11 +148,11 @@ class TextReplacer:
         :return: 置換後のテキスト
         :raises ValueError: text または target_text が不適切な場合
         """
-        if not isinstance(text, str):
-            raise ValueError(f"Input text must be a string, not {type(text)}")
+        if text is None:
+            text = ""
 
-        if not isinstance(target_text, str):
-            raise ValueError(f"Target text must be a string, not {type(target_text)}")
+        if target_text is None:
+            text = ""
 
         if replacement_text is None:
             logger.info("Replacement text is None. Using empty string for replacement.")
