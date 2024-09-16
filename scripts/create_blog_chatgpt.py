@@ -2,33 +2,36 @@ import os
 import sys
 from dotenv import load_dotenv
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 dotenv_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), ".env")
 sys.path.append(project_root)
 
 load_dotenv(dotenv_path, override=True)
+# common
 EXCEL_FILE_PATH = os.getenv("EXCEL_FILE_PATH", "")
 WAIT_TIME_AFTER_PROMPT_LONG = int(os.getenv("WAIT_TIME_AFTER_PROMPT_LONG", 200))
 WAIT_TIME_AFTER_PROMPT_SHORT = int(os.getenv("WAIT_TIME_AFTER_PROMPT_SHORT", 100))
 WAIT_TIME_AFTER_RELOAD = int(os.getenv("WAIT_TIME_AFTER_RELOAD", 5))
 SHORT_WAIT_TIME = float(os.getenv("SHORT_WAIT_TIME", 0.5))
+# chatgpt
 CHATGPT_MODEL_TYPE = os.getenv("CHATGPT_MODEL_TYPE", "4o")
 IS_IMAGE_GENERATION_ENABLED = (
     os.getenv("IS_IMAGE_GENERATION_ENABLED", "false").lower() == "true"
 )
-CHATGPT_PATH = os.getenv("CHATGPT_PATH", "https://chatgpt.com/")
+CHATGPT_URL = os.getenv("CHATGPT_URL", "https://chatgpt.com/")
 PROMPT_TEMPLATE_PATH = os.getenv("PROMPT_TEMPLATE_PATH", "")
+TITLE_PROMPT = os.getenv("TITLE_PROMPT")
 LONG_DESCRIPTION_PROMPT = os.getenv("LONG_DESCRIPTION_PROMPT", "")
-GROUP_SIZE = 10
-EXCEL_INDEX_ROW = 1
-EXCEL_START_ROW = EXCEL_INDEX_ROW + 1
-SOURCE_COPILOT_CONVERSATION = "ソース: Copilot との会話"
-SUPERSCRIPT_CITATION_PATTERN = r"\s*[⁰¹²³⁴⁵⁶⁷⁸⁹]+:\s*\[[^\]]+\]\([^\)]+\)"
 SHORT_DESCRIPTION_PROMPT = os.getenv("SHORT_DESCRIPTION_PROMPT")
 KEYWORDS_PROMPT = os.getenv("KEYWORDS_PROMPT")
 PERMALINK_PROMPT = os.getenv("PERMALINK_PROMPT")
 IMAGE_PROMPT = os.getenv("IMAGE_PROMPT")
-TITLE_PROMPT = os.getenv("TITLE_PROMPT")
+# define
+SOURCE_COPILOT_CONVERSATION = "ソース: Copilot との会話"
+SUPERSCRIPT_CITATION_PATTERN = r"\s*[⁰¹²³⁴⁵⁶⁷⁸⁹]+:\s*\[[^\]]+\]\([^\)]+\)"
+GROUP_SIZE = 10
+EXCEL_INDEX_ROW = 1
+EXCEL_START_ROW = EXCEL_INDEX_ROW + 1
 
 from src.excel_operations.excel_manager import ExcelManager
 from src.web_operations.edge_handler import EdgeHandler
@@ -73,7 +76,7 @@ def generate_and_process_prompts(start_row, columns):
     if not ValueValidator.has_any_valid_value_in_array(evidences):
         return
 
-    edge_handler.open_url_in_browser(CHATGPT_PATH)
+    edge_handler.open_url_in_browser(CHATGPT_URL)
 
     logger.info("getting md content")
     initial_prompt = file_reader.read_file(PROMPT_TEMPLATE_PATH)

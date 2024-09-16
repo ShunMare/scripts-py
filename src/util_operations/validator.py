@@ -27,11 +27,7 @@ class ValueValidator:
         :param custom_check: カスタム検証関数（オプション）。値を受け取り、Falseを返せば無効と判断
         :return: 値が有効な場合はTrue、そうでない場合はFalse
         """
-        if value is not None:
-            display_value = text_replacer.replace(
-                text=value, target_value="\n", replacement_text=""
-            )
-            display_value = text_handler.extract_substring(text=value, start=1, length=10)
+        display_value = text_handler.generate_display_value(value, 10)
         if value in invalid_values or (custom_check and not custom_check(value)):
             logger.warning(f"Invalid value found: {display_value}")
             return False

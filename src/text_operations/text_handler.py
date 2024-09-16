@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional
+from typing import List, Optional, Any
 from src.log_operations.log_handlers import setup_logger
 
 logger = setup_logger(__name__)
@@ -17,11 +17,11 @@ class TextHandler:
         :return: 分割された文字列のリスト
         """
         if text is None:
-            logger.warning("Noneが入力されました。空のリストを返します。")
+            logger.warning("None was input. Returning an empty list.")
             return []
 
         result = [item.strip() for item in text.split(separator)]
-        logger.info(f"文字列 '{text}' を '{separator}' で分割しました: {result}")
+        logger.info(f"Split string '{text}' by '{separator}': {result}")
         return result
 
     @staticmethod
@@ -35,13 +35,13 @@ class TextHandler:
         :return: 抽出された部分文字列
         """
         if start < 0:
-            logger.warning("開始位置が負の値です。0として扱います。")
+            logger.warning("Start position is negative. Treating as 0.")
             start = 0
 
         end = start + length
         result = text[start:end]
 
-        logger.info(f"{start} から {length} 文字を抽出しました: '{result}'")
+        logger.info(f"Extracted {length} characters from position {start}: '{result}'")
         return result
 
     @staticmethod
@@ -54,6 +54,39 @@ class TextHandler:
         :return: 出現回数
         """
         return content.count(search_string)
+
+    @staticmethod
+    def generate_display_value(
+        value: Any, max_length: int = 100, placeholder: str = "..."
+    ) -> str:
+        """
+        任意の型の値に対して、表示用の文字列を生成します。
+
+        :param value: 表示用に変換する値（任意の型）
+        :param max_length: 生成する文字列の最大長（デフォルト: 100）
+        :param placeholder: 切り詰めた場合に末尾に付加する文字列（デフォルト: "..."）
+        :return: 表示用の文字列
+        """
+        try:
+            if value is None:
+                return "None"
+            if isinstance(value, str):
+                if len(value) > max_length:
+                    return value[: max_length - len(placeholder)] + placeholder
+                return value
+            if isinstance(value, (list, dict)):
+                str_value = str(value)
+                if len(str_value) > max_length:
+                    return str_value[: max_length - len(placeholder)] + placeholder
+                return str_value
+            str_value = str(value)
+            if len(str_value) > max_length:
+                return str_value[: max_length - len(placeholder)] + placeholder
+            return str_value
+
+        except Exception as e:
+            logger.error(f"Error occurred while converting value to string: {e}")
+            return f"<Error: {type(value).__name__}>"
 
 
 class TextPathHandler:
@@ -71,7 +104,7 @@ class TextPathHandler:
         """
         joined_path = os.path.join(*path_elements)
         normalized_path = os.path.normpath(joined_path)
-        logger.info(f"パスを結合しました: {normalized_path}")
+        logger.info(f"Joined path: {normalized_path}")
         return normalized_path
 
     @staticmethod
@@ -82,12 +115,12 @@ class TextPathHandler:
         :return: 結合された正規化されたパス
         """
         if not path_elements:
-            logger.warning("空のパス要素リストが提供されました")
+            logger.warning("Empty list of path elements provided")
             return ""
 
         joined_path = os.path.join(*path_elements)
         normalized_path = os.path.normpath(joined_path)
-        logger.info(f"パスを結合し正規化しました: {normalized_path}")
+        logger.info(f"Joined and normalized path: {normalized_path}")
         return normalized_path
 
     @staticmethod
@@ -98,5 +131,5 @@ class TextPathHandler:
         :return: 区切り文字が正規化されたパス
         """
         normalized_path = os.path.normpath(path)
-        logger.info(f"パスの区切り文字を正規化しました: {normalized_path}")
+        logger.info(f"Normalized path separators: {normalized_path}")
         return normalized_path

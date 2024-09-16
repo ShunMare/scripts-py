@@ -8,9 +8,9 @@ from src.input_operations.keyboard_handler import KeyboardHandler
 from src.web_operations.edge_handler import EdgeHandler
 from src.log_operations.log_handlers import setup_logger
 
-logger = setup_logger(__name__)
 keyboard_handler = KeyboardHandler()
 edge_handler = EdgeHandler()
+logger = setup_logger(__name__)
 
 class ChatGPTHandler:
     """
@@ -62,7 +62,7 @@ class ChatGPTHandler:
     def move_to_copy_button(self):
         """プロンプトのコピーボタンに移動する"""
         if self.model_type == "4o":
-            repeat_count = 5
+            repeat_count = 6
         elif self.model_type == "4omini":
             repeat_count = 5
         else:

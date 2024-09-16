@@ -160,3 +160,30 @@ class ExcelCellHandler:
             last_row -= 1
         logger.info(f"No data found in column {column}")
         return 0
+
+    @staticmethod
+    def insert_array_column_wise(
+        worksheet, start_row: int, start_column: int, data: list
+    ):
+        """
+        配列のデータを指定された行から順に列方向に入力します。
+        :param worksheet: 対象のワークシート
+        :param start_row: 開始行
+        :param start_column: 開始列
+        :param data: 入力するデータの配列
+        :return: True: 成功、False: エラー発生
+        """
+        try:
+            for i, value in enumerate(data):
+                row = start_row + i
+                ExcelCellHandler.update_cell(worksheet, row, start_column, value)
+
+            logger.info(
+                f"Successfully inserted {len(data)} values column-wise starting from row {start_row}, column {start_column}"
+            )
+            return True
+        except Exception as e:
+            logger.error(
+                f"An error occurred while inserting data column-wise: {str(e)}"
+            )
+            return False

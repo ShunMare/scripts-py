@@ -1,4 +1,4 @@
-class Formatter:
+class TextFormatter:
     @staticmethod
     def format_heading_result(data):
         """
