@@ -35,9 +35,8 @@ from utils.data_retriever import (
     check_flag_and_theme,
 )
 from analyzers.google_search_analyzer import GoogleSearchAnalyzer
-from handlers.json_processor import JSONProcessor
+from utils.json_processor import JSONProcessor
 from utils.formatter import Formatter
-from generators.chatgpt_content_generator import ChatGPTContentGenerator
 from handlers.chatgpt_handler import ChatGPTHandler
 from handlers.text_processor import TextProcessor
 
@@ -62,16 +61,6 @@ chatgpt_handler = ChatGPTHandler(
 prompt_generator = PromptGenerator(
     keyboard_handler,
     chatgpt_handler,
-    WAIT_TIME_AFTER_PROMPT_SHORT,
-    WAIT_TIME_AFTER_PROMPT_LONG,
-)
-chatgpt_content_generator = ChatGPTContentGenerator(
-    edge_handler,
-    keyboard_handler,
-    chatgpt_handler,
-    prompt_generator,
-    text_processor,
-    WAIT_TIME_AFTER_RELOAD,
     WAIT_TIME_AFTER_PROMPT_SHORT,
     WAIT_TIME_AFTER_PROMPT_LONG,
 )

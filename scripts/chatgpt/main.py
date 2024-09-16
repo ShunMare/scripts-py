@@ -1,13 +1,11 @@
 import os
 import sys
-import pandas as pd
 from dotenv import load_dotenv
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 dotenv_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), ".env")
 sys.path.append(project_root)
 
-# 環境変数を読み込む（既存の環境変数を上書きする）
 load_dotenv(dotenv_path, override=True)
 EXCEL_FILE_PATH = os.getenv("EXCEL_FILE_PATH", "")
 WAIT_TIME_AFTER_PROMPT_LONG = int(os.getenv("WAIT_TIME_AFTER_PROMPT_LONG", 200))
@@ -20,29 +18,31 @@ IS_IMAGE_GENERATION_ENABLED = (
 )
 CHATGPT_PATH = os.getenv("CHATGPT_PATH", "https://chatgpt.com/")
 PROMPT_TEMPLATE_PATH = os.getenv("PROMPT_TEMPLATE_PATH", "")
+LONG_DESCRIPTION_PROMPT = os.getenv("LONG_DESCRIPTION_PROMPT", "")
 GROUP_SIZE = 10
+EXCEL_INDEX_ROW = 1
+EXCEL_START_ROW = EXCEL_INDEX_ROW + 1
+SOURCE_COPILOT_CONVERSATION = "ソース: Copilot との会話"
+SUPERSCRIPT_CITATION_PATTERN = r"\s*[⁰¹²³⁴⁵⁶⁷⁸⁹]+:\s*\[[^\]]+\]\([^\)]+\)"
+SHORT_DESCRIPTION_PROMPT = os.getenv("SHORT_DESCRIPTION_PROMPT")
+KEYWORDS_PROMPT = os.getenv("KEYWORDS_PROMPT")
+PERMALINK_PROMPT = os.getenv("PERMALINK_PROMPT")
+IMAGE_PROMPT = os.getenv("IMAGE_PROMPT")
+TITLE_PROMPT = os.getenv("TITLE_PROMPT")
 
-from handlers.excel_handler import ExcelHandler
-from handlers.edge_handler import EdgeHandler
-from handlers.keyboard_handler import KeyboardHandler
-from handlers.chatgpt_handler import ChatGPTHandler
-from handlers.file_handler import FileHandler
-from generators.prompt_generator import PromptGenerator
-from utils.data_retriever import (
-    get_flag,
-    get_theme,
-    get_heading,
-    get_evidences,
-    check_flag_and_evidences,
-)
-from generators.chatgpt_content_generator import ChatGPTContentGenerator
-from handlers.text_processor import TextProcessor
+from src.excel_operations.excel_manager import ExcelManager
+from src.web_operations.edge_handler import EdgeHandler
+from src.input_operations.keyboard_handler import KeyboardHandler
+from src.ai_operations.chatgpt_handler import ChatGPTHandler
+from src.text_operations.prompt_generator import PromptGenerator
+from src.file_operations.file_processor import FileReader
+from src.util_operations.validator import ValueValidator
+from src.log_operations.log_handlers import setup_logger
+from src.text_operations.text_manager import TextManager
 
-# 各種ハンドラーのインスタンスを作成
-excel_handler = ExcelHandler(EXCEL_FILE_PATH)
+excel_manager = ExcelManager(EXCEL_FILE_PATH)
 edge_handler = EdgeHandler(wait_time_after_switch=WAIT_TIME_AFTER_RELOAD)
 keyboard_handler = KeyboardHandler(short_wait_time=SHORT_WAIT_TIME)
-text_processor = TextProcessor()
 chatgpt_handler = ChatGPTHandler(
     edge_handler=edge_handler,
     keyboard_handler=keyboard_handler,
@@ -53,105 +53,124 @@ chatgpt_handler = ChatGPTHandler(
     model_type=CHATGPT_MODEL_TYPE,
 )
 prompt_generator = PromptGenerator(
-    keyboard_handler,
-    chatgpt_handler,
     WAIT_TIME_AFTER_PROMPT_SHORT,
     WAIT_TIME_AFTER_PROMPT_LONG,
 )
-chatgpt_content_generator = ChatGPTContentGenerator(
-    edge_handler,
-    keyboard_handler,
-    chatgpt_handler,
-    prompt_generator,
-    text_processor,
-    WAIT_TIME_AFTER_RELOAD,
-    WAIT_TIME_AFTER_PROMPT_SHORT,
-    WAIT_TIME_AFTER_PROMPT_LONG,
-)
-file_handler = FileHandler()
-
-# Excelファイルを読み込み、列情報を事前に取得
-wb, ws = excel_handler.load_excel()
-if not wb or not ws:
-    print("Failed to load Excel workbook.")
-    exit()
-
-# 各列のインデックスを取得
-column_indices = {
-    "flag": excel_handler.find_matching_index(1, "flag", is_row_flag=True),
-    "md": excel_handler.find_matching_index(1, "md", is_row_flag=True),
-    "title": excel_handler.find_matching_index(1, "title", is_row_flag=True),
-    "description": excel_handler.find_matching_index(
-        1, "description", is_row_flag=True
-    ),
-    "link": excel_handler.find_matching_index(1, "link", is_row_flag=True),
-    "keywords": excel_handler.find_matching_index(1, "keywords", is_row_flag=True),
-    "theme": excel_handler.find_matching_index(1, "theme", is_row_flag=True),
-    "heading": excel_handler.find_matching_index(1, "heading", is_row_flag=True),
-    "evidence": excel_handler.find_matching_index(1, "evidence", is_row_flag=True),
-}
-initial_prompt = file_handler.get_file_content(PROMPT_TEMPLATE_PATH)
+text_manager = TextManager()
+file_reader = FileReader()
+logger = setup_logger(__name__)
 
 
-# データ処理関数
-def generate_and_process_prompts(group, start_row, column_indices):
+def generate_and_process_prompts(start_row, columns):
     """指定されたグループのプロンプトを生成し、処理する"""
-    edge_handler.open_url_in_browser(CHATGPT_PATH)
-    first_row = int(group.index[0]) + 2
-
-    flag = get_flag(excel_handler, first_row, column_indices)
-    theme = get_theme(excel_handler, first_row, column_indices)
-    heading = get_heading(excel_handler, first_row, column_indices)
-    evidences = get_evidences(excel_handler, column_indices, group)
-
-    if not check_flag_and_evidences(flag, evidences, first_row):
+    flag = excel_manager.cell_handler.get_cell_value(
+        excel_manager.current_sheet, start_row, columns["flag"]
+    )
+    theme = excel_manager.cell_handler.get_cell_value(
+        excel_manager.current_sheet, start_row, columns["theme"]
+    )
+    heading = excel_manager.cell_handler.get_cell_value(
+        excel_manager.current_sheet, start_row, columns["heading"]
+    )
+    evidences = excel_manager.cell_handler.get_range_values(
+        excel_manager.current_sheet, start_row, columns["evidence"], GROUP_SIZE
+    )
+    if ValueValidator.is_single_value_valid(
+        flag
+    ) and not ValueValidator.has_any_valid_value_in_array(evidences):
         return
 
-    # 各種コンテンツの生成
-    md_content = chatgpt_content_generator.get_md(
-        theme, heading, evidences, initial_prompt
-    )
-    title_content = chatgpt_content_generator.get_title(theme)
+    edge_handler.open_url_in_browser(CHATGPT_PATH)
+
+    logger.info("getting md content")
+    initial_prompt = file_reader.read_file(PROMPT_TEMPLATE_PATH)
+    for i, evidence in enumerate(evidences):
+        evidence = text_manager.text_remover.remove_content_after(
+            evidence, SOURCE_COPILOT_CONVERSATION
+        )
+        evidence = text_manager.text_remover.remove_pattern(
+            evidence, SUPERSCRIPT_CITATION_PATTERN
+        )
+        if i == 0:
+            prompt = prompt_generator.create_initial_prompt(
+                theme, heading, evidence, initial_prompt
+            )
+        else:
+            prompt = prompt_generator.generate_additional_prompt(evidence)
+        chatgpt_handler.send_prompt_and_generate_content(prompt, repeat_count=2)
+    md_content = chatgpt_handler.get_generated_content()
+
+    logger.info("getting title content")
+    chatgpt_handler.send_prompt_and_generate_content(TITLE_PROMPT, repeat_count=0)
+    title_content = chatgpt_handler.get_generated_content()
+
+    logger.info("sent long description content")
     chatgpt_handler.send_prompt_and_generate_content(
-        os.getenv("LONG_DESCRIPTION_PROMPT"), 0
+        LONG_DESCRIPTION_PROMPT, repeat_count=0
     )
-    description_content = chatgpt_content_generator.get_description()
-    keywords_content = chatgpt_content_generator.get_keywords()
-    permalink_content = chatgpt_content_generator.get_permalink()
+
+    logger.info("getting short description content")
+    chatgpt_handler.send_prompt_and_generate_content(
+        SHORT_DESCRIPTION_PROMPT, repeat_count=0
+    )
+    description_content = chatgpt_handler.get_generated_content()
+
+    logger.info("getting keywords content")
+    chatgpt_handler.send_prompt_and_generate_content(KEYWORDS_PROMPT, repeat_count=0)
+    keywords_content = chatgpt_handler.get_generated_content()
+
+    logger.info("getting permalink content")
+    chatgpt_handler.send_prompt_and_generate_content(PERMALINK_PROMPT, repeat_count=0)
+    link_content = chatgpt_handler.get_generated_content()
+
+    logger.info("getting image content")
     if IS_IMAGE_GENERATION_ENABLED:
-        chatgpt_handler.send_prompt_and_generate_content(os.getenv("IMAGE_PROMPT"), 0)
+        chatgpt_handler.send_prompt_and_generate_content(IMAGE_PROMPT, repeat_count=0)
 
-    # Excelに保存する処理
-    flag_row = start_row + 2
-    success = excel_handler.update_cells(
-        target_index=flag_row,
-        target_indices=[
-            column_indices["md"],
-            column_indices["title"],
-            column_indices["description"],
-            column_indices["keywords"],
-            column_indices["link"],
-        ],
-        values=[
-            md_content,
-            title_content,
-            description_content,
-            keywords_content,
-            permalink_content,
-        ],
-        row_flag=True,
+    excel_manager.update_cell(2, columns["md"], md_content)
+    excel_manager.update_cell(2, columns["title"], title_content)
+    excel_manager.update_cell(2, columns["description"], description_content)
+    excel_manager.update_cell(2, columns["keywords"], keywords_content)
+    excel_manager.update_cell(2, columns["link"], link_content)
+
+    excel_manager.save_workbook()
+
+
+def main():
+    if not excel_manager.load_workbook():
+        return
+
+    excel_manager.set_active_sheet(excel_manager.get_sheet_names()[0])
+    search_strings = [
+        "flag",
+        "md",
+        "theme",
+        "heading",
+        "title",
+        "description",
+        "keywords",
+        "evidence",
+        "link",
+    ]
+    column_indices = excel_manager.search_handler.find_multiple_matching_indices(
+        worksheet=excel_manager.current_sheet,
+        index=EXCEL_INDEX_ROW,
+        search_strings=search_strings,
+        is_row_flag=True,
     )
+    columns = dict(zip(search_strings, column_indices))
 
-    if success:
-        excel_handler.save_to_excel()
+    if ValueValidator.has_any_invalid_value_in_array(list(columns.values())):
+        return
+
+    flag_end_row = excel_manager.cell_handler.get_last_row_of_column(
+        worksheet=excel_manager.current_sheet, column=columns["flag"]
+    )
+    for i in range(flag_end_row):
+        start_row = i * GROUP_SIZE + EXCEL_START_ROW
+        logger.prominent_log(f"Processing group starting at row {start_row}")
+        generate_and_process_prompts(start_row, columns)
 
 
-# グループごとに処理を実行
-grouped = pd.read_excel(EXCEL_FILE_PATH).groupby(lambda idx: idx // GROUP_SIZE)
-
-for i, (_, group) in enumerate(grouped):
-    start_row = i * GROUP_SIZE
-    print(f"\nProcessing group starting at row {start_row}")
-    generate_and_process_prompts(group, start_row, column_indices)
-
-print("\nAll prompts have been processed and results saved to Excel.")
+if __name__ == "__main__":
+    main()

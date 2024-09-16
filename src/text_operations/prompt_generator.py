@@ -1,23 +1,31 @@
 import pyperclip
 import pandas as pd
-import logging
+
+from src.text_operations.text_replacer import TextReplacer
+from src.log_operations.log_handlers import setup_logger
+
+logger = setup_logger(__name__)
+text_replacer = TextReplacer()
+
 
 class PromptGenerator:
-    def __init__(self, keyboard_handler, chatgpt_handler, wait_time_after_prompt_short, wait_time_after_prompt_long):
-        self.keyboard_handler = keyboard_handler
-        self.chatgpt_handler = chatgpt_handler
+    def __init__(self, wait_time_after_prompt_short, wait_time_after_prompt_long):
         self.wait_time_after_prompt_short = wait_time_after_prompt_short
         self.wait_time_after_prompt_long = wait_time_after_prompt_long
-        logging.info('PromptGenerator initialized')
+        logger.info("PromptGenerator initialized")
 
     def create_initial_prompt(self, theme, heading, evidence, initial_prompt):
-        initial_prompt = initial_prompt.replace('{theme}', theme)
-        initial_prompt = initial_prompt.replace('{heading}', heading)
+        initial_prompt = text_replacer.replace(
+            text=initial_prompt, target_text="{theme}", replacement_text=theme
+        )
+        initial_prompt = text_replacer.replace(
+            text=initial_prompt, target_text="{heading}", replacement_text=heading
+        )
         if pd.notna(evidence):
             evidence_text = f"参照内容：\n{evidence}"
         initial_prompt += evidence_text
         pyperclip.copy(initial_prompt)
-        logging.info('Initial prompt created and copied to clipboard')
+        logger.info("Initial prompt created and copied to clipboard")
         return initial_prompt
 
     def generate_additional_prompt(self, evidence):
@@ -26,7 +34,5 @@ class PromptGenerator:
             f"下記の内容を上記に加えて。省略せずに全部書いて。\n{evidence}"
         )
         pyperclip.copy(additional_prompt)
-        logging.info('Additional prompt created and copied to clipboard')
-        print(f"Additional prompt created")
+        logger.info("Additional prompt created and copied to clipboard")
         return additional_prompt
-
