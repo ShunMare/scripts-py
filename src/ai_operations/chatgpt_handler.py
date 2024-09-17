@@ -22,6 +22,7 @@ class ChatGPTHandler:
         self,
         wait_time_after_reload,
         wait_time_after_prompt_short,
+        wait_time_after_prompt_medium,
         wait_time_after_prompt_long,
         model_type="4o",
         short_wait_time=0.5,
@@ -29,13 +30,14 @@ class ChatGPTHandler:
         """
         ChatGPTHandlerの初期化
         :param wait_time_after_reload: ページリロード後の待機時間
-        :param wait_time_after_prompt_short: プロンプト送信後の短い待機時間
+        :param wait_time_after_prompt_medium: プロンプト送信後の短い待機時間
         :param wait_time_after_prompt_long: プロンプト送信後の長い待機時間
         :param model_type: 使用するChatGPTのモデルタイプ（'4o'または'4omini'）
         :param short_wait_time: 短い操作間の待機時間
         """
         self.wait_time_after_reload = wait_time_after_reload
         self.wait_time_after_prompt_short = wait_time_after_prompt_short
+        self.wait_time_after_prompt_medium = wait_time_after_prompt_medium
         self.wait_time_after_prompt_long = wait_time_after_prompt_long
         self.model_type = model_type
         self.short_wait_time = short_wait_time
@@ -95,6 +97,22 @@ class ChatGPTHandler:
         logging.info("Generated content copied from clipboard")
         return generated_content
 
+    def save_html(self, filename):
+            """
+            生成されたコンテンツをファイルに保存する
+            :param filename: 保存するファイルの名前（パスを含む）
+            """
+            edge_handler.activate_edge()
+            time.sleep(self.wait_time_after_prompt_short)
+            pyautogui.hotkey("ctrl", "s")
+            time.sleep(self.wait_time_after_prompt_short)
+            pyperclip.copy(filename)
+            pyautogui.hotkey("ctrl", "v")
+            time.sleep(self.wait_time_after_prompt_short)
+            pyautogui.press("enter")
+            time.sleep(self.wait_time_after_prompt_short)
+            logging.info(f"save {filename} as html in downloads")
+
     def send_prompt_and_generate_content(self, prompt, repeat_count):
         """
         プロンプトを送信し、生成ボタンを押す処理を行う
@@ -114,4 +132,4 @@ class ChatGPTHandler:
             self.move_to_generate_button()
             self.press_hotkey(["space"])
             logging.info(f"Generation button pressed (iteration {i+1}/{repeat_count})")
-            time.sleep(self.wait_time_after_prompt_short)
+            time.sleep(self.wait_time_after_prompt_medium)

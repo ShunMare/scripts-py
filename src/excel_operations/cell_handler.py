@@ -187,3 +187,76 @@ class ExcelCellHandler:
                 f"An error occurred while inserting data column-wise: {str(e)}"
             )
             return False
+
+    @staticmethod
+    def count_nonempty_cells_in_range(
+        worksheet, column: int, start_row: int, end_row: int
+    ):
+        """
+        指定された列の開始行から終了行までの範囲内の空でないセルの数を数えます。
+        :param worksheet: 対象のワークシート
+        :param column: 列番号
+        :param start_row: 開始行
+        :param end_row: 終了行
+        :return: 空でないセルの数
+        """
+        try:
+            count = sum(
+                1
+                for row in range(start_row, end_row + 1)
+                if not pd.isna(worksheet.cell(row=row, column=column).value)
+                and worksheet.cell(row=row, column=column).value != ""
+            )
+            logger.info(
+                f"Counted {count} non-empty cells in column {column} from row {start_row} to {end_row}"
+            )
+            return count
+        except Exception as e:
+            logger.error(f"An error occurred while counting non-empty cells: {str(e)}")
+            return 0
+
+    @staticmethod
+    def insert_array_row_wise(worksheet, row: int, start_column: int, data: list):
+        """
+        配列のデータを指定された行の指定された列から順に行方向に入力します。
+        :param worksheet: 対象のワークシート
+        :param row: 入力を開始する行
+        :param start_column: 入力を開始する列
+        :param data: 入力するデータの配列
+        :return: True: 成功、False: エラー発生
+        """
+        try:
+            for i, value in enumerate(data):
+                column = start_column + i
+                ExcelCellHandler.update_cell(worksheet, row, column, value)
+
+            logger.info(
+                f"Successfully inserted {len(data)} values row-wise starting from row {row}, column {start_column}"
+            )
+            return True
+        except Exception as e:
+            logger.error(f"An error occurred while inserting data row-wise: {str(e)}")
+            return False
+
+    @staticmethod
+    def insert_array_vertically(worksheet, start_row: int, column: int, data: list):
+        """
+        配列のデータを指定された行の指定された列から順に列方向（縦方向）に入力します。
+        :param worksheet: 対象のワークシート
+        :param start_row: 入力を開始する行
+        :param column: 入力する列
+        :param data: 入力するデータの配列
+        :return: True: 成功、False: エラー発生
+        """
+        try:
+            for i, value in enumerate(data):
+                row = start_row + i
+                ExcelCellHandler.update_cell(worksheet, row, column, value)
+
+            logger.info(
+                f"Successfully inserted {len(data)} values vertically starting from row {start_row}, column {column}"
+            )
+            return True
+        except Exception as e:
+            logger.error(f"An error occurred while inserting data vertically: {str(e)}")
+            return False

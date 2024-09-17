@@ -30,7 +30,7 @@ GROUP_SIZE = 10
 EXCEL_INDEX_ROW = 1
 EXCEL_START_ROW = EXCEL_INDEX_ROW + 1
 DOWNLOAD_FOLDER_PATH = "C:/Users/okubo/Downloads/"
-CHATGPT_HTML_FILE_NAME = "chatgpt_get_heading.html"
+CHATGPT_HTML_FILE_NAME = "get_heading_google.html"
 
 from src.excel_operations.excel_manager import ExcelManager
 from src.web_operations.edge_handler import EdgeHandler
@@ -112,7 +112,6 @@ def get_heading(start_row, columns):
         )
         if len(results) == 1:
             heading_content = text_converter.convert_to_markdown(results[0])
-        print("heading_content", heading_content)
         file_handler.delete_file(chatgpt_html_path)
 
     excel_manager.update_cell(

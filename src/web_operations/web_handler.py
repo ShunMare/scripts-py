@@ -3,9 +3,10 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from typing import List, Optional, Dict, Any
 from src.log_operations.log_handlers import setup_logger
+from src.file_operations.file_processor import FileHandler
 
 logger = setup_logger(__name__)
-
+file_handler = FileHandler()
 
 class WebFetcher:
     """Webページの取得を担当するクラス"""
@@ -110,27 +111,22 @@ class ImageExtractor:
 class WebScraper:
     """Webスクレイピングの全体的な処理を統括するクラス"""
 
-    def __init__(self, url: str):
-        """
-        :param url: スクレイピング対象のURL
-        """
-        self.url = url
-        self.html_content = None
-
-    def scrape(self, tags_to_extract: List[str]) -> Dict[str, Any]:
+    @staticmethod
+    def scrape(url: str, tags_to_extract: List[str]) -> Dict[str, Any]:
         """
         Webページをスクレイピングし、指定されたタグの情報を抽出します。
+        :param url: スクレイピング対象のURL
         :param tags_to_extract: 抽出したいタグのリスト
         :return: 抽出された情報を含む辞書
         """
-        self.html_content = WebFetcher.fetch_page(self.url)
-        if not self.html_content:
+        html_content = WebFetcher.fetch_page(url)
+        if not html_content:
             logger.error("ページの取得に失敗しました。スクレイピングを中止します。")
             return {}
 
-        parser = HTMLParser(self.html_content)
-        link_extractor = LinkExtractor(self.html_content, self.url)
-        image_extractor = ImageExtractor(self.html_content, self.url)
+        parser = HTMLParser(html_content)
+        link_extractor = LinkExtractor(html_content, url)
+        image_extractor = ImageExtractor(html_content, url)
 
         results = {}
 
@@ -153,3 +149,28 @@ class WebScraper:
                     logger.warning(f"{tag}の内容が見つかりませんでした")
 
         return results
+
+    @staticmethod
+    def find_elements(content: str, tag_name: str, class_list: list) -> list:
+        """
+        HTMLファイルから指定されたタグと指定されたクラスを全て持つ要素を探します。
+
+        :param file_path: HTMLファイルのパス
+        :param tag_name: 探したいHTMLタグ名
+        :param class_list: 要素が持つべきクラスのリスト
+        :return: 条件に合致する要素のリスト
+        :raises FileNotFoundError: 指定されたファイルが存在しない場合
+        """
+        try:
+            soup = BeautifulSoup(content, "html.parser")
+            elements = soup.find_all(
+                tag_name,
+                class_=lambda x: x and all(cls in x.split() for cls in class_list),
+            )
+
+            logger.info(f"{len(elements)} 個の要素が見つかりました。")
+            return elements
+
+        except Exception as e:
+            logger.error(f"要素の探索中にエラーが発生しました: {str(e)}")
+            raise
