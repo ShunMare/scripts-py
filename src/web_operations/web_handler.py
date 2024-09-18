@@ -8,6 +8,7 @@ from src.file_operations.file_processor import FileHandler
 logger = setup_logger(__name__)
 file_handler = FileHandler()
 
+
 class WebFetcher:
     """Webページの取得を担当するクラス"""
 
@@ -63,6 +64,34 @@ class HTMLParser:
         logger.info(f"{len(results)}個の {tag} タグを見つけました")
         return [result.get_text(strip=True) for result in results]
 
+    def find_aria_labels(self, tag: str, class_list: List[str]) -> List[str]:
+        """
+        指定されたタグとクラスを持つ要素から aria-label 属性の値を抽出します。
+        :param tag: 検索するHTMLタグ
+        :param class_list: タグが持つべきクラスのリスト
+        :return: aria-label 属性の値のリスト
+        """
+        elements = self.soup.find_all(
+            tag,
+            class_=lambda x: x and all(cls in x.split() for cls in class_list),
+        )
+        logger.info(
+            f"{len(elements)} 個の <{tag} class='{ ' '.join(class_list) }'> 要素が見つかりました。"
+        )
+
+        aria_labels = []
+        for elem in elements:
+            aria_label = elem.get("aria-label")
+            if aria_label:
+                aria_labels.append(aria_label)
+                logger.info(f"aria-label 属性の値を取得しました: {aria_label}")
+            else:
+                logger.warning(
+                    f"<{tag} class='{ ' '.join(class_list) }'> 要素に aria-label 属性が見つかりませんでした。"
+                )
+
+        return aria_labels
+
 
 class LinkExtractor:
     """リンクの抽出を担当するクラス"""
@@ -112,11 +141,17 @@ class WebScraper:
     """Webスクレイピングの全体的な処理を統括するクラス"""
 
     @staticmethod
-    def scrape(url: str, tags_to_extract: List[str]) -> Dict[str, Any]:
+    def scrape(
+        url: str,
+        tags_to_extract: List[str],
+        aria_tags: Optional[Dict[str, List[str]]] = None,
+    ) -> Dict[str, Any]:
         """
         Webページをスクレイピングし、指定されたタグの情報を抽出します。
         :param url: スクレイピング対象のURL
         :param tags_to_extract: 抽出したいタグのリスト
+        :param aria_tags: aria-label を抽出したいタグとクラスの辞書（オプション）
+        例: {'div': ['content', 'user-select-text']}
         :return: 抽出された情報を含む辞書
         """
         html_content = WebFetcher.fetch_page(url)
@@ -147,6 +182,14 @@ class WebScraper:
                     logger.info(f"{tag}の内容: {content[:50]}...")
                 else:
                     logger.warning(f"{tag}の内容が見つかりませんでした")
+
+        if aria_tags:
+            for tag, classes in aria_tags.items():
+                aria_labels = parser.find_aria_labels(tag, classes)
+                results[f"{tag}_aria_labels"] = aria_labels
+                logger.info(
+                    f"抽出された {tag} タグの aria-label 数: {len(aria_labels)}"
+                )
 
         return results
 

@@ -1,8 +1,7 @@
 import time
 import pyautogui
-import time
 import pyperclip
-import logging
+from typing import Optional
 
 from src.input_operations.keyboard_handler import KeyboardHandler
 from src.web_operations.edge_handler import EdgeHandler
@@ -11,6 +10,7 @@ from src.log_operations.log_handlers import setup_logger
 keyboard_handler = KeyboardHandler()
 edge_handler = EdgeHandler()
 logger = setup_logger(__name__)
+
 
 class ChatGPTHandler:
     """
@@ -41,7 +41,7 @@ class ChatGPTHandler:
         self.wait_time_after_prompt_long = wait_time_after_prompt_long
         self.model_type = model_type
         self.short_wait_time = short_wait_time
-        logging.info(f"ChatGPTHandler initialized with model type: {model_type}")
+        logger.info(f"ChatGPTHandler initialized with model type: {model_type}")
 
     def press_hotkey(self, key_combination, duration=0.5):
         """
@@ -51,7 +51,7 @@ class ChatGPTHandler:
         """
         pyautogui.hotkey(*key_combination, duration=duration)
         time.sleep(self.short_wait_time)
-        logging.debug(
+        logger.debug(
             f"Hotkey pressed: {key_combination}, Duration: {duration if duration is not None else 'default'}"
         )
 
@@ -59,7 +59,7 @@ class ChatGPTHandler:
         """プロンプトの生成ボタンに移動する"""
         for _ in range(3):
             self.press_hotkey(["shift", "tab"])
-        logging.info("Moved to generate button")
+        logger.info("Moved to generate button")
 
     def move_to_copy_button(self):
         """プロンプトのコピーボタンに移動する"""
@@ -68,12 +68,12 @@ class ChatGPTHandler:
         elif self.model_type == "4omini":
             repeat_count = 5
         else:
-            logging.error(f"Invalid ChatGPT model type: {self.model_type}")
+            logger.error(f"Invalid ChatGPT model type: {self.model_type}")
             raise ValueError(f"Invalid ChatGPT model type: {self.model_type}")
 
         for _ in range(repeat_count):
             self.press_hotkey(["shift", "tab"])
-        logging.info("Moved to copy button")
+        logger.info("Moved to copy button")
 
     def paste_and_send_message(self):
         """クリップボードの内容を貼り付け、送信する"""
@@ -82,7 +82,7 @@ class ChatGPTHandler:
         pyautogui.press("tab")
         time.sleep(self.short_wait_time)
         pyautogui.press("enter")
-        logging.info("Message pasted and sent")
+        logger.info("Message pasted and sent")
 
     def get_generated_content(self):
         """
@@ -94,36 +94,42 @@ class ChatGPTHandler:
         self.move_to_copy_button()
         self.press_hotkey(["enter"])
         generated_content = pyperclip.paste()
-        logging.info("Generated content copied from clipboard")
+        logger.info("Generated content copied from clipboard")
         return generated_content
 
     def save_html(self, filename):
-            """
-            生成されたコンテンツをファイルに保存する
-            :param filename: 保存するファイルの名前（パスを含む）
-            """
-            edge_handler.activate_edge()
-            time.sleep(self.wait_time_after_prompt_short)
-            pyautogui.hotkey("ctrl", "s")
-            time.sleep(self.wait_time_after_prompt_short)
-            pyperclip.copy(filename)
-            pyautogui.hotkey("ctrl", "v")
-            time.sleep(self.wait_time_after_prompt_short)
-            pyautogui.press("enter")
-            time.sleep(self.wait_time_after_prompt_short)
-            logging.info(f"save {filename} as html in downloads")
+        """
+        生成されたコンテンツをファイルに保存する
+        :param filename: 保存するファイルの名前（パスを含む）
+        """
+        edge_handler.activate_edge()
+        time.sleep(self.wait_time_after_prompt_short)
+        pyautogui.hotkey("ctrl", "s")
+        time.sleep(self.wait_time_after_prompt_short)
+        pyperclip.copy(filename)
+        pyautogui.hotkey("ctrl", "v")
+        time.sleep(self.wait_time_after_prompt_short)
+        pyautogui.press("enter")
+        time.sleep(self.wait_time_after_prompt_long)
+        logger.info(f"save {filename} as html in downloads")
 
-    def send_prompt_and_generate_content(self, prompt, repeat_count):
+    def send_prompt_and_generate_content(
+        self, prompt: str, repeat_count: int, is_reload: Optional[bool] = False
+    ):
         """
         プロンプトを送信し、生成ボタンを押す処理を行う
         :param prompt: 送信するプロンプト
         :param repeat_count: 生成ボタンを押す回数
+        :param is_reload: 最初の実行かどうか（デフォルトはFalse）
         """
         edge_handler.activate_edge()
-        keyboard_handler.reload_page(self.wait_time_after_reload)
+
+        if not is_reload:
+            keyboard_handler.reload_page(self.wait_time_after_reload)
+
         pyperclip.copy(prompt)
         self.paste_and_send_message()
-        logging.info("Prompt sent and message generation initiated")
+        logger.info("Prompt sent and message generation initiated")
         time.sleep(self.wait_time_after_prompt_long)
 
         for i in range(repeat_count):
@@ -131,5 +137,5 @@ class ChatGPTHandler:
             keyboard_handler.reload_page(self.wait_time_after_reload)
             self.move_to_generate_button()
             self.press_hotkey(["space"])
-            logging.info(f"Generation button pressed (iteration {i+1}/{repeat_count})")
+            logger.info(f"Generation button pressed (iteration {i+1}/{repeat_count})")
             time.sleep(self.wait_time_after_prompt_medium)

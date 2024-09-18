@@ -161,3 +161,45 @@ class FolderProcessor:
 
         if self.processed_folders == 0:
             logger.warning(f"Warning: No folders starting with '{self.folder_prefix}' were found.")
+
+class FolderRemover:
+    """フォルダを削除するクラス"""
+
+    @staticmethod
+    def remove_folder(folder_path: str) -> bool:
+        """
+        指定されたフォルダを削除します。
+        :param folder_path: 削除するフォルダのパス
+        :return: 削除が成功した場合は True、それ以外は False を返す
+        """
+        try:
+            if os.path.exists(folder_path):
+                shutil.rmtree(folder_path)
+                logger.info(f"Folder removed: {folder_path}")
+                return True
+            else:
+                logger.warning(f"Folder does not exist, cannot remove: {folder_path}")
+                return False
+        except Exception as e:
+            logger.error(f"Error occurred while removing folder {folder_path}: {e}")
+            return False
+
+    @staticmethod
+    def remove_folders_with_prefix(base_folder: str, folder_prefix: str) -> int:
+        """
+        指定されたベースフォルダ内の、特定のプレフィックスを持つフォルダを全て削除します。
+        :param base_folder: ベースフォルダのパス
+        :param folder_prefix: 削除対象のフォルダプレフィックス
+        :return: 削除されたフォルダの数
+        """
+        removed_count = 0
+        try:
+            for item in os.listdir(base_folder):
+                item_path = os.path.join(base_folder, item)
+                if os.path.isdir(item_path) and item.startswith(folder_prefix):
+                    if FolderRemover.remove_folder(item_path):
+                        removed_count += 1
+            logger.info(f"Removed {removed_count} folders with prefix '{folder_prefix}' from {base_folder}")
+        except OSError as e:
+            logger.error(f"Error occurred while removing folders with prefix '{folder_prefix}': {e}")
+        return removed_count

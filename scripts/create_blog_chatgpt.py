@@ -39,7 +39,7 @@ GROUP_SIZE = 10
 EXCEL_INDEX_ROW = 1
 EXCEL_START_ROW = EXCEL_INDEX_ROW + 1
 DOWNLOAD_FOLDER_PATH = "C:/Users/okubo/Downloads/"
-CHATGPT_HTML_FILE_NAME = "create_blog_chatgpt.html"
+TMP_NAME = "create_blog_chatgpt"
 
 from src.excel_operations.excel_manager import ExcelManager
 from src.web_operations.edge_handler import EdgeHandler
@@ -52,6 +52,7 @@ from src.text_operations.text_converter import TextConverter
 from src.web_operations.web_handler import WebScraper
 from src.log_operations.log_handlers import setup_logger
 from src.text_operations.text_manager import TextManager
+from src.folder_operations.folder_processor import FolderRemover
 
 logger = setup_logger(__name__)
 excel_manager = ExcelManager(EXCEL_FILE_PATH)
@@ -74,6 +75,7 @@ file_handler = FileHandler()
 file_reader = FileReader()
 web_scraper = WebScraper()
 text_converter = TextConverter()
+folder_remover = FolderRemover()
 
 
 def generate_and_process_prompts(start_row, columns):
@@ -95,24 +97,30 @@ def generate_and_process_prompts(start_row, columns):
     logger.info("getting md content")
     initial_prompt = file_reader.read_file(PROMPT_TEMPLATE_PATH)
     for i, evidence in enumerate(evidences):
-        evidence = text_manager.text_remover.remove_content_after(
-            evidence, SOURCE_COPILOT_CONVERSATION
-        )
-        evidence = text_manager.text_remover.remove_pattern(
-            evidence, SUPERSCRIPT_CITATION_PATTERN
-        )
-        if i == 0:
-            prompt = prompt_generator.create_initial_prompt(
-                theme, heading, evidence, initial_prompt
+        if evidence is not None:
+            evidence = text_manager.text_remover.remove_content_after(
+                evidence, SOURCE_COPILOT_CONVERSATION
             )
-        else:
-            prompt = prompt_generator.create_additional_prompt(evidence)
-        chatgpt_handler.send_prompt_and_generate_content(prompt, repeat_count=2)
+            evidence = text_manager.text_remover.remove_pattern(
+                evidence, SUPERSCRIPT_CITATION_PATTERN
+            )
+            if i == 0:
+                prompt = prompt_generator.create_initial_prompt(
+                    theme, heading, evidence, initial_prompt
+                )
+            else:
+                prompt = prompt_generator.create_additional_prompt(evidence)
+            chatgpt_handler.send_prompt_and_generate_content(
+                prompt, repeat_count=0, is_reload=True
+            )
     if GET_CONTENT_METHOD == "clipboard":
         md_content = chatgpt_handler.get_generated_content()
 
     logger.info("getting title content")
-    chatgpt_handler.send_prompt_and_generate_content(TITLE_PROMPT, repeat_count=0)
+    title_prompt = prompt_generator.replace_marker(
+        prompt=TITLE_PROMPT, theme=theme, heading=""
+    )
+    chatgpt_handler.send_prompt_and_generate_content(title_prompt, repeat_count=0)
     if GET_CONTENT_METHOD == "clipboard":
         title_content = chatgpt_handler.get_generated_content()
 
@@ -144,8 +152,9 @@ def generate_and_process_prompts(start_row, columns):
 
     logger.info("convert html to md")
     if GET_CONTENT_METHOD != "clipboard":
-        chatgpt_handler.save_html(CHATGPT_HTML_FILE_NAME)
-        chatgpt_html_path = DOWNLOAD_FOLDER_PATH + CHATGPT_HTML_FILE_NAME
+        chatgpt_html_file_name = TMP_NAME + ".html"
+        chatgpt_handler.save_html(chatgpt_html_file_name)
+        chatgpt_html_path = DOWNLOAD_FOLDER_PATH + chatgpt_html_file_name
         if file_handler.exists(chatgpt_html_path):
             chatgpt_html = file_reader.read_file(chatgpt_html_path)
         results = web_scraper.find_elements(
@@ -165,18 +174,18 @@ def generate_and_process_prompts(start_row, columns):
                 html_content = results[i]
                 md_content = text_converter.convert_to_markdown(html_content)
                 md_contents.append(md_content)
-            title_content = text_converter.convert_to_markdown(
-                results[evidence_count + 1]
-            )
+            title_content = text_converter.convert_to_markdown(results[evidence_count])
             description_content = text_converter.convert_to_markdown(
-                results[evidence_count + 3]
+                results[evidence_count + 2]
             )
             keywords_content = text_converter.convert_to_markdown(
-                results[evidence_count + 4]
+                results[evidence_count + 3]
             )
             link_content = text_converter.convert_to_markdown(
-                results[evidence_count + 5]
+                results[evidence_count + 4]
             )
+        file_handler.delete_file(chatgpt_html_path)
+        folder_remover.remove_folder(DOWNLOAD_FOLDER_PATH + TMP_NAME + "_files")
 
     logger.info("update cells in excel")
     if GET_CONTENT_METHOD != "clipboard":
