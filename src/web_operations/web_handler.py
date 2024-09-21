@@ -202,7 +202,6 @@ class WebScraper:
         :param tag_name: 探したいHTMLタグ名
         :param class_list: 要素が持つべきクラスのリスト
         :return: 条件に合致する要素のリスト
-        :raises FileNotFoundError: 指定されたファイルが存在しない場合
         """
         try:
             soup = BeautifulSoup(content, "html.parser")

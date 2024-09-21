@@ -162,6 +162,38 @@ class ExcelCellHandler:
         return 0
 
     @staticmethod
+    def get_last_non_empty_value_in_range(
+        worksheet, start_row: int, column: int, size: int
+    ) -> any:
+        """
+        指定された範囲内で、データが入っている最後の行の値を返します。
+        :param worksheet: 対象のワークシート
+        :param start_row: 開始行
+        :param column: 列番号
+        :param size: 範囲のサイズ（行数）
+        :return: データが入っている最後の行の値、全てのセルが空の場合はNone
+        """
+        try:
+            end_row = min(start_row + size - 1, worksheet.max_row)
+            for row in range(end_row, start_row - 1, -1):
+                value = worksheet.cell(row=row, column=column).value
+                if value is not None and value != "":
+                    logger.info(
+                        f"Last non-empty value found in range: row {row}, column {column}, value: {value}"
+                    )
+                    return value
+            logger.info(
+                f"No non-empty data found in the specified range: rows {start_row}-{end_row}, column {column}"
+            )
+            return None
+        except Exception as e:
+            logger.error(
+                f"An error occurred while getting the last non-empty value in range: {str(e)}"
+            )
+            return None
+
+    # ... (その他の既存のメソッド)
+    @staticmethod
     def insert_array_column_wise(
         worksheet, start_row: int, start_column: int, data: list
     ):

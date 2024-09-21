@@ -1,7 +1,8 @@
 from bs4 import Tag, NavigableString
 import re
-from typing import List
-
+from typing import List, Union
+import html
+from bs4 import BeautifulSoup
 from src.log_operations.log_handlers import setup_logger
 
 logger = setup_logger(__name__)
@@ -19,8 +20,10 @@ class TextConverter:
         logger.info("HTMLエレメントのMarkdown変換を開始します。")
         markdown = cls._process_element(element)
         markdown = re.sub(r"\n{3,}", "\n\n", markdown)
-        markdown = re.sub(r'<[^>]+>', '', markdown)
-        markdown = markdown.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+        markdown = re.sub(r"<[^>]+>", "", markdown)
+        markdown = (
+            markdown.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        )
         return markdown.strip()
 
     @classmethod
@@ -86,3 +89,29 @@ class TextConverter:
             else:
                 content.append(child.strip())
         return " ".join(content).strip()
+
+    @classmethod
+    def convert_html_to_string_array(cls, html_content):
+        """
+        単一のHTML要素を文字列に変換します。
+        """
+        html_str = ""
+        try:
+            if isinstance(html_content, BeautifulSoup):
+                html_str = str(html_content)
+            elif isinstance(html_content, str):
+                html_str = html_content
+            elif isinstance(html_content, bytes):
+                html_str = html_content.decode("utf-8", errors="ignore")
+            elif hasattr(html_content, "__html__"):
+                html_str = html_content.__html__()
+            else:
+                html_str = str(html_content)
+            html_str = html.unescape(html_str)
+            logger.info("HTMLコンテンツを正常に変換しました。")
+
+        except Exception as e:
+            logger.error(f"HTMLコンテンツの変換中にエラーが発生しました: {str(e)}")
+            html_str = ""
+
+        return html_str

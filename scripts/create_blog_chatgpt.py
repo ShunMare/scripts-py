@@ -49,6 +49,8 @@ from src.text_operations.prompt_generator import PromptGenerator
 from src.file_operations.file_processor import FileHandler, FileReader
 from src.util_operations.validator import ValueValidator
 from src.text_operations.text_converter import TextConverter
+from src.text_operations.text_remover import TextRemover
+from src.text_operations.text_replacer import TextReplacer
 from src.web_operations.web_handler import WebScraper
 from src.log_operations.log_handlers import setup_logger
 from src.text_operations.text_manager import TextManager
@@ -75,7 +77,9 @@ file_handler = FileHandler()
 file_reader = FileReader()
 web_scraper = WebScraper()
 text_converter = TextConverter()
+text_remover = TextRemover()
 folder_remover = FolderRemover()
+text_replacer = TextReplacer()
 
 
 def generate_and_process_prompts(start_row, columns):
@@ -169,9 +173,22 @@ def generate_and_process_prompts(start_row, columns):
             end_row=start_row + GROUP_SIZE - 1,
         )
         if len(results) >= evidence_count + 5:
+            html_contents = []
             md_contents = []
             for i in range(evidence_count):
                 html_content = results[i]
+                html_content_converted = text_replacer.replace_from_end(
+                    html_content,
+                    '<div class="markdown prose w-full break-words dark:prose-invert dark">',
+                    "",
+                )
+                html_content_converted = text_replacer.replace_from_end(
+                    html_content_converted, "</div>", ""
+                )
+                html_content_converted = text_converter.convert_html_to_string_array(
+                    html_content_converted
+                )
+                html_contents.append(html_content_converted)
                 md_content = text_converter.convert_to_markdown(html_content)
                 md_contents.append(md_content)
             title_content = text_converter.convert_to_markdown(results[evidence_count])
@@ -189,6 +206,13 @@ def generate_and_process_prompts(start_row, columns):
 
     logger.info("update cells in excel")
     if GET_CONTENT_METHOD != "clipboard":
+        for i, content in enumerate(html_contents):
+            excel_manager.cell_handler.update_cell(
+                excel_manager.current_sheet,
+                start_row + i,
+                columns["html"],
+                content,
+            )
         for i, content in enumerate(md_contents):
             excel_manager.cell_handler.update_cell(
                 excel_manager.current_sheet,
@@ -239,6 +263,7 @@ def main():
     search_strings = [
         "flag",
         "md",
+        "html",
         "theme",
         "heading",
         "title",

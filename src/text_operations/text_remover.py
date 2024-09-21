@@ -43,4 +43,13 @@ class TextRemover:
             return re.sub(pattern, "", content)
         except re.error as e:
             logger.error(f"Invalid regular expression pattern: {pattern}. Error: {e}")
-            return content  # パターンが無効な場合、元の内容を返す
+            return content
+
+    @staticmethod
+    def remove_outer_tags(text):
+        pattern_start = r"^\s*<(\w+)(?:\s+[^>]*)?\s*>"
+        text = re.sub(pattern_start, "", text, count=1)
+        pattern_end = r"</(\w+)>\s*$"
+        text = re.sub(pattern_end, "", text, count=1)
+
+        return text.strip()

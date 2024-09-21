@@ -196,3 +196,44 @@ class TextReplacer:
             content,
         )
         return new_content if new_content != content else None
+
+    @staticmethod
+    def replace_from_end(text, target, replacement):
+        """
+        文字列の後ろから対象の文字列を探して置換する
+
+        :param text: 操作対象の文字列
+        :param target: 置換対象の文字列
+        :param replacement: 置換後の文字列
+        :return: 置換後の文字列
+        """
+        logger.info(
+            f"replace_from_end called with text type: {type(text)}, length: {len(str(text))}"
+        )
+        logger.debug(f"Target: {target}, Replacement: {replacement}")
+
+        if not isinstance(text, str):
+            logger.warning(
+                f"Input is not a string, converting from {type(text)} to string"
+            )
+            text = str(text)
+
+        reversed_text = text[::-1]
+        reversed_target = target[::-1]
+        reversed_replacement = replacement[::-1]
+
+        logger.debug(f"Reversed text (first 50 chars): {reversed_text[:50]}...")
+
+        replaced_text = re.sub(
+            re.escape(reversed_target), reversed_replacement, reversed_text, count=1
+        )
+
+        if replaced_text == reversed_text:
+            logger.info("No replacement made")
+        else:
+            logger.info("Replacement successful")
+
+        result = replaced_text[::-1]
+        logger.debug(f"Final result (first 50 chars): {result[:50]}...")
+
+        return result
