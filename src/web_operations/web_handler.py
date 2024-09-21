@@ -75,34 +75,32 @@ class HTMLParser:
         :return: aria-label 属性の値のリスト
         """
         if content:
-            soup = BeautifulSoup(content, 'html.parser')
+            soup = BeautifulSoup(content, "html.parser")
         else:
             soup = self.soup
-
         if not tag:
             logger.warning("タグが指定されていません。")
             return []
-
         if class_list is None:
             class_list = []
-
         elements = soup.find_all(
             tag,
             class_=lambda x: x and all(cls in x.split() for cls in class_list),
         )
         logger.info(
-            f"{len(elements)} 個の <{tag} class='{ ' '.join(class_list) }'> 要素が見つかりました。"
+            f"{len(elements)} 個の <{tag} class='{' '.join(class_list)}'> 要素が見つかりました。"
         )
-
         aria_labels = []
         for elem in elements:
             aria_label = elem.get("aria-label")
             if aria_label:
                 aria_labels.append(aria_label)
-                logger.info(f"aria-label 属性の値を取得しました: {aria_label}")
+                logger.info(
+                    f"aria-label 属性の値を取得しました: {aria_label[:50]}..."
+                )
             else:
                 logger.warning(
-                    f"<{tag} class='{ ' '.join(class_list) }'> 要素に aria-label 属性が見つかりませんでした。"
+                    f"<{tag} class='{' '.join(class_list)}'> 要素に aria-label 属性が見つかりませんでした。"
                 )
 
         return aria_labels

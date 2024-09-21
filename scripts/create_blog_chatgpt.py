@@ -136,7 +136,9 @@ def generate_and_process_prompts(start_row, columns):
                 results[evidence_count + 4]
             )
         file_handler.delete_file(chatgpt_html_path)
-        folder_remover.remove_folder(DOWNLOAD_FOLDER_PATH + CHATGPT_TMP_FILE_NAME + "_files")
+        folder_remover.remove_folder(
+            DOWNLOAD_FOLDER_PATH + CHATGPT_TMP_FILE_NAME + "_files"
+        )
 
     logger.info("update cells in excel")
     if GET_CONTENT_METHOD != "clipboard":

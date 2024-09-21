@@ -22,6 +22,22 @@ DOWNLOAD_FOLDER_PATH = get_env("DOWNLOAD_FOLDER_PATH")
 EXCEL_GROUP_SIZE = get_env("EXCEL_GROUP_SIZE", 10, int)
 EXCEL_INDEX_ROW = get_env("EXCEL_INDEX_ROW", 1, int)
 EXCEL_START_ROW = get_env("EXCEL_START_ROW", 2, int)
+SCRIPT_BASE_DIR = get_env("SCRIPT_BASE_DIR", "")
+EXECUTE_GET_THEMES_GOOGLE = (
+    get_env("EXECUTE_GET_THEMES_GOOGLE", "true").lower() == "true"
+)
+EXECUTE_GET_HEADING_GOOGLE = (
+    get_env("EXECUTE_GET_HEADING_GOOGLE", "true").lower() == "true"
+)
+EXECUTE_GET_EVIDENCE_BING = (
+    get_env("EXECUTE_GET_EVIDENCE_BING", "true").lower() == "true"
+)
+EXECUTE_CREATE_BLOG_CHATGPT = (
+    get_env("EXECUTE_CREATE_BLOG_CHATGPT", "true").lower() == "true"
+)
+EXECUTE_UPLOAD_WP_POST = (
+    get_env("EXECUTE_UPLOAD_WP_POST", "true").lower() == "true"
+)
 
 # **ChatGPT related variables**
 CHATGPT_MODEL_TYPE = get_env("CHATGPT_MODEL_TYPE", "4o")
@@ -53,7 +69,7 @@ GET_CONTENT_METHOD = os.getenv("GET_CONTENT_METHOD", "clipboard")
 # **Bing related variables**
 BING_URL = os.getenv("BING_URL")
 BING_OUTPUT_ELEMENT = os.getenv("BING_OUTPUT_ELEMENT")
-BING_OUTPUT_CLASS_LIST = os.getenv("BING_OUTPUT_CLASS_LIST")
+BING_OUTPUT_CLASS_LIST = get_env("BING_OUTPUT_CLASS_LIST").split(",")
 BING_TMP_FILE_NAME = os.getenv("BING_TMP_FILE_NAME")
 
 # **WordPress related variables**

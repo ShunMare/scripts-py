@@ -1,3 +1,9 @@
+import os
+import sys
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(project_root)
+
 from load_env import *
 from src.excel_operations.excel_manager import ExcelManager
 from src.web_operations.edge_handler import EdgeHandler
@@ -18,6 +24,8 @@ from src.ai_operations.bing_handler import BingHandler
 from src.web_operations.web_handler import WebScraper, HTMLParser
 from src.web_operations.google_search_analyzer import GoogleSearchAnalyzer
 from src.format_operations.text_formatter import TextFormatter
+from src.script_operations.script_executor import ScriptExecutor
+from src.file_operations.file_processor import FilePathHandler
 
 logger = setup_logger(__name__)
 excel_manager = ExcelManager(EXCEL_FILE_PATH)
@@ -55,3 +63,5 @@ web_scraper = WebScraper()
 html_parser = HTMLParser("")
 google_search_analyzer = GoogleSearchAnalyzer()
 text_formatter = TextFormatter()
+script_executor = ScriptExecutor()
+file_path_handler = FilePathHandler()
