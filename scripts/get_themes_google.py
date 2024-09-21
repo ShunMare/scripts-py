@@ -1,31 +1,10 @@
-import os
-import sys
-from dotenv import load_dotenv
-
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-dotenv_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), ".env")
-sys.path.append(project_root)
-load_dotenv(dotenv_path, override=True)
-
-# common
-EXCEL_FILE_PATH = os.getenv("EXCEL_FILE_PATH", "")
-# define
-GROUP_SIZE = 10
-EXCEL_INDEX_ROW = 1
-EXCEL_START_ROW = EXCEL_INDEX_ROW + 1
-
-from src.excel_operations.excel_manager import ExcelManager
-from src.web_operations.google_search_analyzer import GoogleSearchAnalyzer
-from src.format_operations.text_formatter import TextFormatter
-from src.json_operations.json_processor import JSONProcessor
-from src.util_operations.validator import ValueValidator
-from src.log_operations.log_handlers import setup_logger
-
-logger = setup_logger(__name__)
-excel_manager = ExcelManager(EXCEL_FILE_PATH)
-google_search_analyzer = GoogleSearchAnalyzer()
-json_processor = JSONProcessor()
-text_formatter = TextFormatter()
+from load_env import *
+from initialize import (
+    logger,
+    excel_manager,
+    value_validator,
+    google_search_analyzer,
+)
 
 
 def get_themes(start_row, columns):
@@ -61,18 +40,18 @@ def main():
     )
     columns = dict(zip(search_strings, column_indices))
 
-    if ValueValidator.has_any_invalid_value_in_array(list(columns.values())):
+    if value_validator.has_any_invalid_value_in_array(list(columns.values())):
         return
 
     flag_end_row = excel_manager.cell_handler.get_last_row_of_column(
         worksheet=excel_manager.current_sheet, column=columns["flag"]
     )
     for i in range(flag_end_row):
-        start_row = i * GROUP_SIZE + EXCEL_START_ROW
+        start_row = i * EXCEL_GROUP_SIZE + EXCEL_START_ROW
         flag = excel_manager.cell_handler.get_cell_value(
             excel_manager.current_sheet, start_row, columns["flag"]
         )
-        if ValueValidator.is_single_value_valid(flag):
+        if value_validator.is_single_value_valid(flag):
             logger.prominent_log(
                 f"Google get theme, processing group starting at row {start_row}"
             )

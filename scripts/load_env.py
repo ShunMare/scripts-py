@@ -48,8 +48,18 @@ SUPERSCRIPT_CITATION_PATTERN = get_env(
     "SUPERSCRIPT_CITATION_PATTERN",
     r"\s*[⁰¹²³⁴⁵⁶⁷⁸⁹]+:\s*\[[^\]]+\]\([^\)]+\)",
 )
+GET_CONTENT_METHOD = os.getenv("GET_CONTENT_METHOD", "clipboard")
+
+# **Bing related variables**
+BING_URL = os.getenv("BING_URL")
+BING_OUTPUT_ELEMENT = os.getenv("BING_OUTPUT_ELEMENT")
+BING_OUTPUT_CLASS_LIST = os.getenv("BING_OUTPUT_CLASS_LIST")
+BING_TMP_FILE_NAME = os.getenv("BING_TMP_FILE_NAME")
 
 # **WordPress related variables**
 WP_URL = get_env("WP_URL")
 WP_USERNAME = get_env("WP_USERNAME")
 WP_APP_PASSWORD = get_env("WP_APP_PASSWORD")
+
+# **Google related variables**
+HEADING_PROMPT = get_env("HEADING_PROMPT")

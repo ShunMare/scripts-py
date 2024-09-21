@@ -64,14 +64,29 @@ class HTMLParser:
         logger.info(f"{len(results)}個の {tag} タグを見つけました")
         return [result.get_text(strip=True) for result in results]
 
-    def find_aria_labels(self, tag: str, class_list: List[str]) -> List[str]:
+    def find_aria_labels(
+        self, content: str = "", tag: str = "", class_list: List[str] = None
+    ) -> List[str]:
         """
         指定されたタグとクラスを持つ要素から aria-label 属性の値を抽出します。
+        :param content: HTML内容（省略時は初期化時のコンテンツを使用）
         :param tag: 検索するHTMLタグ
         :param class_list: タグが持つべきクラスのリスト
         :return: aria-label 属性の値のリスト
         """
-        elements = self.soup.find_all(
+        if content:
+            soup = BeautifulSoup(content, 'html.parser')
+        else:
+            soup = self.soup
+
+        if not tag:
+            logger.warning("タグが指定されていません。")
+            return []
+
+        if class_list is None:
+            class_list = []
+
+        elements = soup.find_all(
             tag,
             class_=lambda x: x and all(cls in x.split() for cls in class_list),
         )

@@ -14,6 +14,10 @@ from src.log_operations.log_handlers import setup_logger
 from src.text_operations.text_manager import TextManager
 from src.folder_operations.folder_processor import FolderRemover
 from src.wp_operations.wp_manager import WordPressAPI
+from src.ai_operations.bing_handler import BingHandler
+from src.web_operations.web_handler import WebScraper, HTMLParser
+from src.web_operations.google_search_analyzer import GoogleSearchAnalyzer
+from src.format_operations.text_formatter import TextFormatter
 
 logger = setup_logger(__name__)
 excel_manager = ExcelManager(EXCEL_FILE_PATH)
@@ -41,3 +45,13 @@ folder_remover = FolderRemover()
 text_replacer = TextReplacer()
 wp_manager = WordPressAPI(WP_URL, WP_USERNAME, WP_APP_PASSWORD)
 value_validator = ValueValidator()
+bing_handler = BingHandler(
+    wait_time_after_reload=WAIT_TIME_AFTER_RELOAD,
+    wait_time_after_prompt_short=WAIT_TIME_AFTER_PROMPT_SHORT,
+    wait_time_after_prompt_long=WAIT_TIME_AFTER_PROMPT_LONG,
+    short_wait_time=SHORT_WAIT_TIME,
+)
+web_scraper = WebScraper()
+html_parser = HTMLParser("")
+google_search_analyzer = GoogleSearchAnalyzer()
+text_formatter = TextFormatter()

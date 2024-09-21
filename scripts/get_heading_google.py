@@ -1,72 +1,17 @@
-import os
-import sys
-from dotenv import load_dotenv
-
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-dotenv_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), ".env")
-sys.path.append(project_root)
-load_dotenv(dotenv_path, override=True)
-
-# common
-EXCEL_FILE_PATH = os.getenv("EXCEL_FILE_PATH", "")
-WAIT_TIME_AFTER_PROMPT_LONG = int(os.getenv("WAIT_TIME_AFTER_PROMPT_LONG", 200))
-WAIT_TIME_AFTER_PROMPT_MEDIUM = int(os.getenv("WAIT_TIME_AFTER_PROMPT_MEDIUM", 100))
-WAIT_TIME_AFTER_PROMPT_SHORT = int(os.getenv("WAIT_TIME_AFTER_PROMPT_SHORT", 5))
-WAIT_TIME_AFTER_RELOAD = int(os.getenv("WAIT_TIME_AFTER_RELOAD", 5))
-WAIT_TIME_AFTER_SWITCH = int(os.getenv("WAIT_TIME_AFTER_SWITCH", 3))
-SHORT_WAIT_TIME = float(os.getenv("SHORT_WAIT_TIME", 0.5))
-GET_CONTENT_METHOD = os.getenv("GET_CONTENT_METHOD", "clipboard")
-# chatgpt
-CHATGPT_PATH = os.getenv("CHATGPT_PATH", "https://chatgpt.com/")
-CHATGPT_MODEL_TYPE = os.getenv("CHATGPT_MODEL_TYPE", "4o")
-CHATGPT_OUTPUT_ELEMENT = os.getenv("CHATGPT_OUTPUT_ELEMENT", "div")
-CHATGPT_OUTPUT_CLASS_LIST = os.environ.get(
-    "CHATGPT_OUTPUT_CLASS_LIST", "markdown,prose"
-).split(",")
-# google
-HEADING_PROMPT = os.getenv("HEADING_PROMPT", "")
-# define
-GROUP_SIZE = 10
-EXCEL_INDEX_ROW = 1
-EXCEL_START_ROW = EXCEL_INDEX_ROW + 1
-DOWNLOAD_FOLDER_PATH = "C:/Users/okubo/Downloads/"
-CHATGPT_HTML_FILE_NAME = "get_heading_google.html"
-
-from src.excel_operations.excel_manager import ExcelManager
-from src.web_operations.edge_handler import EdgeHandler
-from src.web_operations.google_search_analyzer import GoogleSearchAnalyzer
-from src.format_operations.text_formatter import TextFormatter
-from src.json_operations.json_processor import JSONProcessor
-from src.ai_operations.chatgpt_handler import ChatGPTHandler
-from src.text_operations.prompt_generator import PromptGenerator
-from src.util_operations.validator import ValueValidator
-from src.file_operations.file_processor import FileHandler, FileReader
-from src.text_operations.text_converter import TextConverter
-from src.web_operations.web_handler import WebScraper
-from src.log_operations.log_handlers import setup_logger
-
-logger = setup_logger(__name__)
-excel_manager = ExcelManager(EXCEL_FILE_PATH)
-edge_handler = EdgeHandler(wait_time_after_switch=WAIT_TIME_AFTER_RELOAD)
-prompt_generator = PromptGenerator(
-    WAIT_TIME_AFTER_PROMPT_MEDIUM,
-    WAIT_TIME_AFTER_PROMPT_LONG,
+from load_env import *
+from initialize import (
+    logger,
+    excel_manager,
+    edge_handler,
+    chatgpt_handler,
+    file_handler,
+    file_reader,
+    web_scraper,
+    text_converter,
+    value_validator,
+    google_search_analyzer,
+    text_formatter
 )
-chatgpt_handler = ChatGPTHandler(
-    wait_time_after_reload=WAIT_TIME_AFTER_RELOAD,
-    wait_time_after_prompt_short=WAIT_TIME_AFTER_PROMPT_SHORT,
-    wait_time_after_prompt_medium=WAIT_TIME_AFTER_PROMPT_MEDIUM,
-    wait_time_after_prompt_long=WAIT_TIME_AFTER_PROMPT_LONG,
-    short_wait_time=SHORT_WAIT_TIME,
-    model_type=CHATGPT_MODEL_TYPE,
-)
-google_search_analyzer = GoogleSearchAnalyzer()
-json_processor = JSONProcessor()
-text_formatter = TextFormatter()
-file_handler = FileHandler()
-file_reader = FileReader()
-web_scraper = WebScraper()
-text_converter = TextConverter()
 
 
 def get_heading(start_row, columns):
@@ -93,7 +38,7 @@ def get_heading(start_row, columns):
 
     combined_results = "\n".join(results_str)
     combined_results = HEADING_PROMPT + "\n" + combined_results
-    edge_handler.open_url_in_browser(CHATGPT_PATH)
+    edge_handler.open_url_in_browser(CHATGPT_URL)
     prompt = HEADING_PROMPT + "\n" + combined_results
     chatgpt_handler.send_prompt_and_generate_content(prompt, repeat_count=0)
 
@@ -101,8 +46,8 @@ def get_heading(start_row, columns):
     if GET_CONTENT_METHOD == "clipboard":
         heading_content = chatgpt_handler.get_generated_content()
     else:
-        chatgpt_handler.save_html(CHATGPT_HTML_FILE_NAME)
-        chatgpt_html_path = DOWNLOAD_FOLDER_PATH + CHATGPT_HTML_FILE_NAME
+        chatgpt_handler.save_html(CHATGPT_TMP_FILE_NAME)
+        chatgpt_html_path = DOWNLOAD_FOLDER_PATH + CHATGPT_TMP_FILE_NAME
         if file_handler.exists(chatgpt_html_path):
             chatgpt_html = file_reader.read_file(chatgpt_html_path)
         results = web_scraper.find_elements(
@@ -136,18 +81,18 @@ def main():
     )
     columns = dict(zip(search_strings, column_indices))
 
-    if ValueValidator.has_any_invalid_value_in_array(list(columns.values())):
+    if value_validator.has_any_invalid_value_in_array(list(columns.values())):
         return
 
     flag_end_row = excel_manager.cell_handler.get_last_row_of_column(
         worksheet=excel_manager.current_sheet, column=columns["flag"]
     )
     for i in range(flag_end_row):
-        start_row = i * GROUP_SIZE + EXCEL_START_ROW
+        start_row = i * EXCEL_GROUP_SIZE + EXCEL_START_ROW
         flag = excel_manager.cell_handler.get_cell_value(
             excel_manager.current_sheet, start_row, columns["flag"]
         )
-        if ValueValidator.is_single_value_valid(flag):
+        if value_validator.is_single_value_valid(flag):
             logger.prominent_log(
                 f"Google get heading, processing group starting at row {start_row}"
             )
