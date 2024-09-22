@@ -26,7 +26,10 @@ def generate_and_process_prompts(start_row, columns):
         excel_manager.current_sheet, start_row, columns["heading"]
     )
     evidences = excel_manager.cell_handler.get_range_values(
-        excel_manager.current_sheet, start_row, columns["evidence"], EXCEL_GROUP_SIZE
+        excel_manager.current_sheet,
+        start_row,
+        columns["evidence"],
+        CREATE_BLOG_DETAIL_EXCEL_GROUP_SIZE,
     )
     if not value_validator.has_any_invalid_value_in_array(evidences):
         return
@@ -105,7 +108,7 @@ def generate_and_process_prompts(start_row, columns):
             excel_manager.current_sheet,
             column=columns["evidence"],
             start_row=start_row,
-            end_row=start_row + EXCEL_GROUP_SIZE - 1,
+            end_row=start_row + CREATE_BLOG_DETAIL_EXCEL_GROUP_SIZE - 1,
         )
         if len(results) >= evidence_count + 5:
             html_contents = []
@@ -211,7 +214,7 @@ def main():
     ]
     column_indices = excel_manager.search_handler.find_multiple_matching_indices(
         worksheet=excel_manager.current_sheet,
-        index=EXCEL_INDEX_ROW,
+        index=CREATE_BLOG_DETAIL_EXCEL_INDEX_ROW,
         search_strings=search_strings,
         is_row_flag=True,
     )
@@ -224,7 +227,9 @@ def main():
         worksheet=excel_manager.current_sheet, column=columns["flag"]
     )
     for i in range(flag_end_row):
-        start_row = i * EXCEL_GROUP_SIZE + EXCEL_START_ROW
+        start_row = (
+            i * CREATE_BLOG_DETAIL_EXCEL_GROUP_SIZE + CREATE_BLOG_DETAIL_EXCEL_START_ROW
+        )
         flag = excel_manager.cell_handler.get_cell_value(
             excel_manager.current_sheet, start_row, columns["flag"]
         )
