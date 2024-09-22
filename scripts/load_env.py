@@ -23,6 +23,8 @@ EXCEL_GROUP_SIZE = get_env("EXCEL_GROUP_SIZE", 10, int)
 EXCEL_INDEX_ROW = get_env("EXCEL_INDEX_ROW", 1, int)
 EXCEL_START_ROW = get_env("EXCEL_START_ROW", 2, int)
 SCRIPT_BASE_DIR = get_env("SCRIPT_BASE_DIR", "")
+SCRIPT_CREATE_BLOG_DETAIL_DIR = get_env("SCRIPT_CREATE_BLOG_DETAIL_DIR", "")
+SCRIPT_CREATE_BLOG_INSTA_DIR = get_env("SCRIPT_CREATE_BLOG_INSTA_DIR", "")
 EXECUTE_GET_THEMES_GOOGLE = (
     get_env("EXECUTE_GET_THEMES_GOOGLE", "true").lower() == "true"
 )
@@ -35,9 +37,7 @@ EXECUTE_GET_EVIDENCE_BING = (
 EXECUTE_CREATE_BLOG_CHATGPT = (
     get_env("EXECUTE_CREATE_BLOG_CHATGPT", "true").lower() == "true"
 )
-EXECUTE_UPLOAD_WP_POST = (
-    get_env("EXECUTE_UPLOAD_WP_POST", "true").lower() == "true"
-)
+EXECUTE_UPLOAD_WP_POST = get_env("EXECUTE_UPLOAD_WP_POST", "true").lower() == "true"
 
 # **ChatGPT related variables**
 CHATGPT_MODEL_TYPE = get_env("CHATGPT_MODEL_TYPE", "4o")

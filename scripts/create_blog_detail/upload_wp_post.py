@@ -1,5 +1,6 @@
-from load_env import *
-from initialize import (
+from initialize import *
+from scripts.load_env import *
+from scripts.initialize import (
     logger,
     excel_manager,
     wp_manager,

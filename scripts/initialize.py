@@ -2,9 +2,10 @@ import os
 import sys
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.append(project_root)
+if project_root not in sys.path:
+    sys.path.append(project_root)
 
-from load_env import *
+from scripts.load_env import *
 from src.excel_operations.excel_manager import ExcelManager
 from src.web_operations.edge_handler import EdgeHandler
 from src.input_operations.keyboard_handler import KeyboardHandler

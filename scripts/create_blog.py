@@ -1,6 +1,5 @@
-from load_env import *
-from initialize import logger, script_executor, file_path_handler
-
+from scripts.load_env import *
+from scripts.initialize import logger, script_executor, file_path_handler
 
 def main():
     GET_EVIDENCE_NAME = "get_evidence_bing.py"
@@ -8,12 +7,14 @@ def main():
     POST_WP_NAME = "upload_wp_post.py"
 
     get_evidence_full_path = file_path_handler.join_path(
-        SCRIPT_BASE_DIR, GET_EVIDENCE_NAME
+        SCRIPT_CREATE_BLOG_DETAIL_DIR, GET_EVIDENCE_NAME
     )
     create_blog_full_path = file_path_handler.join_path(
-        SCRIPT_BASE_DIR, CREATE_BLOG_NAME
+        SCRIPT_CREATE_BLOG_DETAIL_DIR, CREATE_BLOG_NAME
     )
-    post_wp_full_path = file_path_handler.join_path(SCRIPT_BASE_DIR, POST_WP_NAME)
+    post_wp_full_path = file_path_handler.join_path(
+        SCRIPT_CREATE_BLOG_DETAIL_DIR, POST_WP_NAME
+    )
 
     try:
         if EXECUTE_GET_EVIDENCE_BING:
