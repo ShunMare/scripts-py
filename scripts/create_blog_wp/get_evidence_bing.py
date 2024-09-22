@@ -23,7 +23,7 @@ def generate_and_process_prompts(start_row, columns):
         worksheet=excel_manager.current_sheet,
         start_row=start_row,
         column=columns["direction"],
-        num_rows=EXCEL_GROUP_SIZE,
+        num_rows=CREATE_BLOG_WP_EXCEL_GROUP_SIZE,
     )
     if not value_validator.has_any_valid_value_in_array(directions):
         return
@@ -54,7 +54,7 @@ def generate_and_process_prompts(start_row, columns):
             excel_manager.current_sheet,
             column=columns["direction"],
             start_row=start_row,
-            end_row=start_row + EXCEL_GROUP_SIZE - 1,
+            end_row=start_row + CREATE_BLOG_WP_EXCEL_GROUP_SIZE - 1,
         )
         if len(results) == direction_count:
             md_contents = []
@@ -85,7 +85,7 @@ def main():
     search_strings = ["flag", "theme", "direction", "evidence"]
     column_indices = excel_manager.search_handler.find_multiple_matching_indices(
         worksheet=excel_manager.current_sheet,
-        index=EXCEL_INDEX_ROW,
+        index=CREATE_BLOG_WP_EXCEL_INDEX_ROW,
         search_strings=search_strings,
         is_row_flag=True,
     )
@@ -98,7 +98,7 @@ def main():
         worksheet=excel_manager.current_sheet, column=columns["flag"]
     )
     for i in range(flag_end_row):
-        start_row = i * EXCEL_GROUP_SIZE + EXCEL_START_ROW
+        start_row = i * CREATE_BLOG_WP_EXCEL_GROUP_SIZE + CREATE_BLOG_WP_EXCEL_START_ROW
         flag = excel_manager.cell_handler.get_cell_value(
             excel_manager.current_sheet, start_row, columns["flag"]
         )

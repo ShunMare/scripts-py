@@ -29,7 +29,10 @@ from src.script_operations.script_executor import ScriptExecutor
 from src.file_operations.file_processor import FilePathHandler
 
 logger = setup_logger(__name__)
-excel_manager = ExcelManager(EXCEL_FILE_PATH)
+if EXECUTE_CREATE_BLOG_WP:
+    excel_manager = ExcelManager(CREATE_BLOG_WP_EXCEL_FILE_PATH)
+else:
+    excel_manager = ExcelManager(CREATE_BLOG_MD_EXCEL_FILE_PATH)
 edge_handler = EdgeHandler(wait_time_after_switch=WAIT_TIME_AFTER_RELOAD)
 keyboard_handler = KeyboardHandler(short_wait_time=SHORT_WAIT_TIME)
 chatgpt_handler = ChatGPTHandler(

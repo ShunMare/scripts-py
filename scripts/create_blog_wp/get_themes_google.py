@@ -35,7 +35,7 @@ def main():
     search_strings = ["flag", "theme_suggestions", "theme", "heading"]
     column_indices = excel_manager.search_handler.find_multiple_matching_indices(
         worksheet=excel_manager.current_sheet,
-        index=CREATE_BLOG_DETAIL_EXCEL_INDEX_ROW,
+        index=CREATE_BLOG_WP_EXCEL_INDEX_ROW,
         search_strings=search_strings,
         is_row_flag=True,
     )
@@ -49,7 +49,7 @@ def main():
     )
     for i in range(flag_end_row):
         start_row = (
-            i * CREATE_BLOG_DETAIL_EXCEL_GROUP_SIZE + CREATE_BLOG_DETAIL_EXCEL_START_ROW
+            i * CREATE_BLOG_WP_EXCEL_GROUP_SIZE + CREATE_BLOG_WP_EXCEL_START_ROW
         )
         flag = excel_manager.cell_handler.get_cell_value(
             excel_manager.current_sheet, start_row, columns["flag"]

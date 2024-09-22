@@ -7,13 +7,13 @@ def main():
     POST_WP_NAME = "upload_wp_post.py"
 
     get_evidence_full_path = file_path_handler.join_path(
-        SCRIPT_CREATE_BLOG_DETAIL_DIR, GET_EVIDENCE_NAME
+        SCRIPT_CREATE_BLOG_WP_DIR, GET_EVIDENCE_NAME
     )
     create_blog_full_path = file_path_handler.join_path(
-        SCRIPT_CREATE_BLOG_DETAIL_DIR, CREATE_BLOG_NAME
+        SCRIPT_CREATE_BLOG_WP_DIR, CREATE_BLOG_NAME
     )
     post_wp_full_path = file_path_handler.join_path(
-        SCRIPT_CREATE_BLOG_DETAIL_DIR, POST_WP_NAME
+        SCRIPT_CREATE_BLOG_WP_DIR, POST_WP_NAME
     )
 
     try:
