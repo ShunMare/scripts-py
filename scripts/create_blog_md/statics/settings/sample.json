@@ -1,0 +1,29 @@
+{
+    "settings": {
+        "tag": {
+            "size": 105,
+            "color": "#23325f",
+            "horizontalType": "absolute",
+            "verticalType": "absolute",
+            "x": 100,
+            "y": 162
+        },
+        "title": {
+            "size": 115,
+            "color": "#283063",
+            "horizontalType": "relative",
+            "verticalType": "relative",
+            "horizontal": "center",
+            "vertical": "middle"
+        },
+        "subtitle": {
+            "size": 55,
+            "color": "#263262",
+            "horizontalType": "relative",
+            "verticalType": "absolute",
+            "horizontal": "center",
+            "y": 780
+        }
+    },
+    "backgroundImage": "HALCON.png"
+}

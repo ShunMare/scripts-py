@@ -163,4 +163,5 @@ cython_debug/
 #.idea/
 
 # Project specific files
-blog.xlsx
+blog_wp.xlsx
+blog_md.xlsx

@@ -19,7 +19,7 @@ def main():
     try:
         if EXECUTE_GET_EVIDENCE_BING:
             script_executor.run_script(get_evidence_full_path)
-        if EXECUTE_CREATE_BLOG_CHATGPT:
+        if EXECUTE_CREATE_BLOG_WP_CHATGPT:
             script_executor.run_script(create_blog_full_path)
         if EXECUTE_UPLOAD_WP_POST:
             script_executor.run_script(post_wp_full_path)

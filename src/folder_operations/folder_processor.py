@@ -6,6 +6,7 @@ from src.log_operations.log_handlers import setup_logger
 
 logger = setup_logger(__name__)
 
+
 class FolderChecker:
     """フォルダの存在確認や必要なフォルダのチェックを行うクラス"""
 
@@ -81,7 +82,9 @@ class FolderLister:
                 item_path = os.path.join(folder_path, item)
                 if os.path.isdir(item_path) and item.startswith(folder_prefix):
                     matching_folders.append(item)
-            logger.info(f"Found {len(matching_folders)} folders matching prefix '{folder_prefix}'")
+            logger.info(
+                f"Found {len(matching_folders)} folders matching prefix '{folder_prefix}'"
+            )
         except OSError as e:
             logger.error(f"Error occurred while listing folders: {e}")
         return matching_folders
@@ -102,7 +105,9 @@ class FolderLister:
                 item_path = os.path.join(folder_path, item)
                 if os.path.isdir(item_path) and item.startswith(folder_prefix):
                     matching_folders.append(item_path)
-            logger.info(f"Found {len(matching_folders)} folders matching prefix '{folder_prefix}' (full path)")
+            logger.info(
+                f"Found {len(matching_folders)} folders matching prefix '{folder_prefix}' (full path)"
+            )
         except OSError as e:
             logger.error(f"Error occurred while listing folders (full path): {e}")
         return matching_folders
@@ -133,6 +138,7 @@ class FolderCreator:
             except OSError as e:
                 logger.error(f"Error occurred while creating folder {folder_path}: {e}")
 
+
 class FolderProcessor:
     """特定のプレフィックスを持つフォルダに対して処理を行うクラス"""
 
@@ -160,7 +166,10 @@ class FolderProcessor:
                 logger.info(f"Skipped folder (prefix doesn't match): {folder_name}")
 
         if self.processed_folders == 0:
-            logger.warning(f"Warning: No folders starting with '{self.folder_prefix}' were found.")
+            logger.warning(
+                f"Warning: No folders starting with '{self.folder_prefix}' were found."
+            )
+
 
 class FolderRemover:
     """フォルダを削除するクラス"""
@@ -199,7 +208,43 @@ class FolderRemover:
                 if os.path.isdir(item_path) and item.startswith(folder_prefix):
                     if FolderRemover.remove_folder(item_path):
                         removed_count += 1
-            logger.info(f"Removed {removed_count} folders with prefix '{folder_prefix}' from {base_folder}")
+            logger.info(
+                f"Removed {removed_count} folders with prefix '{folder_prefix}' from {base_folder}"
+            )
         except OSError as e:
-            logger.error(f"Error occurred while removing folders with prefix '{folder_prefix}': {e}")
+            logger.error(
+                f"Error occurred while removing folders with prefix '{folder_prefix}': {e}"
+            )
         return removed_count
+
+
+class FolderPathHandler:
+    """
+    FolderPathHandler クラスは、フォルダーパスの結合に関する処理を担当します。
+    """
+
+    @staticmethod
+    def join_path(folder_path: str, file_name: str) -> str:
+        """
+        フォルダパスを結合してフルパスを生成します。
+        :param folder_path: フォルダのパス
+        :param file_name: ファイル名
+        :return: フルパス
+        """
+        return os.path.join(folder_path, file_name)
+
+    @staticmethod
+    def join_and_normalize_path(path_elements: List[str]) -> str:
+        """
+        パス要素のリストを受け取り、結合して正規化されたパスを返します。
+        :param path_elements: 結合するパス要素のリスト
+        :return: 結合された正規化されたパス
+        """
+        if not path_elements:
+            logger.warning("空のパス要素リストが提供されました")
+            return ""
+
+        joined_path = os.path.join(*path_elements)
+        normalized_path = os.path.normpath(joined_path)
+        logger.info(f"パスを結合し正規化しました: {normalized_path}")
+        return normalized_path

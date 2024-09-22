@@ -1,6 +1,6 @@
 from bs4 import Tag, NavigableString
 import re
-from typing import List, Union
+from typing import List
 import html
 from bs4 import BeautifulSoup
 from src.log_operations.log_handlers import setup_logger

@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Tuple
 from src.log_operations.log_handlers import setup_logger
 
 logger = setup_logger(__name__)
@@ -87,6 +87,76 @@ class TextHandler:
         except Exception as e:
             logger.error(f"Error occurred while converting value to string: {e}")
             return f"<Error: {type(value).__name__}>"
+
+    @staticmethod
+    def split_at_character(
+        text: str, max_length: int, split_char: str = "_"
+    ) -> Tuple[str, str]:
+        """
+        Split a string at a specified character, respecting the maximum length.
+
+        This function attempts to split the input text at the specified character,
+        ensuring that the first part does not exceed the specified maximum length.
+        If the split character is not found within the maximum length, it splits at the
+        maximum length.
+
+        :param text: The text to split.
+        :param max_length: The maximum length of the first part.
+        :param split_char: The character at which to split the string (default is "_").
+        :return: A tuple containing the first part and the remaining text.
+        """
+        if len(text) <= max_length:
+            return text, ""
+
+        split_index = text.rfind(split_char, 0, max_length)
+        if split_index == -1:
+            split_index = max_length
+
+        return text[:split_index], text[split_index:]
+
+    @staticmethod
+    def format_text_with_keyword_split(
+        text: str,
+        keyword: str = "",
+        split_char: str = "_",
+        max_line_length: int = 25,
+        max_lines: int = 3,
+    ) -> str:
+        """
+        Process a title by splitting it into multiple lines based on a keyword and length constraints.
+
+        :param text: The input text to process.
+        :param keyword: The keyword to split the text on (default is "").
+        :param max_line_length: The maximum length of each line (default is 25).
+        :param max_lines: The maximum number of lines to produce (default is 3).
+        :return: The processed text as a string with line breaks.
+        """
+
+        if keyword in text:
+            first_part, second_part = text.split(keyword, 1)
+            first_part = first_part.strip()
+            lines = []
+            while first_part and len(lines) < max_lines - 1:
+                line, first_part = TextHandler.split_at_character(
+                    first_part, max_line_length, split_char
+                )
+                lines.append(line)
+            if first_part:
+                lines[-1] += first_part
+            lines.append(keyword)
+            result = "\n".join(lines)
+        else:
+            lines = []
+            remaining_text = text
+            while remaining_text and len(lines) < max_lines:
+                line, remaining_text = TextHandler.split_at_character(
+                    remaining_text, max_line_length, split_char
+                )
+                lines.append(line)
+            if remaining_text:
+                lines[-1] += remaining_text
+            result = "\n".join(lines)
+        return result
 
 
 class TextPathHandler:

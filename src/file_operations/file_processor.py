@@ -300,6 +300,21 @@ class FilePathHandler:
         """
         return os.path.join(folder_path, file_name)
 
+    @staticmethod
+    def join_and_normalize_path(path_elements: List[str]) -> str:
+        """
+        パス要素のリストを受け取り、結合して正規化されたパスを返します。
+        :param path_elements: 結合するパス要素のリスト
+        :return: 結合された正規化されたパス
+        """
+        if not path_elements:
+            logger.warning("空のパス要素リストが提供されました")
+            return ""
+
+        joined_path = os.path.join(*path_elements)
+        normalized_path = os.path.normpath(joined_path)
+        logger.info(f"パスを結合し正規化しました: {normalized_path}")
+        return normalized_path
 
 class FileWriter:
     def __init__(self):

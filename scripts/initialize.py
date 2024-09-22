@@ -11,22 +11,32 @@ from src.web_operations.edge_handler import EdgeHandler
 from src.input_operations.keyboard_handler import KeyboardHandler
 from src.ai_operations.chatgpt_handler import ChatGPTHandler
 from src.text_operations.prompt_generator import PromptGenerator
-from src.file_operations.file_processor import FileHandler, FileReader
+from src.file_operations.file_processor import (
+    FileHandler,
+    FileReader,
+    FileWriter,
+    FilePathHandler,
+)
 from src.util_operations.validator import ValueValidator
+from src.text_operations.text_handler import TextHandler
 from src.text_operations.text_converter import TextConverter
 from src.text_operations.text_remover import TextRemover
 from src.text_operations.text_replacer import TextReplacer
+from src.text_operations.text_finder import TextFinder
+from src.text_operations.text_manager import TextManager
 from src.web_operations.web_handler import WebScraper
 from src.log_operations.log_handlers import setup_logger
-from src.text_operations.text_manager import TextManager
-from src.folder_operations.folder_processor import FolderRemover
+from src.folder_operations.folder_processor import FolderRemover, FolderPathHandler
 from src.wp_operations.wp_manager import WordPressAPI
 from src.ai_operations.bing_handler import BingHandler
 from src.web_operations.web_handler import WebScraper, HTMLParser
 from src.web_operations.google_search_analyzer import GoogleSearchAnalyzer
 from src.format_operations.text_formatter import TextFormatter
 from src.script_operations.script_executor import ScriptExecutor
-from src.file_operations.file_processor import FilePathHandler
+from src.font_operations.font_manager import FontManager
+from src.image_operations.image_manager import ImageManager
+from src.json_operations.json_processor import JSONParser
+from src.text_operations.text_drawer import TextDrawer
 
 logger = setup_logger(__name__)
 if EXECUTE_CREATE_BLOG_WP:
@@ -49,12 +59,15 @@ prompt_generator = PromptGenerator(
 )
 text_manager = TextManager()
 file_handler = FileHandler()
+file_writer = FileWriter()
 file_reader = FileReader()
 web_scraper = WebScraper()
 text_converter = TextConverter()
 text_remover = TextRemover()
-folder_remover = FolderRemover()
 text_replacer = TextReplacer()
+text_finder = TextFinder()
+text_handler = TextHandler()
+folder_remover = FolderRemover()
 wp_manager = WordPressAPI(WP_URL, WP_USERNAME, WP_APP_PASSWORD)
 value_validator = ValueValidator()
 bing_handler = BingHandler(
@@ -69,3 +82,8 @@ google_search_analyzer = GoogleSearchAnalyzer()
 text_formatter = TextFormatter()
 script_executor = ScriptExecutor()
 file_path_handler = FilePathHandler()
+folder_path_handler = FolderPathHandler()
+font_manager = FontManager()
+image_manager = ImageManager()
+json_parser = JSONParser()
+text_drawer = TextDrawer()

@@ -67,6 +67,8 @@ class ChatGPTHandler:
             repeat_count = 6
         elif self.model_type == "4omini":
             repeat_count = 5
+        elif self.model_type == "gpts":
+            repeat_count = 5
         else:
             logger.error(f"Invalid ChatGPT model type: {self.model_type}")
             raise ValueError(f"Invalid ChatGPT model type: {self.model_type}")
