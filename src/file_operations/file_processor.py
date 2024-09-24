@@ -1,6 +1,7 @@
 import os
 from typing import Callable, List, Dict, Optional
 from src.log_operations.log_handlers import setup_logger
+import magic
 
 logger = setup_logger(__name__)
 
@@ -69,6 +70,10 @@ class FileHandler:
             except Exception as e:
                 logger.error(f"Failed to create file {file_path}: {e}")
 
+    @staticmethod
+    def read_file(file_path: str, encoding: str = "utf-8") -> str:
+        with open(file_path, "r", encoding=encoding) as file:
+            return file.read()
 
 class FileReader:
     @staticmethod
@@ -116,18 +121,53 @@ class FileValidator:
     """
 
     @staticmethod
-    def is_processable_file(file_name: str) -> bool:
-        """
-        処理可能なファイルかどうかを確認します。
-        無視すべきファイルは '.pyc', '.exe' などであり、これらを処理しないようにします。
-        :param file_name: ファイル名
-        :return: 処理可能な場合は True、無視すべきファイルの場合は False を返す
-        """
-        return not (
-            file_name.endswith(".pyc")
-            or file_name.startswith(".")
-            or file_name.endswith(".exe")
-        )
+    def is_processable_file(file_name: str, file_path: str = None) -> bool:
+        """Determines if a file should be processed based on its MIME type."""
+        if file_name.startswith("."):
+            return False
+
+        allowed_extensions = [
+            ".txt",
+            ".md",
+            ".markdown",
+            ".json",
+            ".xml",
+            ".js",
+            ".html",
+            ".mdx",
+        ]
+
+        excluded_extensions = [
+            ".pyc",
+            ".exe",
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".gif",
+            ".bmp",
+            ".svg",
+            ".ico",
+            ".pdf",
+            ".doc",
+            ".docx",
+            ".xls",
+            ".xlsx",
+            ".ppt",
+            ".pptx",
+            ".zip",
+            ".rar",
+            ".7z",
+            ".tar",
+            ".gz",
+            # Add more binary or irrelevant file extensions as needed
+        ]
+
+        _, ext = os.path.splitext(file_name.lower())
+        if ext in excluded_extensions:
+            return False
+        if ext in allowed_extensions:
+            return True
+        return False
 
     @staticmethod
     def has_required_files(folder_path: str, required_files: List[str]) -> bool:
@@ -171,9 +211,9 @@ class FileProcessor:
     処理結果を集計します。フォルダ内の複数のファイルに対して処理を実行することができます。
     """
 
-    def __init__(self):
-        self.file_handler = FileHandler()
-        self.file_validator = FileValidator()
+    def __init__(self, file_handler: FileHandler, file_validator: FileValidator):
+        self.file_handler = file_handler
+        self.file_validator = file_validator
 
     def process_file(
         self, file_path: str, process_function: Callable[[str], str]
@@ -185,6 +225,11 @@ class FileProcessor:
         :return: ファイルが更新された場合は True、そうでなければ False を返す
         """
         try:
+            # Check if the file is processable
+            file_name = os.path.basename(file_path)
+            if not self.file_validator.is_processable_file(file_name, file_path):
+                logger.info(f"Skipped non-processable file: {file_path}")
+                return False
             content = self.file_handler.read_file(file_path)
             processed_content = process_function(content)
             if processed_content != content:
@@ -218,7 +263,9 @@ class FileProcessor:
 
         if self.file_validator.has_required_files(root, required_files):
             for file in files:
-                if self.file_validator.is_processable_file(file):
+                if self.file_validator.is_processable_file(
+                    file, os.path.join(root, file)
+                ):
                     file_path = os.path.join(root, file)
                     success = self.process_file(file_path, process_function)
                     if success:
@@ -253,9 +300,9 @@ class FileProcessor:
         :param required_files: 必要なファイルリスト
         :return: 処理結果を示すディクショナリ
         """
-        logger.info(f"検索開始フォルダ: {folder_path}")
-        logger.info(f"フォルダプレフィックス: {folder_prefix}")
-        logger.info(f"必要なファイル: {', '.join(required_files)}")
+        logger.info(f"Starting search in folder: {folder_path}")
+        logger.info(f"Folder prefix: {folder_prefix}")
+        logger.info(f"Required files: {', '.join(required_files)}")
 
         total_processed_files = 0
         total_updated_files = 0
@@ -315,6 +362,7 @@ class FilePathHandler:
         normalized_path = os.path.normpath(joined_path)
         logger.info(f"パスを結合し正規化しました: {normalized_path}")
         return normalized_path
+
 
 class FileWriter:
     def __init__(self):

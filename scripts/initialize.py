@@ -16,6 +16,8 @@ from src.file_operations.file_processor import (
     FileReader,
     FileWriter,
     FilePathHandler,
+    FileProcessor,
+    FileValidator,
 )
 from src.util_operations.validator import ValueValidator
 from src.text_operations.text_handler import TextHandler
@@ -26,7 +28,14 @@ from src.text_operations.text_finder import TextFinder
 from src.text_operations.text_manager import TextManager
 from src.web_operations.web_handler import WebScraper
 from src.log_operations.log_handlers import setup_logger
-from src.folder_operations.folder_processor import FolderRemover, FolderPathHandler
+from src.folder_operations.folder_processor import (
+    FolderRemover,
+    FolderPathHandler,
+    FolderProcessor,
+    FolderCreator,
+    FolderChecker,
+    FolderMover,
+)
 from src.wp_operations.wp_manager import WordPressAPI
 from src.ai_operations.bing_handler import BingHandler
 from src.web_operations.web_handler import WebScraper, HTMLParser
@@ -61,6 +70,9 @@ text_manager = TextManager()
 file_handler = FileHandler()
 file_writer = FileWriter()
 file_reader = FileReader()
+file_validator = FileValidator()
+file_path_handler = FilePathHandler()
+file_processor = FileProcessor(file_handler, file_validator)
 web_scraper = WebScraper()
 text_converter = TextConverter()
 text_remover = TextRemover()
@@ -68,6 +80,11 @@ text_replacer = TextReplacer()
 text_finder = TextFinder()
 text_handler = TextHandler()
 folder_remover = FolderRemover()
+folder_creator = FolderCreator()
+folder_path_handler = FolderPathHandler()
+folder_processor = FolderProcessor("", "")
+folder_checker = FolderChecker()
+folder_mover = FolderMover()
 wp_manager = WordPressAPI(WP_URL, WP_USERNAME, WP_APP_PASSWORD)
 value_validator = ValueValidator()
 bing_handler = BingHandler(
@@ -81,8 +98,6 @@ html_parser = HTMLParser("")
 google_search_analyzer = GoogleSearchAnalyzer()
 text_formatter = TextFormatter()
 script_executor = ScriptExecutor()
-file_path_handler = FilePathHandler()
-folder_path_handler = FolderPathHandler()
 font_manager = FontManager()
 image_manager = ImageManager()
 json_parser = JSONParser()
