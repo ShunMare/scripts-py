@@ -16,9 +16,9 @@ from scripts.initialize import (
 )
 
 TARGET_TEXT = "title:"
-REPLACE_TARGET_TEXT = "【Excel VBA】"
+REPLACE_TARGET_TEXT = "【" + CREATE_PNG_TAG_NAME + "】"
 REPLACEMENT_TEXT = ""
-SPLIT_TEXT = "-"
+SPLIT_TEXT = " - "
 
 
 def get_title_in_md(columns):
@@ -33,7 +33,7 @@ def get_title_in_md(columns):
         path_elements = [
             CREATE_BLOG_MD_TARGET_FOLDER_PATH,
             folder_name,
-            CREATE_BLOG_MD_TARGET_FILE_NAME,
+            CREATE_BLOG_MD_TARGET_MDX_FILE_NAME,
         ]
         file_full_path = file_path_handler.join_and_normalize_path(path_elements)
 

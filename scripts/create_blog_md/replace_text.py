@@ -16,11 +16,11 @@ from scripts.initialize import (
 
 
 def main():
-    folder_prefix = "vba-"
+    folder_prefix = TARGET_FOLDER_PREFIX
 
-    target_text = "Excel VBA"
-    replacement_text = "`Excel VBA`"
-    exclude_pattern = "`Excel VBA`"
+    target_text = CREATE_PNG_TAG_NAME
+    replacement_text = "`" + CREATE_PNG_TAG_NAME + "`"
+    exclude_pattern = "`" + CREATE_PNG_TAG_NAME + "`"
 
     process_function = partial(
         text_replacer.replace_with_exclusion,
@@ -35,6 +35,35 @@ def main():
         process_function,
         [],
     )
+
+    # target_text = "【"
+    # replacement_text = ""
+    # exclude_pattern = "【" + CREATE_PNG_TAG_NAME + "】"
+
+    # process_function = partial(
+    #     text_replacer.replace_with_exclusion,
+    #     target_text=target_text,
+    #     replacement_text=replacement_text,
+    #     exclusion_pattern=exclude_pattern,
+    # )
+
+    # target_text = "】"
+    # replacement_text = ""
+    # exclude_pattern = "【" + CREATE_PNG_TAG_NAME + "】"
+
+    # process_function = partial(
+    #     text_replacer.replace_with_exclusion,
+    #     target_text=target_text,
+    #     replacement_text=replacement_text,
+    #     exclusion_pattern=exclude_pattern,
+    # )
+
+    # file_processor.process_all_matching_files(
+    #     CREATE_BLOG_MD_TARGET_FOLDER_PATH,
+    #     folder_prefix,
+    #     process_function,
+    #     [],
+    # )
 
     target_text = "`"
     replacement_text = ""
@@ -87,6 +116,38 @@ def main():
         CREATE_BLOG_MD_TARGET_FOLDER_PATH, folder_prefix, process_function, []
     )
 
+    target_text = r"categories: \[.*?\]"
+    replacement_text = "categories: [Tool, Coding]"
+    process_function = partial(
+        text_replacer.replace_content_regex,
+        pattern=target_text,
+        replacement=replacement_text,
+    )
+    file_processor.process_all_matching_files(
+        CREATE_BLOG_MD_TARGET_FOLDER_PATH, folder_prefix, process_function, []
+    )
+
+    target_text = r"tags: \[.*?\]"
+    replacement_text = "tags: [" + CREATE_PNG_TAG_NAME + "]"
+    process_function = partial(
+        text_replacer.replace_content_regex,
+        pattern=target_text,
+        replacement=replacement_text,
+    )
+    file_processor.process_all_matching_files(
+        CREATE_BLOG_MD_TARGET_FOLDER_PATH, folder_prefix, process_function, []
+    )
+
+    target_text = r'\n{2,}'
+    replacement_text = '\n'
+    process_function = partial(
+        text_replacer.replace_content_regex,
+        pattern=target_text,
+        replacement=replacement_text,
+    )
+    file_processor.process_all_matching_files(
+        CREATE_BLOG_MD_TARGET_FOLDER_PATH, folder_prefix, process_function, []
+    )
 
 if __name__ == "__main__":
     main()

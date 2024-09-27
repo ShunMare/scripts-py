@@ -10,7 +10,7 @@ from scripts.initialize import (
 
 
 def main():
-    create_file_list = [CREATE_BLOG_MD_TARGET_FILE_NAME]
+    create_file_list = [CREATE_BLOG_MD_TARGET_MDX_FILE_NAME]
 
     if not excel_manager.load_workbook():
         return

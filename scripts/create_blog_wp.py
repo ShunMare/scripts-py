@@ -3,7 +3,7 @@ from scripts.initialize import logger, script_executor, file_path_handler
 
 def main():
     GET_EVIDENCE_NAME = "get_evidence_bing.py"
-    CREATE_BLOG_NAME = "create_blog_chatgpt.py"
+    CREATE_BLOG_NAME = "create_blog_wp_chatgpt.py"
     POST_WP_NAME = "upload_wp_post.py"
 
     get_evidence_full_path = file_path_handler.join_path(

@@ -39,9 +39,9 @@ def main():
             )
             result = folder_checker.check_folder_exists(folder_path)
             if result == False:
-                excel_manager.update_cell(row, columns["folder_name"], result)
+                excel_manager.update_cell(row, columns["exist"], result)
             else:
-                excel_manager.update_cell(row, columns["folder_name"], "")
+                excel_manager.update_cell(row, columns["exist"], "")
     excel_manager.save_workbook()
 
 

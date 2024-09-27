@@ -9,8 +9,8 @@ from scripts.initialize import (
 
 def main():
     folder_processor.folder_path = CREATE_BLOG_MD_TARGET_FOLDER_PATH
-    folder_processor.folder_prefix = "test-1"
-    delete_file_names = ["aa copy 1.txt", "aa copy 2.txt", "aa copy 3.txt"]
+    folder_processor.folder_prefix = TARGET_FOLDER_PREFIX
+    delete_file_names = [CREATE_BLOG_MD_TARGET_PNG_FILE_NAME]
 
     def delete_files_in_folder(folder_path: str) -> bool:
         """
@@ -22,7 +22,7 @@ def main():
 
         for delete_file_name in delete_file_names:
             target_file = file_path_handler.join_path(folder_path, delete_file_name)
-            if file_path_handler.exists(target_file):
+            if file_handler.exists(target_file):
                 if not file_handler.delete_file(target_file):
                     all_success = False
             else:

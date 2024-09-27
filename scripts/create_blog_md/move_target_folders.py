@@ -12,11 +12,12 @@ from scripts.initialize import (
 
 
 def move_folder():
-    folder_prefix = "excel-vba-"
-    destination_base = "C:/Users/okubo/OneDrive/ドキュメント/001_repositories/nexunity/src/content/posts"
-    required_files = ["index.mdx", "featured.png"]
+    required_files = [
+        CREATE_BLOG_MD_TARGET_MDX_FILE_NAME,
+        CREATE_BLOG_MD_TARGET_PNG_FILE_NAME,
+    ]
     folder_processor.folder_path = CREATE_BLOG_MD_TARGET_FOLDER_PATH
-    folder_processor.folder_prefix = folder_prefix
+    folder_processor.folder_prefix = TARGET_FOLDER_PREFIX
 
     def move_folder_if_files_exist(folder_path: str) -> bool:
         """
@@ -25,7 +26,7 @@ def move_folder():
         :return: 成功したらTrue、失敗したらFalse
         """
         if file_validator.has_required_files(folder_path, required_files):
-            folder_mover.move_folder(folder_path, destination_base)
+            folder_mover.move_folder(folder_path, CREATE_BLOG_MD_MOVE_TO_DESTINATION_FOLDER_PATH)
 
     folder_processor.process_all_matching_folders(move_folder_if_files_exist)
 

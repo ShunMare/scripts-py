@@ -30,7 +30,7 @@ def generate_and_process_prompts(target_row, columns):
     path_elements = [
         CREATE_BLOG_MD_TARGET_FOLDER_PATH,
         folder_name,
-        CREATE_BLOG_MD_TARGET_FILE_NAME,
+        CREATE_BLOG_MD_TARGET_MDX_FILE_NAME,
     ]
     file_full_path = file_path_handler.join_and_normalize_path(path_elements)
     file_writer.replace_file_content(file_full_path, md_content)

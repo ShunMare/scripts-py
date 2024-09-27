@@ -38,8 +38,7 @@ image_path_elements = [
 ]
 image_folder_path = folder_path_handler.join_and_normalize_path(image_path_elements)
 
-# SEPARATE_KEYWORD = "関数について"
-SEPARATE_KEYWORD = ""
+SEPARATE_KEYWORD = "プロパティの使い方"
 
 
 def read_excel_data():
@@ -88,7 +87,7 @@ def read_excel_data():
                 processed_title = text_handler.format_text_with_keyword_split(
                     text=title,
                     keyword=SEPARATE_KEYWORD,
-                    split_char="_",
+                    split_char="",
                     max_line_length=25,
                     max_lines=3,
                 )

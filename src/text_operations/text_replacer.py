@@ -30,6 +30,24 @@ class TextReplacer:
         return result
 
     @staticmethod
+    def replace_content_regex(
+        content: str, pattern: str, replacement: str, flags: int = re.DOTALL
+    ) -> str:
+        """
+        正規表現を使用してコンテンツ内のテキストを置換します。
+
+        :param content: 置換を行う元のテキスト
+        :param pattern: 置換対象の正規表現パターン
+        :param replacement: 置換後のテキスト
+        :param flags: 正規表現フラグ（デフォルトは0）
+        :return: 置換後のテキスト
+        """
+        compiled_pattern = re.compile(pattern, flags)
+        result = compiled_pattern.sub(replacement, content)
+        logger.info(f"Replaced pattern '{pattern}' with '{replacement}' using regex")
+        return result
+
+    @staticmethod
     def replace_between(
         content: str,
         target_text: str,
