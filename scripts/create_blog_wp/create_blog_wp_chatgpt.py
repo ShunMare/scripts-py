@@ -97,7 +97,11 @@ def generate_and_process_prompts(start_row, columns):
         chatgpt_html_file_name = CHATGPT_TMP_FILE_NAME + ".html"
         chatgpt_handler.save_html(chatgpt_html_file_name)
         chatgpt_html_path = DOWNLOAD_FOLDER_PATH + chatgpt_html_file_name
-        if file_handler.exists(chatgpt_html_path):
+        if file_handler.check_file_with_interval(
+            file_path=chatgpt_html_path,
+            interval=WAIT_TIME_AFTER_PROMPT_MEDIUM,
+            max_attempts=50,
+        ):
             chatgpt_html = file_reader.read_file(chatgpt_html_path)
         results = web_scraper.find_elements(
             chatgpt_html,
@@ -196,7 +200,7 @@ def generate_and_process_prompts(start_row, columns):
 
 
 def main():
-    excel_manager.set_file_path(CREATE_BLOG_MD_EXCEL_FILE_PATH)
+    excel_manager.set_file_path(CREATE_BLOG_WP_EXCEL_FILE_PATH)
     if not excel_manager.load_workbook():
         return
 
@@ -228,9 +232,7 @@ def main():
         worksheet=excel_manager.current_sheet, column=columns["flag"]
     )
     for i in range(flag_end_row):
-        start_row = (
-            i * CREATE_BLOG_WP_EXCEL_GROUP_SIZE + CREATE_BLOG_WP_EXCEL_START_ROW
-        )
+        start_row = i * CREATE_BLOG_WP_EXCEL_GROUP_SIZE + CREATE_BLOG_WP_EXCEL_START_ROW
         flag = excel_manager.cell_handler.get_cell_value(
             excel_manager.current_sheet, start_row, columns["flag"]
         )

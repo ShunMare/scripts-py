@@ -41,11 +41,13 @@ from src.ai_operations.bing_handler import BingHandler
 from src.web_operations.web_handler import WebScraper, HTMLParser
 from src.web_operations.google_search_analyzer import GoogleSearchAnalyzer
 from src.format_operations.text_formatter import TextFormatter
+from src.text_operations.text_splitter import TextSplitter
 from src.script_operations.script_executor import ScriptExecutor
 from src.font_operations.font_manager import FontManager
 from src.image_operations.image_manager import ImageManager
 from src.json_operations.json_processor import JSONParser
 from src.text_operations.text_drawer import TextDrawer
+from src.array_operations.array_combiner import ArrayCombiner, ArrayRemover
 
 logger = setup_logger(__name__)
 excel_manager = ExcelManager()
@@ -76,6 +78,7 @@ text_remover = TextRemover()
 text_replacer = TextReplacer()
 text_finder = TextFinder()
 text_handler = TextHandler()
+text_splitter = TextSplitter()
 folder_remover = FolderRemover()
 folder_creator = FolderCreator()
 folder_path_handler = FolderPathHandler()
@@ -99,3 +102,5 @@ font_manager = FontManager()
 image_manager = ImageManager()
 json_parser = JSONParser()
 text_drawer = TextDrawer()
+array_combiner = ArrayCombiner()
+array_remover = ArrayRemover()

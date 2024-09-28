@@ -6,13 +6,14 @@ def main():
     # CREATE BLOG WP
     GET_THEMES_GOOGLE_NAME = "get_themes_google.py"
     GET_HEADING_GOOGLE = "get_heading_google.py"
+    GET_DIRECTION_NAME = "get_direction.py"
     GET_EVIDENCE_NAME = "get_evidence_bing.py"
-    CREATE_BLOG_NAME = "create_blog_wp_chatgpt.py"
+    CREATE_BLOG_WP_NAME = "create_blog_wp_chatgpt.py"
     POST_WP_NAME = "upload_wp_post.py"
 
     # CREATE BLOG MD
     CREATE_FOLDER_AND_FILE = "create_folder_and_file.py"
-    CREATE_BLOG_CHATGPT = "create_blog_md_chatgpt.py"
+    CREATE_BLOG_MD_NAME = "create_blog_md_chatgpt.py"
     GET_TITLE_IN_MD = "get_title_in_md.py"
     REPLACE_TEXT = "replace_text.py"
     CREATE_THUMBNAIL = "create_thumbnail.py"
@@ -26,11 +27,14 @@ def main():
     get_heading_full_path = file_path_handler.join_path(
         SCRIPT_CREATE_BLOG_WP_DIR, GET_HEADING_GOOGLE
     )
+    get_direction_full_path = file_path_handler.join_path(
+        SCRIPT_CREATE_BLOG_WP_DIR, GET_DIRECTION_NAME
+    )
     get_evidence_full_path = file_path_handler.join_path(
         SCRIPT_CREATE_BLOG_WP_DIR, GET_EVIDENCE_NAME
     )
-    create_blog_full_path = file_path_handler.join_path(
-        SCRIPT_CREATE_BLOG_WP_DIR, CREATE_BLOG_NAME
+    create_blog_wp_full_path = file_path_handler.join_path(
+        SCRIPT_CREATE_BLOG_WP_DIR, CREATE_BLOG_WP_NAME
     )
     post_wp_full_path = file_path_handler.join_path(
         SCRIPT_CREATE_BLOG_WP_DIR, POST_WP_NAME
@@ -40,8 +44,8 @@ def main():
     create_folder_and_file_full_path = file_path_handler.join_path(
         SCRIPT_CREATE_BLOG_MD_DIR, CREATE_FOLDER_AND_FILE
     )
-    create_blog_full_path = file_path_handler.join_path(
-        SCRIPT_CREATE_BLOG_MD_DIR, CREATE_BLOG_CHATGPT
+    create_blog_md_full_path = file_path_handler.join_path(
+        SCRIPT_CREATE_BLOG_MD_DIR, CREATE_BLOG_MD_NAME
     )
     get_title_full_path = file_path_handler.join_path(
         SCRIPT_CREATE_BLOG_MD_DIR, GET_TITLE_IN_MD
@@ -65,10 +69,12 @@ def main():
                 script_executor.run_script(get_themes_google_full_path)
             if EXECUTE_GET_HEADING_GOOGLE:
                 script_executor.run_script(get_heading_full_path)
+            if EXECUTE_GET_DIRECTION:
+                script_executor.run_script(get_direction_full_path)
             if EXECUTE_GET_EVIDENCE_BING:
                 script_executor.run_script(get_evidence_full_path)
             if EXECUTE_CREATE_BLOG_WP_CHATGPT:
-                script_executor.run_script(create_blog_full_path)
+                script_executor.run_script(create_blog_wp_full_path)
             if EXECUTE_UPLOAD_WP_POST:
                 script_executor.run_script(post_wp_full_path)
 
@@ -76,7 +82,7 @@ def main():
             if EXECUTE_CREATE_FOLDER_AND_FILE:
                 script_executor.run_script(create_folder_and_file_full_path)
             if EXECUTE_CREATE_BLOG_CHATGPT:
-                script_executor.run_script(create_blog_full_path)
+                script_executor.run_script(create_blog_md_full_path)
             if EXECUTE_GET_TITLE_IN_MD:
                 script_executor.run_script(get_title_full_path)
             if EXECUTE_REPLACE_TEXT:

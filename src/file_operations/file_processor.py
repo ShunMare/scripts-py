@@ -1,7 +1,7 @@
 import os
 from typing import Callable, List, Dict, Optional
 from src.log_operations.log_handlers import setup_logger
-import magic
+import time
 
 logger = setup_logger(__name__)
 
@@ -50,6 +50,54 @@ class FileHandler:
             logger.info(f"File not found: {file_path}")
         return result
 
+    def wait_for_file(
+        file_path: str, timeout: int = 60, check_interval: float = 1.0
+    ) -> bool:
+        """
+        指定されたファイルが存在するまで一定時間待機します。
+
+        :param file_path: 存在確認するファイルのパス
+        :param timeout: 最大待機時間（秒）
+        :param check_interval: チェック間隔（秒）
+        :return: タイムアウト前にファイルが見つかった場合はTrue、そうでない場合はFalse
+        """
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            if os.path.exists(file_path):
+                logger.info(f"File found: {file_path}")
+                return True
+            time.sleep(check_interval)
+
+        logger.warning(f"File not found within {timeout} seconds: {file_path}")
+        return False
+
+    @staticmethod
+    def check_file_with_interval(
+        file_path: str, interval: int, max_attempts: int = 5
+    ) -> bool:
+        """
+        指定された間隔でファイルの存在を確認し、指定された回数だけ繰り返します。
+
+        :param file_path: 存在確認するファイルのパス
+        :param interval: 確認間隔（秒）
+        :param max_attempts: 最大試行回数
+        :return: ファイルが見つかった場合はTrue、そうでない場合はFalse
+        """
+        for attempt in range(max_attempts):
+            logger.info(
+                f"Attempt {attempt + 1}/{max_attempts}: Waiting {interval} seconds before checking for file: {file_path}"
+            )
+            time.sleep(interval)
+
+            if os.path.exists(file_path):
+                logger.info(f"File found after {attempt + 1} attempts: {file_path}")
+                return True
+
+            logger.info(f"File not found on attempt {attempt + 1}: {file_path}")
+
+        logger.warning(f"File not found after {max_attempts} attempts: {file_path}")
+        return False
+
     @staticmethod
     def create_empty_files(folder_path: str, file_names: list):
         """
@@ -74,6 +122,7 @@ class FileHandler:
     def read_file(file_path: str, encoding: str = "utf-8") -> str:
         with open(file_path, "r", encoding=encoding) as file:
             return file.read()
+
 
 class FileReader:
     @staticmethod

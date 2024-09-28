@@ -47,9 +47,14 @@ def get_heading(start_row, columns):
     if GET_CONTENT_METHOD == "clipboard":
         heading_content = chatgpt_handler.get_generated_content()
     else:
-        chatgpt_handler.save_html(CHATGPT_TMP_FILE_NAME)
-        chatgpt_html_path = DOWNLOAD_FOLDER_PATH + CHATGPT_TMP_FILE_NAME
-        if file_handler.exists(chatgpt_html_path):
+        chatgpt_html_file_name = CHATGPT_TMP_FILE_NAME + ".html"
+        chatgpt_handler.save_html(chatgpt_html_file_name)
+        chatgpt_html_path = DOWNLOAD_FOLDER_PATH + chatgpt_html_file_name
+        if file_handler.check_file_with_interval(
+            file_path=chatgpt_html_path,
+            interval=WAIT_TIME_AFTER_PROMPT_MEDIUM,
+            max_attempts=50,
+        ):
             chatgpt_html = file_reader.read_file(chatgpt_html_path)
         results = web_scraper.find_elements(
             chatgpt_html,
