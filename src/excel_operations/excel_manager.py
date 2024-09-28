@@ -13,24 +13,36 @@ class ExcelManager:
     様々な操作を行うためのハンドラーを集約し、高レベルのインターフェースを提供する。
     """
 
-    def __init__(self, file_path):
+    def __init__(self):
         """
         ExcelManagerの初期化
-        :param file_path: 操作対象のExcelファイルのパス
         """
         self.logger = setup_logger(__name__)
-        self.logger.info(f"Initializing ExcelManager for file: {file_path}")
-        self.file_handler = ExcelFileHandler(file_path)
+        self.logger.info("Initializing ExcelManager")
+        self.file_handler = None
         self.sheet_handler = ExcelSheetHandler()
         self.cell_handler = ExcelCellHandler()
         self.search_handler = ExcelSearchHandler()
-        self.pandas_handler = PandasExcelHandler(file_path)
+        self.pandas_handler = None
         self.data_processor = ExcelDataProcessor()
         self.workbook = None
         self.current_sheet = None
 
+    def set_file_path(self, file_path):
+        """
+        操作対象のExcelファイルのパスを設定する
+        :param file_path: Excelファイルのパス
+        """
+        self.logger.info(f"Setting file path: {file_path}")
+        self.file_handler = ExcelFileHandler(file_path)
+        self.pandas_handler = PandasExcelHandler(file_path)
+
     def load_workbook(self):
         """ワークブックを読み込む"""
+        if not self.file_handler:
+            self.logger.error("File path not set. Please set a file path first.")
+            return False
+
         self.logger.info("Loading workbook")
         self.workbook = self.file_handler.load()
         if self.workbook:
@@ -41,6 +53,10 @@ class ExcelManager:
 
     def save_workbook(self):
         """ワークブックを保存する"""
+        if not self.file_handler:
+            self.logger.error("File path not set. Please set a file path first.")
+            return False
+
         self.logger.info("Saving workbook")
         result = self.file_handler.save(self.workbook)
         if result:
@@ -118,6 +134,10 @@ class ExcelManager:
         ExcelファイルをPandasデータフレームとして読み込む
         :param sheet_name: 読み込むシート名（オプション）
         """
+        if not self.pandas_handler:
+            self.logger.error("File path not set. Please set a file path first.")
+            return None
+
         self.logger.info(
             f"Loading Excel file into Pandas DataFrame, sheet: {sheet_name or 'default'}"
         )

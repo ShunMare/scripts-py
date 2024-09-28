@@ -69,6 +69,7 @@ def get_heading(start_row, columns):
 
 
 def main():
+    excel_manager.set_file_path(CREATE_BLOG_WP_EXCEL_FILE_PATH)
     if not excel_manager.load_workbook():
         return
 

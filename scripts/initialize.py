@@ -48,10 +48,7 @@ from src.json_operations.json_processor import JSONParser
 from src.text_operations.text_drawer import TextDrawer
 
 logger = setup_logger(__name__)
-if EXECUTE_CREATE_BLOG_WP:
-    excel_manager = ExcelManager(CREATE_BLOG_WP_EXCEL_FILE_PATH)
-else:
-    excel_manager = ExcelManager(CREATE_BLOG_MD_EXCEL_FILE_PATH)
+excel_manager = ExcelManager()
 edge_handler = EdgeHandler(wait_time_after_switch=WAIT_TIME_AFTER_RELOAD)
 keyboard_handler = KeyboardHandler(short_wait_time=SHORT_WAIT_TIME)
 chatgpt_handler = ChatGPTHandler(

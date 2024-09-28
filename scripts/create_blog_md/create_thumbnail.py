@@ -42,6 +42,7 @@ SEPARATE_KEYWORD = "プロパティの使い方"
 
 
 def read_excel_data():
+    excel_manager.set_file_path(CREATE_BLOG_MD_EXCEL_FILE_PATH)
     if not excel_manager.load_workbook():
         return
 

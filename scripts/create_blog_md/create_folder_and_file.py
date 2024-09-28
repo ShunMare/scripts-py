@@ -12,6 +12,7 @@ from scripts.initialize import (
 def main():
     create_file_list = [CREATE_BLOG_MD_TARGET_MDX_FILE_NAME]
 
+    excel_manager.set_file_path(CREATE_BLOG_MD_EXCEL_FILE_PATH)
     if not excel_manager.load_workbook():
         return
 
