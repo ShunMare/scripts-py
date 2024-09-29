@@ -40,7 +40,7 @@ def get_heading(start_row, columns):
     combined_results = "\n".join(results_str)
     combined_results = HEADING_PROMPT + "\n" + combined_results
     edge_handler.open_url_in_browser(CHATGPT_URL)
-    prompt = HEADING_PROMPT + "\n" + combined_results
+    prompt = combined_results
     chatgpt_handler.send_prompt_and_generate_content(prompt, repeat_count=0)
 
     heading_content = ""
@@ -50,11 +50,7 @@ def get_heading(start_row, columns):
         chatgpt_html_file_name = CHATGPT_TMP_FILE_NAME + ".html"
         chatgpt_handler.save_html(chatgpt_html_file_name)
         chatgpt_html_path = DOWNLOAD_FOLDER_PATH + chatgpt_html_file_name
-        if file_handler.check_file_with_interval(
-            file_path=chatgpt_html_path,
-            interval=WAIT_TIME_AFTER_PROMPT_MEDIUM,
-            max_attempts=50,
-        ):
+        if file_handler.exists(chatgpt_html_path):
             chatgpt_html = file_reader.read_file(chatgpt_html_path)
         results = web_scraper.find_elements(
             chatgpt_html,

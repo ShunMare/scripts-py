@@ -165,6 +165,7 @@ cython_debug/
 # Project specific files
 blog_wp.xlsx
 blog_md.xlsx
+blog_wp_.xlsx
 
 */*/statics/images
 */*/statics/settings

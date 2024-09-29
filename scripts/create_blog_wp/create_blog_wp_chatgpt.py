@@ -91,17 +91,14 @@ def generate_and_process_prompts(start_row, columns):
     logger.info("getting image content")
     if IS_IMAGE_GENERATION_ENABLED:
         chatgpt_handler.send_prompt_and_generate_content(IMAGE_PROMPT, repeat_count=0)
+        chatgpt_handler.send_prompt_and_generate_content(THUMBNAIL_IMAGE_PROMPT, repeat_count=0)
 
     logger.info("convert html to md")
     if GET_CONTENT_METHOD != "clipboard":
         chatgpt_html_file_name = CHATGPT_TMP_FILE_NAME + ".html"
         chatgpt_handler.save_html(chatgpt_html_file_name)
         chatgpt_html_path = DOWNLOAD_FOLDER_PATH + chatgpt_html_file_name
-        if file_handler.check_file_with_interval(
-            file_path=chatgpt_html_path,
-            interval=WAIT_TIME_AFTER_PROMPT_MEDIUM,
-            max_attempts=50,
-        ):
+        if file_handler.exists(chatgpt_html_path):
             chatgpt_html = file_reader.read_file(chatgpt_html_path)
         results = web_scraper.find_elements(
             chatgpt_html,

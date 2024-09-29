@@ -43,11 +43,7 @@ def generate_and_process_prompts(start_row, columns):
         bing_html_file_name = BING_TMP_FILE_NAME + ".html"
         bing_handler.save_html(bing_html_file_name)
         bing_html_path = DOWNLOAD_FOLDER_PATH + bing_html_file_name
-        if file_handler.check_file_with_interval(
-            file_path=bing_html_file_name,
-            interval=WAIT_TIME_AFTER_PROMPT_MEDIUM,
-            max_attempts=50,
-        ):
+        if file_handler.exists(bing_html_path):
             bing_html = file_reader.read_file(bing_html_path)
         results = html_parser.find_aria_labels(
             content=bing_html,

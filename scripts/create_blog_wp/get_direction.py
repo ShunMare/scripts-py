@@ -24,9 +24,10 @@ def get_direction(start_row, columns):
     heading_list = text_splitter.split_string_to_lines(heading)
     heading_list = array_remover.remove_elements(heading_list, DIRECTION_REMOVE_TEXT)
     split_num = len(heading_list) / CREATE_BLOG_WP_EXCEL_GROUP_SIZE
+    split_num = round(split_num) + 1
     if split_num < 5:
         split_num = 5
-    heading_list = array_combiner.merge_elements(heading_list, split_num)
+    heading_list = array_combiner.merge_elements(heading_list, split_num,"\n")
 
     for i, heading in enumerate(heading_list):
         excel_manager.update_cell(
