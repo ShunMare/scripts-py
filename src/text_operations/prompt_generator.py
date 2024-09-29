@@ -26,7 +26,7 @@ class PromptGenerator:
     def create_additional_prompt(self, evidence):
         """追加の証拠を元にコンテンツを生成する"""
         additional_prompt = (
-            f"下記の内容を上記に加えて。省略せずに全部書いて。\n{evidence}"
+            f"下記の内容を参考にして、もれなく文章をまとめて。他の内容は参照しないで。\n{evidence}"
         )
         pyperclip.copy(additional_prompt)
         logger.info("Additional prompt created and copied to clipboard")
