@@ -26,7 +26,8 @@ class ArrayCombiner:
         result = []
         temp = []
         for item in arr:
-            temp.append(item)
+            if item is not None:
+                temp.append(str(item))
             if len(temp) == merge_count:
                 result.append("".join(temp) + suffix)
                 temp = []

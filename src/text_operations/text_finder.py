@@ -36,3 +36,16 @@ class TextFinder:
         """
         index = content.find(search_string)
         return content[index:] if index != -1 else None
+
+    @staticmethod
+    def count_occurrences(text: str, substring: str) -> int:
+        """
+        指定された文字列内に、部分文字列が何回出現するかを数えます。
+
+        :param text: 検索対象の文字列
+        :param substring: 数える部分文字列
+        :return: 部分文字列の出現回数
+        """
+        count = text.count(substring)
+        logger.info(f"'{substring}' は '{text}' 内に {count} 回出現しました")
+        return count

@@ -5,6 +5,9 @@ from scripts.initialize import (
     excel_manager,
     wp_manager,
     value_validator,
+    array_combiner,
+    text_finder,
+    text_replacer,
 )
 
 
@@ -12,12 +15,28 @@ def upload_wp_post(start_row, columns):
     title = excel_manager.cell_handler.get_cell_value(
         excel_manager.current_sheet, start_row, columns["title"]
     )
-    html = excel_manager.cell_handler.get_last_non_empty_value_in_range(
+    html_array = excel_manager.cell_handler.get_range_values(
         excel_manager.current_sheet,
         start_row,
         columns["html"],
         CREATE_BLOG_WP_EXCEL_GROUP_SIZE,
     )
+    html_array = array_combiner.merge_elements(
+        html_array, CREATE_BLOG_WP_EXCEL_GROUP_SIZE, ""
+    )
+    html = html_array[0]
+    h2_count = text_finder.count_occurrences(html, "<h2>")
+    html = text_replacer.replace(html, "<b>", "")
+    html = text_replacer.replace(html, "</b>", "")
+    html = text_replacer.replace(html, "<strong>", "")
+    html = text_replacer.replace(html, "</strong>", "")
+    if h2_count < 3:
+        html = text_replacer.replace(html, "<h3>", "<h2>")
+        html = text_replacer.replace(html, "</h3>", "</h2>")
+        html = text_replacer.replace(html, "<h4>", "<h4>")
+        html = text_replacer.replace(html, "</h4>", "</h3>")
+        html = text_replacer.replace(html, "<h5>", "<h4>")
+        html = text_replacer.replace(html, "</h5>", "</h4>")
     description = excel_manager.cell_handler.get_cell_value(
         excel_manager.current_sheet, start_row, columns["description"]
     )
@@ -75,9 +94,7 @@ def main():
         worksheet=excel_manager.current_sheet, column=columns["flag"]
     )
     for i in range(flag_end_row):
-        start_row = (
-            i * CREATE_BLOG_WP_EXCEL_GROUP_SIZE + CREATE_BLOG_WP_EXCEL_START_ROW
-        )
+        start_row = i * CREATE_BLOG_WP_EXCEL_GROUP_SIZE + CREATE_BLOG_WP_EXCEL_START_ROW
         flag = excel_manager.cell_handler.get_cell_value(
             excel_manager.current_sheet, start_row, columns["flag"]
         )
