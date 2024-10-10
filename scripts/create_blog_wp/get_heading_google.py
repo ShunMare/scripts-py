@@ -1,5 +1,6 @@
 from initialize import *
 from scripts.load_env import *
+from scripts.constants import *
 from scripts.initialize import (
     logger,
     excel_manager,
@@ -11,12 +12,11 @@ from scripts.initialize import (
     text_converter,
     value_validator,
     google_search_analyzer,
-    text_formatter
+    text_formatter,
 )
 
 
 def get_heading(start_row, columns):
-    """"""
     theme = excel_manager.cell_handler.get_cell_value(
         excel_manager.current_sheet, start_row, columns["theme"]
     )
@@ -38,8 +38,8 @@ def get_heading(start_row, columns):
         results_str.append(result_str)
 
     combined_results = "\n".join(results_str)
-    combined_results = HEADING_PROMPT + "\n" + combined_results
-    edge_handler.open_url_in_browser(CHATGPT_URL)
+    combined_results = CREATE_BLOG_WP_HEADING_PROMPT + "\n" + combined_results
+    edge_handler.open_url_in_browser(CHATGPT_DEFAULT_URL)
     prompt = combined_results
     chatgpt_handler.send_prompt_and_generate_content(prompt, repeat_count=0)
 
@@ -47,9 +47,9 @@ def get_heading(start_row, columns):
     if GET_CONTENT_METHOD == "clipboard":
         heading_content = chatgpt_handler.get_generated_content()
     else:
-        chatgpt_html_file_name = CHATGPT_TMP_FILE_NAME + ".html"
-        chatgpt_handler.save_html(chatgpt_html_file_name)
-        chatgpt_html_path = DOWNLOAD_FOLDER_PATH + chatgpt_html_file_name
+        html_file_name = CREATE_BLOG_WP_GET_HEADING_GOOGLE_FILE_NAME + ".html"
+        edge_handler.ui_save_html(html_file_name)
+        chatgpt_html_path = DOWNLOAD_FOLDER_DIR_FULL_PATH + html_file_name
         if file_handler.exists(chatgpt_html_path):
             chatgpt_html = file_reader.read_file(chatgpt_html_path)
         results = web_scraper.find_elements(
@@ -70,11 +70,11 @@ def get_heading(start_row, columns):
 
 
 def main():
-    excel_manager.set_file_path(CREATE_BLOG_WP_EXCEL_FILE_PATH)
+    excel_manager.set_file_path(CREATE_BLOG_WP_EXCEL_FILE_FULL_PATH)
     if not excel_manager.load_workbook():
         return
 
-    excel_manager.set_active_sheet(excel_manager.get_sheet_names()[0])
+    excel_manager.set_active_sheet(CREATE_BLOG_WP_EXCEL_SHEET_NAME)
     search_strings = ["flag", "theme", "heading_suggestions", "heading"]
     column_indices = excel_manager.search_handler.find_multiple_matching_indices(
         worksheet=excel_manager.current_sheet,

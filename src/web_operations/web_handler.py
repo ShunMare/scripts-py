@@ -32,11 +32,19 @@ class WebFetcher:
 class HTMLParser:
     """HTML解析を担当するクラス"""
 
-    def __init__(self, html_content: str):
+    def __init__(self):
         """
+        初期化メソッド
+        """
+        self.soup = None
+
+    def set_html_content(self, html_content: str):
+        """
+        HTML内容を設定します。
         :param html_content: 解析するHTML内容
         """
         self.soup = BeautifulSoup(html_content, "html.parser")
+        logger.info("HTMLコンテンツが設定されました")
 
     def find_tag_content(self, tag: str, **attrs) -> Optional[str]:
         """
@@ -45,6 +53,10 @@ class HTMLParser:
         :param attrs: タグの属性（オプション）
         :return: タグの内容、見つからない場合はNone
         """
+        if not self.soup:
+            logger.error("HTMLコンテンツが設定されていません")
+            return None
+
         result = self.soup.find(tag, attrs)
         if result:
             logger.info(f"タグ {tag} の内容を見つけました")
@@ -60,6 +72,10 @@ class HTMLParser:
         :param attrs: タグの属性（オプション）
         :return: タグの内容のリスト
         """
+        if not self.soup:
+            logger.error("HTMLコンテンツが設定されていません")
+            return []
+
         results = self.soup.find_all(tag, attrs)
         logger.info(f"{len(results)}個の {tag} タグを見つけました")
         return [result.get_text(strip=True) for result in results]
@@ -95,9 +111,7 @@ class HTMLParser:
             aria_label = elem.get("aria-label")
             if aria_label:
                 aria_labels.append(aria_label)
-                logger.info(
-                    f"aria-label 属性の値を取得しました: {aria_label[:50]}..."
-                )
+                logger.info(f"aria-label 属性の値を取得しました: {aria_label[:50]}...")
             else:
                 logger.warning(
                     f"<{tag} class='{' '.join(class_list)}'> 要素に aria-label 属性が見つかりませんでした。"
@@ -207,6 +221,60 @@ class WebScraper:
         return results
 
     @staticmethod
+    def find_elements_with_attributes(
+        html_content: str, tag: str, classes: List[str], attribute: str
+    ) -> List[str]:
+        """
+        指定されたタグ、クラス、および属性を持つ要素を抽出します。
+
+        :param html_content: 解析するHTML内容
+        :param tag: 検索するHTMLタグ
+        :param classes: 要素が持つべきクラスのリスト
+        :param attribute: 抽出したい属性
+        :return: 指定された属性の値のリスト
+        """
+        try:
+            soup = BeautifulSoup(html_content, "html.parser")
+            elements = soup.find_all(
+                tag, class_=lambda x: x and all(cls in x.split() for cls in classes)
+            )
+
+            attribute_values = [
+                elem.get(attribute) for elem in elements if elem.has_attr(attribute)
+            ]
+
+            logger.info(
+                f"{len(attribute_values)} 個の {tag} タグ（クラス: {', '.join(classes)}）から {attribute} 属性を抽出しました"
+            )
+            return attribute_values
+
+        except Exception as e:
+            logger.error(f"要素の抽出中にエラーが発生しました: {str(e)}")
+            return []
+
+    @staticmethod
+    def scrape_with_attributes(
+        url: str, tag: str, classes: List[str], attribute: str
+    ) -> List[str]:
+        """
+        指定されたURLからHTMLを取得し、指定されたタグ、クラス、属性を持つ要素を抽出します。
+
+        :param url: スクレイピング対象のURL
+        :param tag: 検索するHTMLタグ
+        :param classes: 要素が持つべきクラスのリスト
+        :param attribute: 抽出したい属性
+        :return: 指定された属性の値のリスト
+        """
+        html_content = WebFetcher.fetch_page(url)
+        if not html_content:
+            logger.error("ページの取得に失敗しました。スクレイピングを中止します。")
+            return []
+
+        return WebScraper.find_elements_with_attributes(
+            html_content, tag, classes, attribute
+        )
+
+    @staticmethod
     def find_elements(content: str, tag_name: str, class_list: list) -> list:
         """
         HTMLファイルから指定されたタグと指定されたクラスを全て持つ要素を探します。
@@ -229,3 +297,27 @@ class WebScraper:
         except Exception as e:
             logger.error(f"要素の探索中にエラーが発生しました: {str(e)}")
             raise
+
+    @staticmethod
+    def find_attributes(content: str, tag: str, attribute: str, **attrs) -> List[str]:
+        """
+        指定されたタグの指定された属性の内容をリストで返します。
+        :param content: 解析するHTML内容
+        :param tag: 検索するHTMLタグ
+        :param attribute: 取得したい属性（例えば href, src など）
+        :param attrs: タグの追加属性（オプション）
+        :return: 指定された属性の内容のリスト
+        """
+        try:
+            soup = BeautifulSoup(content, "html.parser")
+            elements = soup.find_all(tag, attrs)
+            attribute_values = [
+                element.get(attribute) for element in elements if element.get(attribute)
+            ]
+            logger.info(
+                f"{len(attribute_values)} 個の {tag} タグの {attribute} 属性を見つけました"
+            )
+            return attribute_values
+        except Exception as e:
+            logger.error(f"属性の抽出中にエラーが発生しました: {str(e)}")
+            return []

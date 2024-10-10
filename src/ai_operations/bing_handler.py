@@ -96,19 +96,3 @@ class BingHandler:
         content = self.get_generated_content()
         logger.info("Content retrieved")
         return content
-
-    def save_html(self, filename):
-        """
-        生成されたコンテンツをファイルに保存する
-        :param filename: 保存するファイルの名前（パスを含む）
-        """
-        edge_handler.activate_edge()
-        time.sleep(self.wait_time_after_prompt_short)
-        pyautogui.hotkey("ctrl", "s")
-        time.sleep(self.wait_time_after_prompt_short)
-        pyperclip.copy(filename)
-        pyautogui.hotkey("ctrl", "v")
-        time.sleep(self.wait_time_after_prompt_short)
-        pyautogui.press("enter")
-        time.sleep(self.wait_time_after_prompt_long)
-        logger.info(f"save {filename} as html in downloads")

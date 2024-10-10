@@ -1,8 +1,11 @@
 import time
 import pygetwindow as gw
+import pyperclip
+import pyautogui
 import webbrowser
 
 from src.log_operations.log_handlers import setup_logger
+from src.input_operations.keyboard_handler import KeyboardHandler
 
 logger = setup_logger(__name__)
 
@@ -13,11 +16,22 @@ class EdgeHandler:
     Seleniumを使用してEdgeブラウザの制御を行います。
     """
 
-    def __init__(self, wait_time_after_switch=2):
+    def __init__(self):
         """
         EdgeHandlerの初期化
         :param wait_time_after_switch: ウィンドウ切り替え後の待機時間（秒）
         """
+        self.wait_time_after_prompt_short = 1
+        self.wait_time_after_prompt_long = 100
+        self.wait_time_after_switch = 2
+
+    def set_wait_time_after_prompt_short(self, wait_time_after_prompt_short):
+        self.wait_time_after_prompt_short = wait_time_after_prompt_short
+
+    def set_wait_time_after_prompt_long(self, wait_time_after_prompt_long):
+        self.wait_time_after_prompt_long = wait_time_after_prompt_long
+
+    def wait_time_after_switch(self, wait_time_after_switch):
         self.wait_time_after_switch = wait_time_after_switch
 
     def activate_edge(self):
@@ -57,3 +71,19 @@ class EdgeHandler:
         """デフォルトのコンテンツに戻る"""
         self.driver.switch_to.default_content()
         logger.info("Switched back to default content")
+
+    def ui_save_html(self, filename):
+        """
+        生成されたコンテンツをファイルに保存する
+        :param filename: 保存するファイルの名前（パスを含む）
+        """
+        self.activate_edge()
+        time.sleep(self.wait_time_after_prompt_short)
+        pyautogui.hotkey("ctrl", "s")
+        time.sleep(self.wait_time_after_prompt_short)
+        pyperclip.copy(filename)
+        pyautogui.hotkey("ctrl", "v")
+        time.sleep(self.wait_time_after_prompt_short)
+        pyautogui.press("enter")
+        time.sleep(self.wait_time_after_prompt_long)
+        logger.info(f"save {filename} as html in downloads")

@@ -1,5 +1,6 @@
 from initialize import *
 from scripts.load_env import *
+from scripts.constants import *
 from scripts.initialize import (
     web_scraper,
 )

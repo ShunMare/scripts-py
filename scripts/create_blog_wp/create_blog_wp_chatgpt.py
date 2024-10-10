@@ -1,5 +1,6 @@
 from initialize import *
 from scripts.load_env import *
+from scripts.constants import *
 from scripts.initialize import (
     logger,
     excel_manager,
@@ -34,17 +35,17 @@ def generate_and_process_prompts(start_row, columns):
     if not value_validator.has_any_invalid_value_in_array(evidences):
         return
 
-    edge_handler.open_url_in_browser(CHATGPT_URL)
+    edge_handler.open_url_in_browser(CHATGPT_DEFAULT_URL)
 
     logger.info("getting md content")
-    initial_prompt = file_reader.read_file(PROMPT_TEMPLATE_PATH)
+    initial_prompt = file_reader.read_file(CREATE_BLOG_WP_PROMPT_TEMPLATE_FULL_PATH)
     for i, evidence in enumerate(evidences):
         if evidence is not None:
             evidence = text_manager.text_remover.remove_content_after(
-                evidence, SOURCE_COPILOT_CONVERSATION
+                evidence, BING_SOURCE_COPILOT_CONVERSATION
             )
             evidence = text_manager.text_remover.remove_pattern(
-                evidence, SUPERSCRIPT_CITATION_PATTERN
+                evidence, BING_SUPERSCRIPT_CITATION_PATTERN
             )
             if i == 0:
                 prompt = prompt_generator.create_initial_prompt(
@@ -60,7 +61,7 @@ def generate_and_process_prompts(start_row, columns):
 
     logger.info("getting title content")
     title_prompt = prompt_generator.replace_marker(
-        prompt=TITLE_PROMPT, theme=theme, heading=""
+        prompt=CREATE_BLOG_WP_TITLE_PROMPT, theme=theme, heading=""
     )
     chatgpt_handler.send_prompt_and_generate_content(title_prompt, repeat_count=0)
     if GET_CONTENT_METHOD == "clipboard":
@@ -68,36 +69,44 @@ def generate_and_process_prompts(start_row, columns):
 
     logger.info("sent long description content")
     chatgpt_handler.send_prompt_and_generate_content(
-        LONG_DESCRIPTION_PROMPT, repeat_count=0
+        CREATE_BLOG_WP_LONG_DESCRIPTION_PROMPT, repeat_count=0
     )
 
     logger.info("getting short description content")
     chatgpt_handler.send_prompt_and_generate_content(
-        SHORT_DESCRIPTION_PROMPT, repeat_count=0
+        CREATE_BLOG_WP_SHORT_DESCRIPTION_PROMPT, repeat_count=0
     )
     if GET_CONTENT_METHOD == "clipboard":
         description_content = chatgpt_handler.get_generated_content()
 
     logger.info("getting keywords content")
-    chatgpt_handler.send_prompt_and_generate_content(KEYWORDS_PROMPT, repeat_count=0)
+    chatgpt_handler.send_prompt_and_generate_content(
+        CREATE_BLOG_WP_KEYWORDS_PROMPT, repeat_count=0
+    )
     if GET_CONTENT_METHOD == "clipboard":
         keywords_content = chatgpt_handler.get_generated_content()
 
     logger.info("getting permalink content")
-    chatgpt_handler.send_prompt_and_generate_content(PERMALINK_PROMPT, repeat_count=0)
+    chatgpt_handler.send_prompt_and_generate_content(
+        CREATE_BLOG_WP_PERMALINK_PROMPT, repeat_count=0
+    )
     if GET_CONTENT_METHOD == "clipboard":
         link_content = chatgpt_handler.get_generated_content()
 
     logger.info("getting image content")
-    if IS_IMAGE_GENERATION_ENABLED:
-        chatgpt_handler.send_prompt_and_generate_content(IMAGE_PROMPT, repeat_count=0)
-        chatgpt_handler.send_prompt_and_generate_content(THUMBNAIL_IMAGE_PROMPT, repeat_count=0)
+    if CREATE_BLOG_WP_IS_IMAGE_GENERATION_ENABLED:
+        chatgpt_handler.send_prompt_and_generate_content(
+            CREATE_BLOG_WP_IMAGE_PROMPT, repeat_count=0
+        )
+        chatgpt_handler.send_prompt_and_generate_content(
+            CREATE_BLOG_WP_THUMBNAIL_IMAGE_PROMPT, repeat_count=0
+        )
 
     logger.info("convert html to md")
     if GET_CONTENT_METHOD != "clipboard":
-        chatgpt_html_file_name = CHATGPT_TMP_FILE_NAME + ".html"
-        chatgpt_handler.save_html(chatgpt_html_file_name)
-        chatgpt_html_path = DOWNLOAD_FOLDER_PATH + chatgpt_html_file_name
+        html_file_name = CREATE_BLOG_WP_CREATE_BLOG_WP_CHATGPT_FILE_NAME + ".html"
+        edge_handler.ui_save_html(html_file_name)
+        chatgpt_html_path = DOWNLOAD_FOLDER_DIR_FULL_PATH + html_file_name
         if file_handler.exists(chatgpt_html_path):
             chatgpt_html = file_reader.read_file(chatgpt_html_path)
         results = web_scraper.find_elements(
@@ -142,7 +151,9 @@ def generate_and_process_prompts(start_row, columns):
             )
         file_handler.delete_file(chatgpt_html_path)
         folder_remover.remove_folder(
-            DOWNLOAD_FOLDER_PATH + CHATGPT_TMP_FILE_NAME + "_files"
+            DOWNLOAD_FOLDER_DIR_FULL_PATH
+            + CREATE_BLOG_WP_CREATE_BLOG_WP_CHATGPT_FILE_NAME
+            + "_files"
         )
 
     logger.info("update cells in excel")
@@ -197,11 +208,11 @@ def generate_and_process_prompts(start_row, columns):
 
 
 def main():
-    excel_manager.set_file_path(CREATE_BLOG_WP_EXCEL_FILE_PATH)
+    excel_manager.set_file_path(CREATE_BLOG_WP_EXCEL_FILE_FULL_PATH)
     if not excel_manager.load_workbook():
         return
 
-    excel_manager.set_active_sheet(excel_manager.get_sheet_names()[0])
+    excel_manager.set_active_sheet(CREATE_BLOG_WP_EXCEL_SHEET_NAME)
     search_strings = [
         "flag",
         "md",

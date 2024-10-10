@@ -1,7 +1,9 @@
 import os
+import json
 from typing import Callable, List, Dict, Optional
 from src.log_operations.log_handlers import setup_logger
 import time
+import glob
 
 logger = setup_logger(__name__)
 
@@ -130,7 +132,8 @@ class FileReader:
         """
         指定されたファイルを読み込み、内容を文字列として返します。
         :param file_path: 読み込むファイルのパス
-        :return: ファイルの内容を文字列として返す
+        :param encoding: ファイルのエンコーディング（デフォルトはUTF-8）
+        :return: ファイルの内容
         """
         with open(file_path, "r", encoding=encoding) as file:
             return file.read()
@@ -208,7 +211,6 @@ class FileValidator:
             ".7z",
             ".tar",
             ".gz",
-            # Add more binary or irrelevant file extensions as needed
         ]
 
         _, ext = os.path.splitext(file_name.lower())
@@ -230,7 +232,27 @@ class FileValidator:
             os.path.exists(os.path.join(folder_path, file)) for file in required_files
         )
 
-
+    @staticmethod
+    def check_token_file(token_path: str) -> bool:
+        """
+        トークンファイルの存在と内容を確認します。
+        :param token_path: トークンファイルのパス
+        :return: ファイルが有効な場合は True、そうでない場合は False
+        """
+        try:
+            content = FileHandler.read_file(token_path)
+            print(f"Token file content: {content}")
+            json.loads(content)
+            logger.info(f"Token file is valid JSON: {token_path}")
+            return True
+        except FileNotFoundError:
+            logger.error(f"Token file not found: {token_path}")
+        except json.JSONDecodeError as e:
+            logger.error(f"Token file is not valid JSON: {token_path}")
+            logger.error(f"JSON Error: {str(e)}")
+        except Exception as e:
+            logger.error(f"Error reading token file: {str(e)}")
+        return False
 class FolderFilter:
     """
     FolderFilter クラスは、特定のフォルダプレフィックスに基づいて、
@@ -411,6 +433,19 @@ class FilePathHandler:
         normalized_path = os.path.normpath(joined_path)
         logger.info(f"パスを結合し正規化しました: {normalized_path}")
         return normalized_path
+
+    @staticmethod
+    def find_files_with_wildcard(base_path: str, wildcard_pattern: str) -> List[str]:
+        """
+        指定されたベースパスとワイルドカードパターンを使用してファイルを検索します。
+        :param base_path: 検索を開始するベースディレクトリ
+        :param wildcard_pattern: 検索に使用するワイルドカードパターン
+        :return: マッチしたファイルパスのリスト
+        """
+        search_pattern = os.path.join(base_path, wildcard_pattern)
+        matched_files = glob.glob(search_pattern)
+        logger.info(f"Found {len(matched_files)} files matching '{search_pattern}'")
+        return matched_files
 
 
 class FileWriter:

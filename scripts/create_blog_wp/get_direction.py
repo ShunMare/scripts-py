@@ -1,5 +1,6 @@
 from initialize import *
 from scripts.load_env import *
+from scripts.constants import *
 from scripts.initialize import (
     logger,
     excel_manager,
@@ -17,17 +18,18 @@ from scripts.initialize import (
 
 
 def get_direction(start_row, columns):
-    """"""
     heading = excel_manager.cell_handler.get_cell_value(
         excel_manager.current_sheet, start_row, columns["heading"]
     )
     heading_list = text_splitter.split_string_to_lines(heading)
-    heading_list = array_remover.remove_elements(heading_list, DIRECTION_REMOVE_TEXT)
+    heading_list = array_remover.remove_elements(
+        heading_list, CREATE_BLOG_WP_DIRECTION_REMOVE_TEXT
+    )
     split_num = len(heading_list) / CREATE_BLOG_WP_EXCEL_GROUP_SIZE
     split_num = round(split_num) + 1
     if split_num < 5:
         split_num = 5
-    heading_list = array_combiner.merge_elements(heading_list, split_num,"\n")
+    heading_list = array_combiner.merge_elements(heading_list, split_num, "\n")
 
     for i, heading in enumerate(heading_list):
         excel_manager.update_cell(
@@ -39,11 +41,11 @@ def get_direction(start_row, columns):
 
 
 def main():
-    excel_manager.set_file_path(CREATE_BLOG_WP_EXCEL_FILE_PATH)
+    excel_manager.set_file_path(CREATE_BLOG_WP_EXCEL_FILE_FULL_PATH)
     if not excel_manager.load_workbook():
         return
 
-    excel_manager.set_active_sheet(excel_manager.get_sheet_names()[0])
+    excel_manager.set_active_sheet(CREATE_BLOG_WP_EXCEL_SHEET_NAME)
     search_strings = ["flag", "heading", "direction"]
     column_indices = excel_manager.search_handler.find_multiple_matching_indices(
         worksheet=excel_manager.current_sheet,

@@ -1,6 +1,7 @@
 from typing import Any
 from initialize import *
 from scripts.load_env import *
+from scripts.constants import *
 from scripts.initialize import (
     logger,
     excel_manager,
@@ -15,26 +16,26 @@ from scripts.initialize import (
 )
 
 font_path_elements = [
-    CREATE_BLOG_MD_FOLDER_PATH,
-    "statics",
-    CREATE_PNG_FONTS_DIR_NAME,
+    CREATE_BLOG_MD_DIR_FULL_PATH,
+    STATISTICS_DIR_NAME,
+    CREATE_BLOG_MD_PNG_FONTS_DIR_NAME,
     "M_PLUS_Rounded_1c",
     "MPLUSRounded1c-Bold.ttf",
 ]
 font_full_path = file_path_handler.join_and_normalize_path(font_path_elements)
 
 setting_path_elements = [
-    CREATE_BLOG_MD_FOLDER_PATH,
-    "statics",
-    CREATE_PNG_SETTINGS_DIR_NAME,
-    f"{CREATE_PNG_CONFIG_NAME}.json",
+    CREATE_BLOG_MD_DIR_FULL_PATH,
+    STATISTICS_DIR_NAME,
+    CREATE_BLOG_MD_PNG_SETTINGS_DIR_NAME,
+    f"{CREATE_BLOG_MD_PNG_CONFIG_NAME}.json",
 ]
 setting_full_path = file_path_handler.join_and_normalize_path(setting_path_elements)
 
 image_path_elements = [
-    CREATE_BLOG_MD_FOLDER_PATH,
-    "statics",
-    CREATE_PNG_IMAGES_DIR_NAME,
+    CREATE_BLOG_MD_DIR_FULL_PATH,
+    STATISTICS_DIR_NAME,
+    CREATE_BLOG_MD_PNG_IMAGES_DIR_NAME,
 ]
 image_folder_path = folder_path_handler.join_and_normalize_path(image_path_elements)
 
@@ -42,11 +43,11 @@ SEPARATE_KEYWORD = "プロパティの使い方"
 
 
 def read_excel_data():
-    excel_manager.set_file_path(CREATE_BLOG_MD_EXCEL_FILE_PATH)
+    excel_manager.set_file_path(CREATE_BLOG_MD_EXCEL_FILE_FULL_PATH)
     if not excel_manager.load_workbook():
         return
 
-    excel_manager.set_active_sheet(excel_manager.get_sheet_names()[0])
+    excel_manager.set_active_sheet(CREATE_BLOG_MD_EXCEL_SHEET_NAME)
     search_strings = [
         "title",
         "subtitle",
@@ -120,7 +121,7 @@ def create_image(title: str, subtitle: str, setting_path: str) -> Any:
     draw = image_manager.get_draw(background)
 
     elements = [
-        ("tag", CREATE_PNG_TAG_NAME),
+        ("tag", CREATE_BLOG_MD_PNG_TAG_NAME),
         ("title", title),
         ("subtitle", subtitle),
     ]
@@ -182,7 +183,7 @@ def main():
             setting_path=setting_full_path,
         )
         output_path_elements = [
-            CREATE_BLOG_MD_TARGET_FOLDER_PATH,
+            CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH,
             excel_data["folder_name"],
             "featured.png",
         ]

@@ -55,10 +55,3 @@ class ImageManager:
         image = Image.new("RGB", size, color)
         logger.info(f"Created new blank image with size {size}")
         return image
-
-
-# Usage example
-# image = ImageManager.load_image("path/to/background.jpg")
-# font = ImageFont.truetype("path/to/font.ttf", 24)
-# image = ImageManager.draw_text(image, (10, 10), "Hello, World!", font, fill="black")
-# ImageManager.save_image(image, "path/to/output.jpg")

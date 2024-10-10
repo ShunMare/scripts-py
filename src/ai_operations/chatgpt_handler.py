@@ -59,6 +59,8 @@ class ChatGPTHandler:
         """プロンプトの生成ボタンに移動する"""
         for _ in range(3):
             self.press_hotkey(["shift", "tab"])
+            time.sleep(self.short_wait_time)
+        time.sleep(self.short_wait_time)
         logger.info("Moved to generate button")
 
     def move_to_copy_button(self):
@@ -99,22 +101,6 @@ class ChatGPTHandler:
         logger.info("Generated content copied from clipboard")
         return generated_content
 
-    def save_html(self, filename):
-        """
-        生成されたコンテンツをファイルに保存する
-        :param filename: 保存するファイルの名前（パスを含む）
-        """
-        edge_handler.activate_edge()
-        time.sleep(self.wait_time_after_prompt_short)
-        pyautogui.hotkey("ctrl", "s")
-        time.sleep(self.wait_time_after_prompt_short)
-        pyperclip.copy(filename)
-        pyautogui.hotkey("ctrl", "v")
-        time.sleep(self.wait_time_after_prompt_short)
-        pyautogui.press("enter")
-        time.sleep(self.wait_time_after_prompt_long)
-        logger.info(f"save {filename} as html in downloads")
-
     def send_prompt_and_generate_content(
         self, prompt: str, repeat_count: int, is_reload: Optional[bool] = False
     ):
@@ -136,8 +122,7 @@ class ChatGPTHandler:
 
         for i in range(repeat_count):
             edge_handler.activate_edge()
-            keyboard_handler.reload_page(self.wait_time_after_reload)
             self.move_to_generate_button()
-            self.press_hotkey(["space"])
+            self.press_hotkey(["enter"])
             logger.info(f"Generation button pressed (iteration {i+1}/{repeat_count})")
             time.sleep(self.wait_time_after_prompt_medium)

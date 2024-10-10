@@ -1,5 +1,6 @@
 from initialize import *
 from scripts.load_env import *
+from scripts.constants import *
 from scripts.initialize import (
     excel_manager,
     value_validator,
@@ -9,11 +10,11 @@ from scripts.initialize import (
 
 
 def main():
-    excel_manager.set_file_path(CREATE_BLOG_MD_EXCEL_FILE_PATH)
+    excel_manager.set_file_path(CREATE_BLOG_MD_EXCEL_FILE_FULL_PATH)
     if not excel_manager.load_workbook():
         return
 
-    excel_manager.set_active_sheet(excel_manager.get_sheet_names()[0])
+    excel_manager.set_active_sheet(CREATE_BLOG_MD_EXCEL_SHEET_NAME)
     search_strings = [
         "exist",
         "folder_name",
@@ -36,7 +37,7 @@ def main():
     ):
         if folder_name:
             folder_path = folder_path_handler.join_path(
-                CREATE_BLOG_MD_TARGET_FOLDER_PATH, folder_name
+                CREATE_BLOG_MD_EXCEL_FILE_FULL_PATH, folder_name
             )
             result = folder_checker.check_folder_exists(folder_path)
             if result == False:

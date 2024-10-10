@@ -1,5 +1,6 @@
 from initialize import *
 from scripts.load_env import *
+from scripts.constants import *
 from scripts.initialize import (
     logger,
     excel_manager,
@@ -28,7 +29,7 @@ def generate_and_process_prompts(target_row, columns):
         excel_manager.current_sheet, target_row, columns["folder_name"]
     )
     path_elements = [
-        CREATE_BLOG_MD_TARGET_FOLDER_PATH,
+        CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH,
         folder_name,
         CREATE_BLOG_MD_TARGET_MDX_FILE_NAME,
     ]
@@ -37,11 +38,11 @@ def generate_and_process_prompts(target_row, columns):
 
 
 def main():
-    excel_manager.set_file_path(CREATE_BLOG_MD_EXCEL_FILE_PATH)
+    excel_manager.set_file_path(CREATE_BLOG_MD_EXCEL_FILE_FULL_PATH)
     if not excel_manager.load_workbook():
         return
 
-    excel_manager.set_active_sheet(excel_manager.get_sheet_names()[0])
+    excel_manager.set_active_sheet(CREATE_BLOG_MD_EXCEL_SHEET_NAME)
     search_strings = [
         "flag",
         "prompt",
@@ -69,7 +70,7 @@ def main():
         )
         if value_validator.is_single_value_valid(flag):
             if count % 20 == 0:
-                edge_handler.open_url_in_browser(CHATGPT_URL)
+                edge_handler.open_url_in_browser(CHATGPT_GPTS_BLOG_MASTER_URL)
             count += 1
             logger.prominent_log(f"Processing group starting at row {target_row}")
             generate_and_process_prompts(target_row, columns)

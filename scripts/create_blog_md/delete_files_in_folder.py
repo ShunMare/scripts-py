@@ -1,5 +1,6 @@
 from initialize import *
 from scripts.load_env import *
+from scripts.constants import *
 from scripts.initialize import (
     file_handler,
     file_path_handler,
@@ -8,8 +9,8 @@ from scripts.initialize import (
 
 
 def main():
-    folder_processor.folder_path = CREATE_BLOG_MD_TARGET_FOLDER_PATH
-    folder_processor.folder_prefix = TARGET_FOLDER_PREFIX
+    folder_processor.folder_path = CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH
+    folder_processor.folder_prefix = CREATE_BLOG_MD_TARGET_TAG_NAME
     delete_file_names = [CREATE_BLOG_MD_TARGET_PNG_FILE_NAME]
 
     def delete_files_in_folder(folder_path: str) -> bool:

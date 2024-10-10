@@ -1,6 +1,7 @@
 import requests
 from requests.auth import HTTPBasicAuth
 from src.log_operations.log_handlers import setup_logger
+from typing import List, Optional
 
 logger = setup_logger(__name__)
 
@@ -226,3 +227,26 @@ class WordPressAPI:
         logger.info(
             f"SEO Title: {post['meta'].get('the_page_seo_title', [''])[0] if 'meta' in post else 'Not set'}"
         )
+
+
+    def get_slugs(
+        self, post_type: str = "posts", per_page: int = 100, page: int = 1
+    ) -> List[str]:
+        endpoint = (
+            f"{self.base_url}/{post_type}?per_page={per_page}&page={page}&_fields=slug"
+        )
+        try:
+            logger.debug(f"Retrieving slugs for {post_type}, page {page}")
+            response = requests.get(endpoint, auth=self.auth)
+            response.raise_for_status()
+
+            posts = response.json()
+            slugs = [post["slug"] for post in posts]
+
+            logger.info(f"Retrieved {len(slugs)} slugs for {post_type} on page {page}")
+            return slugs
+        except requests.RequestException as e:
+            logger.error(
+                f"Failed to retrieve slugs for {post_type} on page {page}: {str(e)}"
+            )
+            return []

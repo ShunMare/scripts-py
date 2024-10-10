@@ -163,10 +163,13 @@ cython_debug/
 #.idea/
 
 # Project specific files
-blog_wp.xlsx
-blog_md.xlsx
-blog_wp_.xlsx
+blog_wp*.xlsx
+blog_md*.xlsx
+taniku*.xlsx
+nexunity*.xlsx
 
 */*/statics/images
 */*/statics/settings
 */*/statics/fonts
+
+*/*/statics/*

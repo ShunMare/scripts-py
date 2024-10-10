@@ -1,5 +1,6 @@
 from initialize import *
 from scripts.load_env import *
+from scripts.constants import *
 from scripts.initialize import (
     logger,
     excel_manager,
@@ -66,11 +67,11 @@ def upload_wp_post(start_row, columns):
 
 
 def main():
-    excel_manager.set_file_path(CREATE_BLOG_WP_EXCEL_FILE_PATH)
+    excel_manager.set_file_path(CREATE_BLOG_WP_EXCEL_FILE_FULL_PATH)
     if not excel_manager.load_workbook():
         return
 
-    excel_manager.set_active_sheet(excel_manager.get_sheet_names()[0])
+    excel_manager.set_active_sheet(CREATE_BLOG_WP_EXCEL_SHEET_NAME)
     search_strings = [
         "flag",
         "title",

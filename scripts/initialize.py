@@ -26,7 +26,6 @@ from src.text_operations.text_remover import TextRemover
 from src.text_operations.text_replacer import TextReplacer
 from src.text_operations.text_finder import TextFinder
 from src.text_operations.text_manager import TextManager
-from src.web_operations.web_handler import WebScraper
 from src.log_operations.log_handlers import setup_logger
 from src.folder_operations.folder_processor import (
     FolderRemover,
@@ -35,10 +34,11 @@ from src.folder_operations.folder_processor import (
     FolderCreator,
     FolderChecker,
     FolderMover,
+    FolderLister,
 )
 from src.wp_operations.wp_manager import WordPressAPI
 from src.ai_operations.bing_handler import BingHandler
-from src.web_operations.web_handler import WebScraper, HTMLParser
+from src.web_operations.web_handler import WebScraper, HTMLParser, WebFetcher
 from src.web_operations.google_search_analyzer import GoogleSearchAnalyzer
 from src.format_operations.text_formatter import TextFormatter
 from src.text_operations.text_splitter import TextSplitter
@@ -47,19 +47,20 @@ from src.font_operations.font_manager import FontManager
 from src.image_operations.image_manager import ImageManager
 from src.json_operations.json_processor import JSONParser
 from src.text_operations.text_drawer import TextDrawer
-from src.array_operations.array_combiner import ArrayCombiner, ArrayRemover
+from src.array_operations.array_combiner import ArrayCombiner, ArrayRemover, ArrayKeeper
+from src.gas_operations.gas_manager import GasManager
 
 logger = setup_logger(__name__)
 excel_manager = ExcelManager()
-edge_handler = EdgeHandler(wait_time_after_switch=WAIT_TIME_AFTER_RELOAD)
-keyboard_handler = KeyboardHandler(short_wait_time=SHORT_WAIT_TIME)
+edge_handler = EdgeHandler()
+keyboard_handler = KeyboardHandler(short_wait_time=KEYBOARD_ACTION_SHORT_DELAY)
 chatgpt_handler = ChatGPTHandler(
     wait_time_after_reload=WAIT_TIME_AFTER_RELOAD,
     wait_time_after_prompt_short=WAIT_TIME_AFTER_PROMPT_SHORT,
     wait_time_after_prompt_medium=WAIT_TIME_AFTER_PROMPT_MEDIUM,
     wait_time_after_prompt_long=WAIT_TIME_AFTER_PROMPT_LONG,
-    short_wait_time=SHORT_WAIT_TIME,
-    model_type=CHATGPT_MODEL_TYPE,
+    short_wait_time=KEYBOARD_ACTION_SHORT_DELAY,
+    model_type=CREATE_BLOG_WP_CHATGPT_MODEL_TYPE,
 )
 prompt_generator = PromptGenerator(
     WAIT_TIME_AFTER_PROMPT_SHORT,
@@ -85,16 +86,19 @@ folder_path_handler = FolderPathHandler()
 folder_processor = FolderProcessor("", "")
 folder_checker = FolderChecker()
 folder_mover = FolderMover()
-wp_manager = WordPressAPI(WP_URL, WP_USERNAME, WP_APP_PASSWORD)
+folder_lister = FolderLister()
+wp_manager = WordPressAPI(
+    CREATE_BLOG_WP_WP_URL, CREATE_BLOG_WP_WP_USERNAME, CREATE_BLOG_WP_WP_APP_PASSWORD
+)
 value_validator = ValueValidator()
 bing_handler = BingHandler(
     wait_time_after_reload=WAIT_TIME_AFTER_RELOAD,
     wait_time_after_prompt_short=WAIT_TIME_AFTER_PROMPT_SHORT,
     wait_time_after_prompt_long=WAIT_TIME_AFTER_PROMPT_LONG,
-    short_wait_time=SHORT_WAIT_TIME,
+    short_wait_time=KEYBOARD_ACTION_SHORT_DELAY,
 )
 web_scraper = WebScraper()
-html_parser = HTMLParser("")
+html_parser = HTMLParser()
 google_search_analyzer = GoogleSearchAnalyzer()
 text_formatter = TextFormatter()
 script_executor = ScriptExecutor()
@@ -104,3 +108,6 @@ json_parser = JSONParser()
 text_drawer = TextDrawer()
 array_combiner = ArrayCombiner()
 array_remover = ArrayRemover()
+array_keeper = ArrayKeeper()
+gas_manager = GasManager()
+web_fetcher = WebFetcher()

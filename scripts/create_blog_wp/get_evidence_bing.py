@@ -1,5 +1,6 @@
 from initialize import *
 from scripts.load_env import *
+from scripts.constants import *
 from scripts.initialize import (
     logger,
     excel_manager,
@@ -40,9 +41,9 @@ def generate_and_process_prompts(start_row, columns):
 
     logger.info("convert html to md")
     if GET_CONTENT_METHOD == "html":
-        bing_html_file_name = BING_TMP_FILE_NAME + ".html"
-        bing_handler.save_html(bing_html_file_name)
-        bing_html_path = DOWNLOAD_FOLDER_PATH + bing_html_file_name
+        html_file_name = CREATE_BLOG_WP_GET_EVIDENCE_BING_FILE_NAME + ".html"
+        edge_handler.ui_save_html(html_file_name)
+        bing_html_path = DOWNLOAD_FOLDER_DIR_FULL_PATH + html_file_name
         if file_handler.exists(bing_html_path):
             bing_html = file_reader.read_file(bing_html_path)
         results = html_parser.find_aria_labels(
@@ -62,7 +63,9 @@ def generate_and_process_prompts(start_row, columns):
                 md_contents.append(results[i])
         file_handler.delete_file(bing_html_path)
         folder_remover.remove_folder(
-            DOWNLOAD_FOLDER_PATH + BING_TMP_FILE_NAME + "_files"
+            DOWNLOAD_FOLDER_DIR_FULL_PATH
+            + CREATE_BLOG_WP_GET_EVIDENCE_BING_FILE_NAME
+            + "_files"
         )
 
     logger.info("update cells in excel")
@@ -78,11 +81,11 @@ def generate_and_process_prompts(start_row, columns):
 
 
 def main():
-    excel_manager.set_file_path(CREATE_BLOG_WP_EXCEL_FILE_PATH)
+    excel_manager.set_file_path(CREATE_BLOG_WP_EXCEL_FILE_FULL_PATH)
     if not excel_manager.load_workbook():
         return
 
-    excel_manager.set_active_sheet(excel_manager.get_sheet_names()[0])
+    excel_manager.set_active_sheet(CREATE_BLOG_WP_EXCEL_SHEET_NAME)
     search_strings = ["flag", "theme", "direction", "evidence"]
     column_indices = excel_manager.search_handler.find_multiple_matching_indices(
         worksheet=excel_manager.current_sheet,

@@ -1,6 +1,7 @@
 from functools import partial
 from initialize import *
 from scripts.load_env import *
+from scripts.constants import *
 from scripts.initialize import (
     logger,
     excel_manager,
@@ -16,11 +17,11 @@ from scripts.initialize import (
 
 
 def main():
-    folder_prefix = TARGET_FOLDER_PREFIX
+    folder_prefix = CREATE_BLOG_MD_TARGET_TAG_NAME
 
-    target_text = CREATE_PNG_TAG_NAME
-    replacement_text = "`" + CREATE_PNG_TAG_NAME + "`"
-    exclude_pattern = "`" + CREATE_PNG_TAG_NAME + "`"
+    target_text = CREATE_BLOG_MD_PNG_TAG_NAME
+    replacement_text = "`" + CREATE_BLOG_MD_PNG_TAG_NAME + "`"
+    exclude_pattern = "`" + CREATE_BLOG_MD_PNG_TAG_NAME + "`"
 
     process_function = partial(
         text_replacer.replace_with_exclusion,
@@ -30,7 +31,7 @@ def main():
     )
 
     file_processor.process_all_matching_files(
-        CREATE_BLOG_MD_TARGET_FOLDER_PATH,
+        CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH,
         folder_prefix,
         process_function,
         [],
@@ -38,7 +39,7 @@ def main():
 
     # target_text = "【"
     # replacement_text = ""
-    # exclude_pattern = "【" + CREATE_PNG_TAG_NAME + "】"
+    # exclude_pattern = "【" + CREATE_BLOG_MD_PNG_TAG_NAME + "】"
 
     # process_function = partial(
     #     text_replacer.replace_with_exclusion,
@@ -49,7 +50,7 @@ def main():
 
     # target_text = "】"
     # replacement_text = ""
-    # exclude_pattern = "【" + CREATE_PNG_TAG_NAME + "】"
+    # exclude_pattern = "【" + CREATE_BLOG_MD_PNG_TAG_NAME + "】"
 
     # process_function = partial(
     #     text_replacer.replace_with_exclusion,
@@ -59,7 +60,7 @@ def main():
     # )
 
     # file_processor.process_all_matching_files(
-    #     CREATE_BLOG_MD_TARGET_FOLDER_PATH,
+    #     CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH,
     #     folder_prefix,
     #     process_function,
     #     [],
@@ -81,7 +82,7 @@ def main():
     )
 
     file_processor.process_all_matching_files(
-        CREATE_BLOG_MD_TARGET_FOLDER_PATH,
+        CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH,
         folder_prefix,
         process_function,
         [],
@@ -99,11 +100,49 @@ def main():
     )
 
     file_processor.process_all_matching_files(
-        CREATE_BLOG_MD_TARGET_FOLDER_PATH,
+        CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH,
         folder_prefix,
         process_function,
         [],
     )
+
+    replacements = [
+        ("**", ""),
+        ("# 1. ", "# "),
+        ("# 2. ", "# "),
+        ("# 3. ", "# "),
+        ("# 4. ", "# "),
+        ("# 5. ", "# "),
+        ("# 6. ", "# "),
+        ("# 7. ", "# "),
+        ("# 8. ", "# "),
+        ("# 9. ", "# "),
+        ("# 10. ", "# "),
+        ("【", "`"),
+        ("】", "`"),
+        (
+            "# `" + CREATE_BLOG_MD_PNG_CONFIG_NAME + "`",
+            "# " + CREATE_BLOG_MD_PNG_CONFIG_NAME,
+        ),
+        (
+            "title: `" + CREATE_BLOG_MD_PNG_CONFIG_NAME + "`",
+            "title: 【" + CREATE_BLOG_MD_PNG_CONFIG_NAME + "】",
+        ),
+        (
+            "title: `" + CREATE_BLOG_MD_PNG_CONFIG_NAME,
+            "title: 【" + CREATE_BLOG_MD_PNG_CONFIG_NAME + "】",
+        ),
+    ]
+
+    for target_text, replacement_text in replacements:
+        process_function = partial(
+            text_replacer.replace_content,
+            target_text=target_text,
+            replacement_text=replacement_text,
+        )
+        file_processor.process_all_matching_files(
+            CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH, folder_prefix, process_function, []
+        )
 
     target_text = "**"
     replacement_text = ""
@@ -113,41 +152,42 @@ def main():
         replacement_text=replacement_text,
     )
     file_processor.process_all_matching_files(
-        CREATE_BLOG_MD_TARGET_FOLDER_PATH, folder_prefix, process_function, []
+        CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH, folder_prefix, process_function, []
     )
 
     target_text = r"categories: \[.*?\]"
-    replacement_text = "categories: [Tool, Coding]"
+    replacement_text = "categories: [Coding]"
     process_function = partial(
         text_replacer.replace_content_regex,
         pattern=target_text,
         replacement=replacement_text,
     )
     file_processor.process_all_matching_files(
-        CREATE_BLOG_MD_TARGET_FOLDER_PATH, folder_prefix, process_function, []
+        CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH, folder_prefix, process_function, []
     )
 
     target_text = r"tags: \[.*?\]"
-    replacement_text = "tags: [" + CREATE_PNG_TAG_NAME + "]"
+    replacement_text = "tags: [" + CREATE_BLOG_MD_PNG_TAG_NAME + "]"
     process_function = partial(
         text_replacer.replace_content_regex,
         pattern=target_text,
         replacement=replacement_text,
     )
     file_processor.process_all_matching_files(
-        CREATE_BLOG_MD_TARGET_FOLDER_PATH, folder_prefix, process_function, []
+        CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH, folder_prefix, process_function, []
     )
 
-    target_text = r'\n{2,}'
-    replacement_text = '\n'
+    target_text = r"\n{2,}"
+    replacement_text = "\n"
     process_function = partial(
         text_replacer.replace_content_regex,
         pattern=target_text,
         replacement=replacement_text,
     )
     file_processor.process_all_matching_files(
-        CREATE_BLOG_MD_TARGET_FOLDER_PATH, folder_prefix, process_function, []
+        CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH, folder_prefix, process_function, []
     )
+
 
 if __name__ == "__main__":
     main()
