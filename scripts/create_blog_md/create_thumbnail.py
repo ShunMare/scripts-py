@@ -39,51 +39,40 @@ image_path_elements = [
 ]
 image_folder_path = folder_path_handler.join_and_normalize_path(image_path_elements)
 
-SEPARATE_KEYWORD = "プロパティの使い方"
+SEPARATE_KEYWORD = "すべての属性を取得する方法"
+SEARCH_STRINGS = ["title", "subtitle", "folder_name"]
 
 
 def read_excel_data():
-    excel_manager.set_file_path(CREATE_BLOG_MD_EXCEL_FILE_FULL_PATH)
-    if not excel_manager.load_workbook():
+    if not excel_manager.set_info(
+        CREATE_BLOG_MD_EXCEL_FILE_FULL_PATH, CREATE_BLOG_MD_EXCEL_SHEET_NAME
+    ):
         return
-
-    excel_manager.set_active_sheet(CREATE_BLOG_MD_EXCEL_SHEET_NAME)
-    search_strings = [
-        "title",
-        "subtitle",
-        "folder_name",
-    ]
-    column_indices = excel_manager.search_handler.find_multiple_matching_indices(
-        worksheet=excel_manager.current_sheet,
+    columns = excel_manager.search_handler.find_and_map_column_indices(
         index=CREATE_BLOG_MD_EXCEL_INDEX_ROW,
-        search_strings=search_strings,
-        is_row_flag=True,
+        search_strings=SEARCH_STRINGS,
     )
-    columns = dict(zip(search_strings, column_indices))
-
-    if value_validator.has_any_invalid_value_in_array(list(columns.values())):
+    if value_validator.any_invalid(columns):
         return
 
     title_end_row = excel_manager.cell_handler.get_last_row_of_column(
-        worksheet=excel_manager.current_sheet, column=columns["title"]
+        column=columns["title"]
     )
 
     data = []
     for i in range(title_end_row):
         target_row = i + CREATE_BLOG_MD_EXCEL_START_ROW
-        title = excel_manager.cell_handler.get_cell_value(
-            excel_manager.current_sheet, target_row, columns["title"]
-        )
+        title = excel_manager.cell_handler.get_cell_value(target_row, columns["title"])
         subtitle = excel_manager.cell_handler.get_cell_value(
-            excel_manager.current_sheet, target_row, columns["subtitle"]
+            target_row, columns["subtitle"]
         )
         folder_name = excel_manager.cell_handler.get_cell_value(
-            excel_manager.current_sheet, target_row, columns["folder_name"]
+            target_row, columns["folder_name"]
         )
         if (
-            value_validator.is_single_value_valid(title)
-            and value_validator.is_single_value_valid(subtitle)
-            and value_validator.is_single_value_valid(folder_name)
+            value_validator.is_valid(title)
+            and value_validator.is_valid(subtitle)
+            and value_validator.is_valid(folder_name)
         ):
             if not SEPARATE_KEYWORD == "":
                 processed_title = text_handler.format_text_with_keyword_split(

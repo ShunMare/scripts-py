@@ -36,28 +36,24 @@ def get_links(url):
     return href_links
 
 
+SEARCH_STRINGS = ["link"]
+EXCEL_FILE_PATH = "C:/Users/okubo/OneDrive/ドキュメント/004_blogs/succulent/data/nexunity_stackoverflow.xlsx"
+
+
 def main():
-    EXCEL_FILE_PATH = "C:/Users/okubo/OneDrive/ドキュメント/004_blogs/succulent/data/nexunity_stackoverflow.xlsx"
-    excel_manager.set_file_path(EXCEL_FILE_PATH)
-    if not excel_manager.load_workbook():
+    if not excel_manager.set_info(EXCEL_FILE_PATH, "Sheet1"):
         return
 
-    excel_manager.set_active_sheet(excel_manager.get_sheet_names()[0])
-    search_strings = ["link"]
-    column_indices = excel_manager.search_handler.find_multiple_matching_indices(
-        worksheet=excel_manager.current_sheet,
+    columns = excel_manager.search_handler.find_and_map_column_indices(
         index=1,
-        search_strings=search_strings,
-        is_row_flag=True,
+        search_strings=SEARCH_STRINGS,
     )
-    columns = dict(zip(search_strings, column_indices))
-
-    if value_validator.has_any_invalid_value_in_array(list(columns.values())):
+    if value_validator.any_invalid(columns):
         return
 
     BASE_URL = "https://stackoverflow.com/search?"
     start_page = 1
-    end_page = 5
+    end_page = 6
     urls = [
         f"{BASE_URL}page={page}&tab=Relevance&pagesize=50&q=hasaccepted%3ayes%20{CREATE_BLOG_MD_TARGET_TAG_NAME}&searchOn=3"
         for page in range(start_page, end_page + 1)
@@ -70,23 +66,24 @@ def main():
         href_links = array_keeper.keep_elements(href_links, elements_to_keep)
 
         for href_link in href_links:
-            while not excel_manager.cell_handler.is_cell_empty(
-                excel_manager.current_sheet, target_row, columns["link"]
+            while not excel_manager.cell_handler.is_cell_empty_or_match(
+                target_row, columns["link"]
             ):
                 target_row += 1
 
             if (
                 excel_manager.search_handler.find_matching_index(
-                    worksheet=excel_manager.current_sheet,
                     index=columns["link"],
                     search_string=href_link,
                     is_row_flag=False,
                 )
                 == None
             ):
-                excel_manager.update_cell(target_row, columns["link"], href_link)
+                excel_manager.cell_handler.update_cell(
+                    target_row, columns["link"], href_link
+                )
 
-    excel_manager.save_workbook()
+    excel_manager.file_handler.save()
 
 
 if __name__ == "__main__":

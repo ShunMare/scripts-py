@@ -25,7 +25,6 @@ MY_SCRIPTS_TARGET_MD_FILE_NAME = "index.md*"
 
 def get_title_in_md(columns):
     for row, folder_name in excel_manager.cell_handler.iterate_column_values(
-        excel_manager.current_sheet,
         column=columns["folder_name"],
         start_row=MY_SCRIPTS_EXCEL_START_ROW,
     ):
@@ -43,25 +42,24 @@ def get_title_in_md(columns):
             file_full_path = index_files[0]
             lines = file_reader.read_file_line_list(file_full_path)
             text = text_finder.find_line_starting_with(lines, TARGET_TEXT)
-            excel_manager.update_cell(row, columns["title_full"], text)
+            excel_manager.cell_handler.update_cell(row, columns["title_full"], text)
+
+
+SEARCH_STRINGS = ["folder_name", "title_full"]
 
 
 def main():
-    excel_manager.set_file_path(STANDALONE_GET_TITLE_IN_MD_EXCEL_FILE_FULL_PATH)
-    if not excel_manager.load_workbook():
+    if not excel_manager.set_info(
+        STANDALONE_GET_TITLE_IN_MD_EXCEL_FILE_FULL_PATH,
+        STANDALONE_GET_TITLE_IN_MD_EXCEL_SHEET_NAME,
+    ):
         return
 
-    excel_manager.set_active_sheet(STANDALONE_GET_TITLE_IN_MD_EXCEL_SHEET_NAME)
-    search_strings = ["folder_name", "title_full"]
-    column_indices = excel_manager.search_handler.find_multiple_matching_indices(
-        worksheet=excel_manager.current_sheet,
-        index=MY_SCRIPTS_EXCEL_INDEX_ROW,
-        search_strings=search_strings,
-        is_row_flag=True,
+    columns = excel_manager.search_handler.find_and_map_column_indices(
+        index=1,
+        search_strings=SEARCH_STRINGS,
     )
-    columns = dict(zip(search_strings, column_indices))
-
-    if value_validator.has_any_invalid_value_in_array(list(columns.values())):
+    if value_validator.any_invalid(columns):
         return
 
     folder_list = list(
@@ -71,13 +69,12 @@ def main():
     )
 
     excel_manager.cell_handler.insert_array_column_wise(
-        worksheet=excel_manager.current_sheet,
         start_row=MY_SCRIPTS_EXCEL_START_ROW,
         start_column=columns["folder_name"],
         data=folder_list,
     )
     get_title_in_md(columns)
-    excel_manager.save_workbook()
+    excel_manager.file_handler.save()
 
 
 if __name__ == "__main__":

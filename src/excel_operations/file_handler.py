@@ -3,35 +3,39 @@ import time
 
 from src.log_operations.log_handlers import setup_logger
 
-logger = setup_logger(__name__)
-
 
 class ExcelFileHandler:
-    def __init__(self, file_path):
+    def __init__(self):
+        self.logger = setup_logger(__name__)
+        self.file_path = None
+        self.workbook = None
+
+    def set_file_path(self, file_path):
         self.file_path = file_path
-        logger.info(f"ExcelFileHandler initialized with file path: {file_path}")
+        self.logger.info("file_path has been set successfully.")
 
     def load(self):
         try:
             workbook = openpyxl.load_workbook(self.file_path)
-            logger.info(f"Successfully loaded Excel file: {self.file_path}")
+            self.workbook = workbook
+            self.logger.info(f"Successfully loaded Excel file: {self.file_path}")
             return workbook
         except Exception as e:
-            logger.error(f"Failed to load Excel file {self.file_path}: {str(e)}")
+            self.logger.error(f"Failed to load Excel file {self.file_path}: {str(e)}")
             return None
 
-    def save(self, workbook, max_retries=3):
+    def save(self, max_retries=3):
         for attempt in range(max_retries):
             try:
-                workbook.save(self.file_path)
-                logger.info(f"Excel file {self.file_path} saved successfully.")
+                self.workbook.save(self.file_path)
+                self.logger.info(f"Excel file {self.file_path} saved successfully.")
                 return True
             except PermissionError:
-                logger.warning(
+                self.logger.warning(
                     f"PermissionError: Attempt {attempt + 1} of {max_retries} to save {self.file_path}. Retrying in 5 seconds..."
                 )
                 time.sleep(5)
-        logger.error(
+        self.logger.error(
             f"Failed to save Excel file {self.file_path} after {max_retries} attempts."
         )
         return False

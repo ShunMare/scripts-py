@@ -20,19 +20,14 @@ from scripts.initialize import (
 
 def generate_and_process_prompts(start_row, columns):
     """指定されたグループのプロンプトを生成し、処理する"""
-    theme = excel_manager.cell_handler.get_cell_value(
-        excel_manager.current_sheet, start_row, columns["theme"]
-    )
-    heading = excel_manager.cell_handler.get_cell_value(
-        excel_manager.current_sheet, start_row, columns["heading"]
-    )
+    theme = excel_manager.cell_handler.get_cell_value(start_row, columns["theme"])
+    heading = excel_manager.cell_handler.get_cell_value(start_row, columns["heading"])
     evidences = excel_manager.cell_handler.get_range_values(
-        excel_manager.current_sheet,
         start_row,
         columns["evidence"],
         CREATE_BLOG_WP_EXCEL_GROUP_SIZE,
     )
-    if not value_validator.has_any_invalid_value_in_array(evidences):
+    if not value_validator.any_invalid(evidences):
         return
 
     edge_handler.open_url_in_browser(CHATGPT_DEFAULT_URL)
@@ -115,7 +110,6 @@ def generate_and_process_prompts(start_row, columns):
             class_list=CHATGPT_OUTPUT_CLASS_LIST,
         )
         evidence_count = excel_manager.cell_handler.count_nonempty_cells_in_range(
-            excel_manager.current_sheet,
             column=columns["evidence"],
             start_row=start_row,
             end_row=start_row + CREATE_BLOG_WP_EXCEL_GROUP_SIZE - 1,
@@ -160,91 +154,80 @@ def generate_and_process_prompts(start_row, columns):
     if GET_CONTENT_METHOD != "clipboard":
         for i, content in enumerate(html_contents):
             excel_manager.cell_handler.update_cell(
-                excel_manager.current_sheet,
                 start_row + i,
                 columns["html"],
                 content,
             )
         for i, content in enumerate(md_contents):
             excel_manager.cell_handler.update_cell(
-                excel_manager.current_sheet,
                 start_row + i,
                 columns["md"],
                 content,
             )
     else:
         excel_manager.cell_handler.update_cell(
-            excel_manager.current_sheet,
             start_row,
             columns["md"],
             md_content,
         )
     excel_manager.cell_handler.update_cell(
-        excel_manager.current_sheet,
         start_row,
         columns["title"],
         title_content,
     )
     excel_manager.cell_handler.update_cell(
-        excel_manager.current_sheet,
         start_row,
         columns["description"],
         description_content,
     )
     excel_manager.cell_handler.update_cell(
-        excel_manager.current_sheet,
         start_row,
         columns["keywords"],
         keywords_content,
     )
     excel_manager.cell_handler.update_cell(
-        excel_manager.current_sheet,
         start_row,
         columns["link"],
         link_content,
     )
 
-    excel_manager.save_workbook()
+    excel_manager.file_handler.save()
+
+
+SEARCH_STRINGS = [
+    "flag",
+    "md",
+    "html",
+    "theme",
+    "heading",
+    "title",
+    "description",
+    "keywords",
+    "evidence",
+    "link",
+]
 
 
 def main():
-    excel_manager.set_file_path(CREATE_BLOG_WP_EXCEL_FILE_FULL_PATH)
-    if not excel_manager.load_workbook():
+    if not excel_manager.set_info(
+        CREATE_BLOG_WP_EXCEL_FILE_FULL_PATH, CREATE_BLOG_WP_EXCEL_SHEET_NAME
+    ):
         return
 
-    excel_manager.set_active_sheet(CREATE_BLOG_WP_EXCEL_SHEET_NAME)
-    search_strings = [
-        "flag",
-        "md",
-        "html",
-        "theme",
-        "heading",
-        "title",
-        "description",
-        "keywords",
-        "evidence",
-        "link",
-    ]
-    column_indices = excel_manager.search_handler.find_multiple_matching_indices(
-        worksheet=excel_manager.current_sheet,
+    columns = excel_manager.search_handler.find_and_map_column_indices(
         index=CREATE_BLOG_WP_EXCEL_INDEX_ROW,
-        search_strings=search_strings,
-        is_row_flag=True,
+        search_strings=SEARCH_STRINGS,
     )
-    columns = dict(zip(search_strings, column_indices))
-
-    if value_validator.has_any_invalid_value_in_array(list(columns.values())):
+    if value_validator.any_invalid(columns):
         return
 
     flag_end_row = excel_manager.cell_handler.get_last_row_of_column(
-        worksheet=excel_manager.current_sheet, column=columns["flag"]
+        column=columns["flag"]
     )
     for i in range(flag_end_row):
         start_row = i * CREATE_BLOG_WP_EXCEL_GROUP_SIZE + CREATE_BLOG_WP_EXCEL_START_ROW
-        flag = excel_manager.cell_handler.get_cell_value(
-            excel_manager.current_sheet, start_row, columns["flag"]
-        )
-        if value_validator.is_single_value_valid(flag):
+        flag = excel_manager.cell_handler.get_cell_value(start_row, columns["flag"])
+        if value_validator.is_valid(flag):
             logger.prominent_log(f"Processing group starting at row {start_row}")
             generate_and_process_prompts(start_row, columns)
 

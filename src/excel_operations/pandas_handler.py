@@ -1,14 +1,20 @@
 import pandas as pd
 from src.log_operations.log_handlers import setup_logger
 
-logger = setup_logger(__name__)
 
-
-class PandasExcelHandler:
-    def __init__(self, file_path):
-        self.file_path = file_path
+class ExcelPandasHandler:
+    def __init__(self):
+        self.logger = setup_logger(__name__)
+        self.file_path = None
         self.df = None
-        logger.info(f"PandasExcelHandler initialized with file path: {file_path}")
+
+    def set_file_path(self, file_path):
+        """
+        ファイルパスを設定します。
+        :param file_path: 対象のワークシート
+        """
+        self.file_path = file_path
+        self.logger.info("file_path has been set successfully.")
 
     def load_pandas(self, sheet_name=None):
         try:
@@ -18,12 +24,12 @@ class PandasExcelHandler:
                 keep_default_na=False,
                 na_values=[""],
             )
-            logger.info(f"Successfully loaded Excel file: {self.file_path}")
-            logger.info(f"Pandas DataFrame shape: {self.df.shape}")
-            logger.info(f"Pandas DataFrame columns: {self.df.columns.tolist()}")
+            self.logger.info(f"Successfully loaded Excel file: {self.file_path}")
+            self.logger.info(f"Pandas DataFrame shape: {self.df.shape}")
+            self.logger.info(f"Pandas DataFrame columns: {self.df.columns.tolist()}")
             return self.df
         except Exception as e:
-            logger.error(
+            self.logger.error(
                 f"Failed to load Excel file {self.file_path} with pandas: {str(e)}"
             )
             return None
@@ -31,11 +37,11 @@ class PandasExcelHandler:
     def get_pandas_column_data(self, column_name):
         if self.df is not None and column_name in self.df.columns:
             data = self.df[column_name].tolist()
-            logger.info(f"Retrieved {len(data)} items from column '{column_name}'")
+            self.logger.info(f"Retrieved {len(data)} items from column '{column_name}'")
             return data
         else:
             if self.df is None:
-                logger.warning("DataFrame is not loaded. Call load_pandas() first.")
+                self.logger.warning("DataFrame is not loaded. Call load_pandas() first.")
             else:
-                logger.warning(f"Column '{column_name}' not found in DataFrame.")
+                self.logger.warning(f"Column '{column_name}' not found in DataFrame.")
             return []

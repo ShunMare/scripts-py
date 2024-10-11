@@ -9,33 +9,28 @@ from scripts.initialize import (
     folder_path_handler,
 )
 
+SEARCH_STRINGS = ["folder_name"]
+CREATE_FILE_LIST = [CREATE_BLOG_MD_TARGET_MDX_FILE_NAME]
+
 
 def main():
-    create_file_list = [CREATE_BLOG_MD_TARGET_MDX_FILE_NAME]
-
-    excel_manager.set_file_path(CREATE_BLOG_MD_EXCEL_FILE_FULL_PATH)
-    if not excel_manager.load_workbook():
+    if not excel_manager.set_info(
+        CREATE_BLOG_MD_EXCEL_FILE_FULL_PATH, CREATE_BLOG_MD_EXCEL_SHEET_NAME
+    ):
         return
 
-    excel_manager.set_active_sheet(CREATE_BLOG_MD_EXCEL_SHEET_NAME)
-    search_strings = ["folder_name"]
-    column_indices = excel_manager.search_handler.find_multiple_matching_indices(
-        worksheet=excel_manager.current_sheet,
+    columns = excel_manager.search_handler.find_and_map_column_indices(
         index=CREATE_BLOG_MD_EXCEL_INDEX_ROW,
-        search_strings=search_strings,
-        is_row_flag=True,
+        search_strings=SEARCH_STRINGS,
     )
-    columns = dict(zip(search_strings, column_indices))
-
-    if value_validator.has_any_invalid_value_in_array(list(columns.values())):
+    if value_validator.any_invalid(columns):
         return
 
     folder_names = excel_manager.cell_handler.get_column_values_to_last_row(
-        worksheet=excel_manager.current_sheet,
         column=columns["folder_name"],
         start_row=CREATE_BLOG_MD_EXCEL_START_ROW,
     )
-    folder_names = excel_manager.remove_nan_from_list(folder_names)
+    folder_names = excel_manager.data_processor.remove_nan_from_list(folder_names)
     folder_names = [
         str(name)
         for item in folder_names
@@ -46,9 +41,9 @@ def main():
         folder_path = folder_path_handler.join_path(
             CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH, folder_name
         )
-        file_handler.create_empty_files(folder_path, create_file_list)
+        file_handler.create_empty_files(folder_path, CREATE_FILE_LIST)
 
-    excel_manager.save_workbook()
+    excel_manager.file_handler.save()
 
 
 if __name__ == "__main__":

@@ -21,7 +21,6 @@ SPLIT_TEXT = " - "
 
 def get_title_in_md(columns):
     for row, folder_name in excel_manager.cell_handler.iterate_column_values(
-        excel_manager.current_sheet,
         column=columns["folder_name"],
         start_row=CREATE_BLOG_MD_EXCEL_START_ROW,
     ):
@@ -39,45 +38,41 @@ def get_title_in_md(columns):
             lines = file_reader.read_file_line_list(file_full_path)
             text = text_finder.find_line_starting_with(lines, TARGET_TEXT)
             text = text_replacer.replace(text, REPLACE_TARGET_TEXT, REPLACEMENT_TEXT)
-            excel_manager.update_cell(row, columns["title_full"], text)
+            excel_manager.cell_handler.update_cell(row, columns["title_full"], text)
 
 
 def separate_title_in_md(columns):
     for row, title_full in excel_manager.cell_handler.iterate_column_values(
-        excel_manager.current_sheet,
         column=columns["title_full"],
         start_row=CREATE_BLOG_MD_EXCEL_START_ROW,
     ):
         texts = text_handler.split_string(title_full, SPLIT_TEXT)
         if len(texts) >= 2:
-            excel_manager.update_cell(row, columns["title"], texts[0])
-            excel_manager.update_cell(row, columns["subtitle"], texts[1])
+            excel_manager.cell_handler.update_cell(row, columns["title"], texts[0])
+            excel_manager.cell_handler.update_cell(row, columns["subtitle"], texts[1])
         elif len(texts) == 1:
-            excel_manager.update_cell(row, columns["title"], texts[0])
-            excel_manager.update_cell(row, columns["subtitle"], "")
+            excel_manager.cell_handler.update_cell(row, columns["title"], texts[0])
+            excel_manager.cell_handler.update_cell(row, columns["subtitle"], "")
+
+
+SEARCH_STRINGS = ["folder_name", "title_full", "title", "subtitle"]
 
 
 def main():
-    excel_manager.set_file_path(CREATE_BLOG_MD_EXCEL_FILE_FULL_PATH)
-    if not excel_manager.load_workbook():
+    if not excel_manager.set_info(
+        CREATE_BLOG_MD_EXCEL_FILE_FULL_PATH, CREATE_BLOG_MD_EXCEL_SHEET_NAME
+    ):
         return
-
-    excel_manager.set_active_sheet(CREATE_BLOG_MD_EXCEL_SHEET_NAME)
-    search_strings = ["folder_name", "title_full", "title", "subtitle"]
-    column_indices = excel_manager.search_handler.find_multiple_matching_indices(
-        worksheet=excel_manager.current_sheet,
+    columns = excel_manager.search_handler.find_and_map_column_indices(
         index=CREATE_BLOG_MD_EXCEL_INDEX_ROW,
-        search_strings=search_strings,
-        is_row_flag=True,
+        search_strings=SEARCH_STRINGS,
     )
-    columns = dict(zip(search_strings, column_indices))
-
-    if value_validator.has_any_invalid_value_in_array(list(columns.values())):
+    if value_validator.any_invalid(columns):
         return
 
     get_title_in_md(columns)
     separate_title_in_md(columns)
-    excel_manager.save_workbook()
+    excel_manager.file_handler.save()
 
 
 if __name__ == "__main__":

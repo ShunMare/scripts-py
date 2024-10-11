@@ -80,25 +80,33 @@ class HTMLParser:
         logger.info(f"{len(results)}個の {tag} タグを見つけました")
         return [result.get_text(strip=True) for result in results]
 
-    def find_aria_labels(
-        self, content: str = "", tag: str = "", class_list: List[str] = None
+    def find_element_attributes(
+        self,
+        content: str = "",
+        tag: str = "",
+        class_list: List[str] = None,
+        attribute: str = "aria-label",
     ) -> List[str]:
         """
-        指定されたタグとクラスを持つ要素から aria-label 属性の値を抽出します。
+        指定されたタグ、クラス、および属性を持つ要素から属性の値を抽出します。
         :param content: HTML内容（省略時は初期化時のコンテンツを使用）
         :param tag: 検索するHTMLタグ
         :param class_list: タグが持つべきクラスのリスト
-        :return: aria-label 属性の値のリスト
+        :param attribute: 検索する属性名（デフォルトは "aria-label"）
+        :return: 指定された属性の値のリスト
         """
         if content:
             soup = BeautifulSoup(content, "html.parser")
         else:
             soup = self.soup
+
         if not tag:
             logger.warning("タグが指定されていません。")
             return []
+
         if class_list is None:
             class_list = []
+
         elements = soup.find_all(
             tag,
             class_=lambda x: x and all(cls in x.split() for cls in class_list),
@@ -106,18 +114,67 @@ class HTMLParser:
         logger.info(
             f"{len(elements)} 個の <{tag} class='{' '.join(class_list)}'> 要素が見つかりました。"
         )
-        aria_labels = []
+
+        attribute_values = []
         for elem in elements:
-            aria_label = elem.get("aria-label")
-            if aria_label:
-                aria_labels.append(aria_label)
-                logger.info(f"aria-label 属性の値を取得しました: {aria_label[:50]}...")
+            attr_value = elem.get(attribute)
+            if attr_value:
+                attribute_values.append(attr_value)
+                logger.info(f"{attribute} 属性の値を取得しました: {attr_value[:50]}...")
             else:
                 logger.warning(
-                    f"<{tag} class='{' '.join(class_list)}'> 要素に aria-label 属性が見つかりませんでした。"
+                    f"<{tag} class='{' '.join(class_list)}'> 要素に {attribute} 属性が見つかりませんでした。"
                 )
 
-        return aria_labels
+        return attribute_values
+
+    def find_elements_with_attributes(
+        self,
+        content: str = "",
+        tag: str = "div",
+        class_name: Optional[str] = None,
+        attributes: Optional[Dict[str, str]] = None,
+    ) -> List[BeautifulSoup]:
+        """
+        指定されたタグ、クラス、および属性を持つ要素を見つけます。
+
+        :param content: HTML内容（省略時は初期化時のコンテンツを使用）
+        :param tag: 検索するHTMLタグ（デフォルトは "div"）
+        :param class_name: タグが持つべきクラス名（オプション）
+        :param attributes: 検索する属性と値のディクショナリ（オプション）
+        :return: 条件に合致するBeautifulSoup要素のリスト
+        """
+        search_args = {"name": tag}
+
+        if class_name:
+            search_args["class_"] = class_name
+        if attributes:
+            search_args.update(attributes)
+        if content:
+            soup = BeautifulSoup(content, "html.parser")
+        else:
+            soup = self.soup
+
+        elements = soup.find_all(**search_args)
+        logger.info(f"{len(elements)} 個の <{tag}> 要素が見つかりました。")
+        for i, elem in enumerate(elements, 1):
+            logger.info(f"要素 {i}: {elem.get_text()[:50]}...")
+        return elements
+
+    @staticmethod
+    def get_element_contents(elements: List[BeautifulSoup]) -> List[str]:
+        """
+        要素のコンテンツを抽出します。
+
+        :param elements: BeautifulSoup要素のリスト
+        :return: 各要素のテキストコンテンツのリスト
+        """
+        contents = [elem.get_text(strip=True) for elem in elements]
+
+        for i, content in enumerate(contents, 1):
+            logger.info(f"コンテンツ {i}: {content[:50]}...")
+
+        return contents
 
 
 class LinkExtractor:

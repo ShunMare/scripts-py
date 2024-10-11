@@ -33,22 +33,20 @@ def get_blog_slugs():
         return []
 
 
+SEARCH_STRINGS = ["flag", "slug"]
+
+
 def main():
-    excel_manager.set_file_path(CREATE_SNS_EXCEL_FILE_FULL_PATH)
-    if not excel_manager.load_workbook():
+    if not excel_manager.set_info(
+        CREATE_SNS_EXCEL_FILE_FULL_PATH, CREATE_SNS_EXCEL_SHEET_NAME
+    ):
         return
 
-    excel_manager.set_active_sheet(CREATE_SNS_EXCEL_SHEET_NAME)
-    search_strings = ["flag", "slug"]
-    column_indices = excel_manager.search_handler.find_multiple_matching_indices(
-        worksheet=excel_manager.current_sheet,
-        index=1,
-        search_strings=search_strings,
-        is_row_flag=True,
+    columns = excel_manager.search_handler.find_and_map_column_indices(
+        index=CREATE_SNS_EXCEL_INDEX_ROW,
+        search_strings=SEARCH_STRINGS,
     )
-    columns = dict(zip(search_strings, column_indices))
-
-    if value_validator.has_any_invalid_value_in_array(list(columns.values())):
+    if value_validator.any_invalid(columns):
         return
 
     all_slugs = get_blog_slugs()
@@ -56,23 +54,22 @@ def main():
     logger.prominent_log(f"Total slugs retrieved: {len(all_slugs)}")
     target_row = 2
     for slug in all_slugs:
-        while not excel_manager.cell_handler.is_cell_empty(
-            excel_manager.current_sheet, target_row, columns["slug"]
+        while not excel_manager.cell_handler.is_cell_empty_or_match(
+            target_row, columns["slug"]
         ):
             target_row += 1
         if (
             excel_manager.search_handler.find_matching_index(
-                worksheet=excel_manager.current_sheet,
                 index=columns["slug"],
                 search_string=slug,
                 is_row_flag=False,
             )
             == None
         ):
-            excel_manager.update_cell(target_row, columns["flag"], "1")
-            excel_manager.update_cell(target_row, columns["slug"], slug)
+            excel_manager.cell_handler.update_cell(target_row, columns["flag"], "1")
+            excel_manager.cell_handler.update_cell(target_row, columns["slug"], slug)
 
-    excel_manager.save_workbook()
+    excel_manager.file_handler.save()
 
 
 if __name__ == "__main__":

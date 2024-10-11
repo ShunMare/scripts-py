@@ -9,29 +9,23 @@ from scripts.initialize import (
 )
 
 
+SEARCH_STRINGS = ["exist", "folder_name"]
+
+
 def main():
-    excel_manager.set_file_path(CREATE_BLOG_MD_EXCEL_FILE_FULL_PATH)
-    if not excel_manager.load_workbook():
+    if not excel_manager.set_info(
+        CREATE_BLOG_MD_EXCEL_FILE_FULL_PATH, CREATE_BLOG_MD_EXCEL_SHEET_NAME
+    ):
         return
 
-    excel_manager.set_active_sheet(CREATE_BLOG_MD_EXCEL_SHEET_NAME)
-    search_strings = [
-        "exist",
-        "folder_name",
-    ]
-    column_indices = excel_manager.search_handler.find_multiple_matching_indices(
-        worksheet=excel_manager.current_sheet,
+    columns = excel_manager.search_handler.find_and_map_column_indices(
         index=CREATE_BLOG_MD_EXCEL_INDEX_ROW,
-        search_strings=search_strings,
-        is_row_flag=True,
+        search_strings=SEARCH_STRINGS,
     )
-    columns = dict(zip(search_strings, column_indices))
-
-    if value_validator.has_any_invalid_value_in_array(list(columns.values())):
+    if value_validator.any_invalid(columns):
         return
 
     for row, folder_name in excel_manager.cell_handler.iterate_column_values(
-        excel_manager.current_sheet,
         column=columns["folder_name"],
         start_row=CREATE_BLOG_MD_EXCEL_START_ROW,
     ):
@@ -41,10 +35,10 @@ def main():
             )
             result = folder_checker.check_folder_exists(folder_path)
             if result == False:
-                excel_manager.update_cell(row, columns["exist"], result)
+                excel_manager.cell_handler.update_cell(row, columns["exist"], result)
             else:
-                excel_manager.update_cell(row, columns["exist"], "")
-    excel_manager.save_workbook()
+                excel_manager.cell_handler.update_cell(row, columns["exist"], "")
+    excel_manager.file_handler.save()
 
 
 if __name__ == "__main__":

@@ -13,11 +13,9 @@ from scripts.initialize import (
 
 
 def generate_and_process_prompts(target_row, columns):
-    prompt = excel_manager.cell_handler.get_cell_value(
-        excel_manager.current_sheet, target_row, columns["prompt"]
-    )
+    prompt = excel_manager.cell_handler.get_cell_value(target_row, columns["prompt"])
 
-    if not value_validator.is_single_value_valid(prompt):
+    if not value_validator.is_valid(prompt):
         return
 
     logger.info("getting short md content")
@@ -26,7 +24,7 @@ def generate_and_process_prompts(target_row, columns):
 
     logger.info("update md")
     folder_name = excel_manager.cell_handler.get_cell_value(
-        excel_manager.current_sheet, target_row, columns["folder_name"]
+        target_row, columns["folder_name"]
     )
     path_elements = [
         CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH,
@@ -37,38 +35,30 @@ def generate_and_process_prompts(target_row, columns):
     file_writer.replace_file_content(file_full_path, md_content)
 
 
+SEARCH_STRINGS = ["flag", "prompt", "folder_name"]
+
+
 def main():
-    excel_manager.set_file_path(CREATE_BLOG_MD_EXCEL_FILE_FULL_PATH)
-    if not excel_manager.load_workbook():
+    if not excel_manager.set_info(
+        CREATE_BLOG_MD_EXCEL_FILE_FULL_PATH, CREATE_BLOG_MD_EXCEL_SHEET_NAME
+    ):
         return
 
-    excel_manager.set_active_sheet(CREATE_BLOG_MD_EXCEL_SHEET_NAME)
-    search_strings = [
-        "flag",
-        "prompt",
-        "folder_name",
-    ]
-    column_indices = excel_manager.search_handler.find_multiple_matching_indices(
-        worksheet=excel_manager.current_sheet,
+    columns = excel_manager.search_handler.find_and_map_column_indices(
         index=CREATE_BLOG_MD_EXCEL_INDEX_ROW,
-        search_strings=search_strings,
-        is_row_flag=True,
+        search_strings=SEARCH_STRINGS,
     )
-    columns = dict(zip(search_strings, column_indices))
-
-    if value_validator.has_any_invalid_value_in_array(list(columns.values())):
+    if value_validator.any_invalid(columns):
         return
 
     flag_end_row = excel_manager.cell_handler.get_last_row_of_column(
-        worksheet=excel_manager.current_sheet, column=columns["flag"]
+        column=columns["flag"]
     )
     count = 0
     for i in range(flag_end_row):
         target_row = i + CREATE_BLOG_MD_EXCEL_START_ROW
-        flag = excel_manager.cell_handler.get_cell_value(
-            excel_manager.current_sheet, target_row, columns["flag"]
-        )
-        if value_validator.is_single_value_valid(flag):
+        flag = excel_manager.cell_handler.get_cell_value(target_row, columns["flag"])
+        if value_validator.is_valid(flag):
             if count % 20 == 0:
                 edge_handler.open_url_in_browser(CHATGPT_GPTS_BLOG_MASTER_URL)
             count += 1

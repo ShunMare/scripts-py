@@ -35,6 +35,22 @@ class BingHandler:
             self.press_hotkey(["shift", "tab"])
         logger.info("Moved to generate button")
 
+    def press_new_chat_button(self):
+        for _ in range(2):
+            self.press_hotkey(["shift", "tab"])
+            time.sleep(self.short_wait_time)
+        pyautogui.press("enter")
+        for _ in range(2):
+            self.press_hotkey(["shift", "tab"])
+            time.sleep(self.short_wait_time)
+        pyautogui.press("enter")
+        for _ in range(3):
+            self.press_hotkey(["tab"])
+            time.sleep(self.short_wait_time)
+        pyautogui.press("enter")
+        time.sleep(self.wait_time_after_prompt_short)
+        logger.info("Pressed new chat button")
+
     def press_sign_in_button(self):
         """サインインボタンを押す"""
         for _ in range(1):

@@ -1,21 +1,32 @@
 from src.log_operations.log_handlers import setup_logger
 
-logger = setup_logger(__name__)
-
 
 class ExcelSheetHandler:
-    @staticmethod
-    def get_sheet_names(workbook):
-        sheet_names = workbook.sheetnames
-        logger.info(f"Retrieved sheet names: {sheet_names}")
+    def __init__(self):
+        """
+        ExcelSheetHandlerの初期化
+        """
+        self.logger = setup_logger(__name__)
+        self.workbook = None
+
+    def set_workbook(self, workbook):
+        """
+        ワークブックを設定します。
+        :param workbook: 対象のワークブック
+        """
+        self.workbook = workbook
+        self.logger.info("Workbook has been set successfully.")
+
+    def get_sheet_names(self):
+        sheet_names = self.workbook.sheetnames
+        self.logger.info(f"Retrieved sheet names: {sheet_names}")
         return sheet_names
 
-    @staticmethod
-    def set_active_sheet(workbook, sheet_name):
-        if sheet_name in workbook.sheetnames:
-            active_sheet = workbook[sheet_name]
-            logger.info(f"Set active sheet to '{sheet_name}'")
+    def set_active_sheet(self, sheet_name):
+        if sheet_name in self.workbook.sheetnames:
+            active_sheet = self.workbook[sheet_name]
+            self.logger.info(f"Set active sheet to '{sheet_name}'")
             return active_sheet
         else:
-            logger.warning(f"Sheet '{sheet_name}' not found in the workbook.")
+            self.logger.warning(f"Sheet '{sheet_name}' not found in the workbook.")
             return None
