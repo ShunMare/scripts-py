@@ -34,9 +34,6 @@ def move_folder():
     folder_processor.process_all_matching_folders(move_folder_if_files_exist)
 
 
-SEARCH_STRINGS = ["exist", "folder_name"]
-
-
 def check_folders():
     if not excel_manager.set_info(
         CREATE_BLOG_MD_EXCEL_FILE_FULL_PATH, CREATE_BLOG_MD_EXCEL_SHEET_NAME
@@ -44,7 +41,7 @@ def check_folders():
         return
     columns = excel_manager.search_handler.find_and_map_column_indices(
         index=CREATE_BLOG_MD_EXCEL_INDEX_ROW,
-        search_strings=SEARCH_STRINGS,
+        search_strings=CREATE_BLOG_MD_EXCEL_INDEX_STRINGS,
     )
     if value_validator.any_invalid(columns):
         return

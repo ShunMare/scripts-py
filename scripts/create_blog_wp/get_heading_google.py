@@ -42,10 +42,10 @@ def get_heading(start_row, columns):
     chatgpt_handler.send_prompt_and_generate_content(prompt, repeat_count=0)
 
     heading_content = ""
-    if GET_CONTENT_METHOD == "clipboard":
+    if GET_CONTENT_METHOD == GET_CONTENT_METHOD_CLIPBOARD:
         heading_content = chatgpt_handler.get_generated_content()
     else:
-        html_file_name = CREATE_BLOG_WP_GET_HEADING_GOOGLE_FILE_NAME + ".html"
+        html_file_name = CREATE_BLOG_WP_GET_HEADING_GOOGLE_FILE_NAME + EXTENSION_HTML
         edge_handler.ui_save_html(html_file_name)
         chatgpt_html_path = DOWNLOAD_FOLDER_DIR_FULL_PATH + html_file_name
         if file_handler.exists(chatgpt_html_path):
@@ -67,9 +67,6 @@ def get_heading(start_row, columns):
     excel_manager.file_handler.save()
 
 
-SEARCH_STRINGS = ["flag", "theme", "heading_suggestions", "heading"]
-
-
 def main():
     if not excel_manager.set_info(
         CREATE_BLOG_WP_EXCEL_FILE_FULL_PATH, CREATE_BLOG_WP_EXCEL_SHEET_NAME
@@ -78,7 +75,7 @@ def main():
 
     columns = excel_manager.search_handler.find_and_map_column_indices(
         index=CREATE_BLOG_WP_EXCEL_INDEX_ROW,
-        search_strings=SEARCH_STRINGS,
+        search_strings=CREATE_BLOG_WP_EXCEL_INDEX_STRINGS,
     )
     if value_validator.any_invalid(columns):
         return

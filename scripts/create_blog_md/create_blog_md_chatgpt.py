@@ -35,9 +35,6 @@ def generate_and_process_prompts(target_row, columns):
     file_writer.replace_file_content(file_full_path, md_content)
 
 
-SEARCH_STRINGS = ["flag", "prompt", "folder_name"]
-
-
 def main():
     if not excel_manager.set_info(
         CREATE_BLOG_MD_EXCEL_FILE_FULL_PATH, CREATE_BLOG_MD_EXCEL_SHEET_NAME
@@ -46,7 +43,7 @@ def main():
 
     columns = excel_manager.search_handler.find_and_map_column_indices(
         index=CREATE_BLOG_MD_EXCEL_INDEX_ROW,
-        search_strings=SEARCH_STRINGS,
+        search_strings=CREATE_BLOG_MD_EXCEL_INDEX_STRINGS,
     )
     if value_validator.any_invalid(columns):
         return

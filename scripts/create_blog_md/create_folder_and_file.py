@@ -9,9 +9,6 @@ from scripts.initialize import (
     folder_path_handler,
 )
 
-SEARCH_STRINGS = ["folder_name"]
-CREATE_FILE_LIST = [CREATE_BLOG_MD_TARGET_MDX_FILE_NAME]
-
 
 def main():
     if not excel_manager.set_info(
@@ -21,7 +18,7 @@ def main():
 
     columns = excel_manager.search_handler.find_and_map_column_indices(
         index=CREATE_BLOG_MD_EXCEL_INDEX_ROW,
-        search_strings=SEARCH_STRINGS,
+        search_strings=CREATE_BLOG_MD_EXCEL_INDEX_STRINGS,
     )
     if value_validator.any_invalid(columns):
         return
@@ -41,7 +38,9 @@ def main():
         folder_path = folder_path_handler.join_path(
             CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH, folder_name
         )
-        file_handler.create_empty_files(folder_path, CREATE_FILE_LIST)
+        file_handler.create_empty_files(
+            folder_path, [CREATE_BLOG_MD_TARGET_MDX_FILE_NAME]
+        )
 
     excel_manager.file_handler.save()
 

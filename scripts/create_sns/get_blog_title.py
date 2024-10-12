@@ -29,9 +29,6 @@ def get_blog_title(start_row, columns):
         return None
 
 
-SEARCH_STRINGS = ["slug", "title"]
-
-
 def main():
     if not excel_manager.set_info(
         CREATE_SNS_EXCEL_FILE_FULL_PATH, CREATE_SNS_EXCEL_SHEET_NAME
@@ -40,7 +37,7 @@ def main():
 
     columns = excel_manager.search_handler.find_and_map_column_indices(
         index=CREATE_SNS_EXCEL_INDEX_ROW,
-        search_strings=SEARCH_STRINGS,
+        search_strings=CREATE_SNS_EXCEL_INDEX_STRINGS,
     )
     if value_validator.any_invalid(columns):
         return

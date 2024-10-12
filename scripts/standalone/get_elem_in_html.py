@@ -5,65 +5,69 @@ from scripts.initialize import (
     logger,
     excel_manager,
     edge_handler,
-    prompt_generator,
     file_handler,
     file_reader,
     folder_remover,
     html_parser,
-    bing_handler,
     web_scraper,
     value_validator,
-    web_fetcher,
     array_keeper,
 )
 
 
 def get_links(url):
     edge_handler.open_url_in_browser(url)
-    html_file_name = STANDALONE_GET_ELEM_IN_HTML_FILE_NAME + ".html"
+    html_file_name = STANDALONE_GET_ELEM_IN_HTML_FILE_NAME + EXTENSION_HTML
     edge_handler.ui_save_html(html_file_name)
+
     html_path = DOWNLOAD_FOLDER_DIR_FULL_PATH + html_file_name
     if file_handler.exists(html_path):
         html_content = file_reader.read_file(html_path)
     html_parser.set_html_content(html_content)
     href_links = web_scraper.find_elements_with_attributes(
-        html_content=html_content, tag="a", classes=["s-link"], attribute="href"
+        html_content=html_content,
+        tag=STANDALONE_GET_ELEM_IN_HTML_TAG,
+        classes=STANDALONE_GET_ELEM_IN_HTML_CLASSES,
+        attribute=STANDALONE_GET_ELEM_IN_HTML_ATTRIBUTE,
     )
+
     file_handler.delete_file(html_path)
     folder_remover.remove_folder(
-        DOWNLOAD_FOLDER_DIR_FULL_PATH + STANDALONE_GET_ELEM_IN_HTML_FILE_NAME + "_files"
+        DOWNLOAD_FOLDER_DIR_FULL_PATH
+        + STANDALONE_GET_ELEM_IN_HTML_FILE_NAME
+        + DOWNLOAD_HTML_FOLDER_SUFFIX
     )
     return href_links
 
 
-SEARCH_STRINGS = ["link"]
-EXCEL_FILE_PATH = "C:/Users/okubo/OneDrive/ドキュメント/004_blogs/succulent/data/nexunity_stackoverflow.xlsx"
-
-
 def main():
-    if not excel_manager.set_info(EXCEL_FILE_PATH, "Sheet1"):
+    if not excel_manager.set_info(
+        STANDALONE_GET_ELEM_IN_HTML_EXCEL_FILE_NAME,
+        STANDALONE_GET_ELEM_IN_HTML_EXCEL_SHEET_NAME,
+    ):
         return
 
     columns = excel_manager.search_handler.find_and_map_column_indices(
-        index=1,
-        search_strings=SEARCH_STRINGS,
+        index=STANDALONE_GET_ELEM_IN_HTML_EXCEL_INDEX_ROW,
+        search_strings=STANDALONE_GET_ELEM_IN_HTML_EXCEL_INDEX_STRINGS,
     )
     if value_validator.any_invalid(columns):
         return
 
-    BASE_URL = "https://stackoverflow.com/search?"
-    start_page = 1
-    end_page = 6
     urls = [
-        f"{BASE_URL}page={page}&tab=Relevance&pagesize=50&q=hasaccepted%3ayes%20{CREATE_BLOG_MD_TARGET_TAG_NAME}&searchOn=3"
-        for page in range(start_page, end_page + 1)
+        f"{STANDALONE_GET_ELEM_IN_HTML_BASE_URL}page={page}&tab=Relevance&pagesize=50&q=hasaccepted%3ayes%20{CREATE_BLOG_MD_TARGET_TAG_NAME}&searchOn=3"
+        for page in range(
+            STANDALONE_GET_ELEM_IN_HTML_START_PAGE,
+            STANDALONE_GET_ELEM_IN_HTML_END_PAGE + 1,
+        )
     ]
 
-    target_row = 2
+    target_row = STANDALONE_GET_ELEM_IN_HTML_EXCEL_START_ROW
     for url in urls:
         href_links = get_links(url)
-        elements_to_keep = ["https://stackoverflow.com/questions/"]
-        href_links = array_keeper.keep_elements(href_links, elements_to_keep)
+        href_links = array_keeper.keep_elements(
+            href_links, STANDALONE_GET_ELEM_IN_HTML_ELEMENT_TO_KEEP
+        )
 
         for href_link in href_links:
             while not excel_manager.cell_handler.is_cell_empty_or_match(

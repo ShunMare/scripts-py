@@ -39,9 +39,6 @@ image_path_elements = [
 ]
 image_folder_path = folder_path_handler.join_and_normalize_path(image_path_elements)
 
-SEPARATE_KEYWORD = "すべての属性を取得する方法"
-SEARCH_STRINGS = ["title", "subtitle", "folder_name"]
-
 
 def read_excel_data():
     if not excel_manager.set_info(
@@ -50,7 +47,7 @@ def read_excel_data():
         return
     columns = excel_manager.search_handler.find_and_map_column_indices(
         index=CREATE_BLOG_MD_EXCEL_INDEX_ROW,
-        search_strings=SEARCH_STRINGS,
+        search_strings=CREATE_BLOG_MD_EXCEL_INDEX_STRINGS,
     )
     if value_validator.any_invalid(columns):
         return
@@ -74,16 +71,16 @@ def read_excel_data():
             and value_validator.is_valid(subtitle)
             and value_validator.is_valid(folder_name)
         ):
-            if not SEPARATE_KEYWORD == "":
-                processed_title = text_handler.format_text_with_keyword_split(
-                    text=title,
-                    keyword=SEPARATE_KEYWORD,
-                    split_char="",
-                    max_line_length=25,
-                    max_lines=3,
-                )
-            else:
-                processed_title = title
+            # if not CREATE_BLOG_MD_CREATE_THUMBNAIL_SEPARATE_TEXT == "":
+            processed_title = text_handler.format_text_with_keyword_split(
+                text=title,
+                keyword=CREATE_BLOG_MD_CREATE_THUMBNAIL_SEPARATE_TEXT,
+                split_char="",
+                max_line_length=25,
+                max_lines=3,
+            )
+            # else:
+            #     processed_title = title
             data.append(
                 {
                     "title": processed_title,
@@ -174,7 +171,7 @@ def main():
         output_path_elements = [
             CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH,
             excel_data["folder_name"],
-            "featured.png",
+            CREATE_BLOG_MD_TARGET_PNG_FILE_NAME,
         ]
         output_full_path = file_path_handler.join_and_normalize_path(
             output_path_elements

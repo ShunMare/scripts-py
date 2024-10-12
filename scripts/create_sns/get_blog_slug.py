@@ -33,9 +33,6 @@ def get_blog_slugs():
         return []
 
 
-SEARCH_STRINGS = ["flag", "slug"]
-
-
 def main():
     if not excel_manager.set_info(
         CREATE_SNS_EXCEL_FILE_FULL_PATH, CREATE_SNS_EXCEL_SHEET_NAME
@@ -44,7 +41,7 @@ def main():
 
     columns = excel_manager.search_handler.find_and_map_column_indices(
         index=CREATE_SNS_EXCEL_INDEX_ROW,
-        search_strings=SEARCH_STRINGS,
+        search_strings=CREATE_SNS_EXCEL_INDEX_STRINGS,
     )
     if value_validator.any_invalid(columns):
         return
@@ -52,7 +49,7 @@ def main():
     all_slugs = get_blog_slugs()
 
     logger.prominent_log(f"Total slugs retrieved: {len(all_slugs)}")
-    target_row = 2
+    target_row = CREATE_SNS_EXCEL_START_ROW
     for slug in all_slugs:
         while not excel_manager.cell_handler.is_cell_empty_or_match(
             target_row, columns["slug"]

@@ -59,16 +59,6 @@ def upload_wp_post(start_row, columns):
             wp_manager.print_post_details(created_post)
 
 
-SEARCH_STRINGS = [
-    "flag",
-    "title",
-    "html",
-    "description",
-    "keywords",
-    "link",
-]
-
-
 def main():
     if not excel_manager.set_info(
         CREATE_BLOG_WP_EXCEL_FILE_FULL_PATH, CREATE_BLOG_WP_EXCEL_SHEET_NAME
@@ -77,7 +67,7 @@ def main():
 
     columns = excel_manager.search_handler.find_and_map_column_indices(
         index=CREATE_BLOG_WP_EXCEL_INDEX_ROW,
-        search_strings=SEARCH_STRINGS,
+        search_strings=CREATE_BLOG_WP_EXCEL_INDEX_STRINGS,
     )
     if value_validator.any_invalid(columns):
         return

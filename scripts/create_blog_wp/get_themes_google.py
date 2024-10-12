@@ -33,9 +33,6 @@ def get_themes(start_row, columns):
     excel_manager.file_handler.save()
 
 
-SEARCH_STRINGS = ["flag", "theme_suggestions", "theme", "heading"]
-
-
 def main():
     try:
         if not excel_manager.set_info(
@@ -45,7 +42,7 @@ def main():
 
         columns = excel_manager.search_handler.find_and_map_column_indices(
             index=CREATE_BLOG_WP_EXCEL_INDEX_ROW,
-            search_strings=SEARCH_STRINGS,
+            search_strings=CREATE_BLOG_WP_EXCEL_INDEX_STRINGS,
         )
         if value_validator.any_invalid(columns):
             return

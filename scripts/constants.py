@@ -5,6 +5,15 @@ from scripts.initialize import (
 )
 
 # ===========================
+# constants
+# ===========================
+# extension and prefix
+EXTENSION_HTML = ".html"
+DOWNLOAD_HTML_FOLDER_SUFFIX = "_files"
+GET_CONTENT_METHOD_CLIPBOARD = "clipboard"
+GET_CONTENT_METHOD_HTML = "html"
+
+# ===========================
 # Create blog wp variables
 # ===========================
 CREATE_BLOG_WP_DIR_FULL_PATH = folder_path_handler.join_and_normalize_path(
@@ -105,6 +114,15 @@ CREATE_SNS_UPDATE_POST_CONTENT_GAS_FILE_FULL_PATH = file_path_handler.join_path(
 STANDALONE_DIR_FULL_PATH = folder_path_handler.join_and_normalize_path(
     [PROJECT_DIR_FULL_PATH, SCRIPTS_DIR_NAME, STANDALONE_DIR_NAME]
 )
+STANDALONE_GET_TITLE_IN_MD_FILE_FULL_PATH = file_path_handler.join_path(
+    STANDALONE_DIR_FULL_PATH, STANDALONE_GET_TITLE_IN_MD_FILE_NAME
+)
+STANDALONE_GET_TITLE_IN_HTML_FILE_FULL_PATH = file_path_handler.join_path(
+    STANDALONE_DIR_FULL_PATH, STANDALONE_GET_ELEM_IN_HTML_FILE_NAME
+)
+# ----------------------------
+# get title in md variables
+# ----------------------------
 STANDALONE_GET_TITLE_IN_MD_EXCEL_FILE_FULL_PATH = (
     file_path_handler.join_and_normalize_path(
         [
@@ -114,9 +132,15 @@ STANDALONE_GET_TITLE_IN_MD_EXCEL_FILE_FULL_PATH = (
         ]
     )
 )
-STANDALONE_GET_TITLE_IN_MD_FILE_FULL_PATH = file_path_handler.join_path(
-    STANDALONE_DIR_FULL_PATH, STANDALONE_GET_TITLE_IN_MD_FILE_NAME
-)
-STANDALONE_GET_TITLE_IN_HTML_FILE_FULL_PATH = file_path_handler.join_path(
-    STANDALONE_DIR_FULL_PATH, STANDALONE_GET_ELEM_IN_HTML_FILE_NAME
+# ----------------------------
+# get elem in html variables
+# ----------------------------
+STANDALONE_GET_TITLE_IN_MD_EXCEL_FILE_FULL_PATH = (
+    file_path_handler.join_and_normalize_path(
+        [
+            PROJECT_DIR_FULL_PATH,
+            DATA_DIR_NAME,
+            STANDALONE_GET_TITLE_IN_MD_EXCEL_FILE_NAME,
+        ]
+    )
 )

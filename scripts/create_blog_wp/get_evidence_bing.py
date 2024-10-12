@@ -36,24 +36,23 @@ def generate_and_process_prompts(start_row, columns):
             prompt = prompt_generator.replace_marker(
                 prompt=direction, theme=theme, heading=""
             )
-            prompt = (
-                "下記の内容についてできるだけ詳しく教えてほしい、Bing AIでエビデンスを用いて答えて\n必ず参考文献を引用して\n\n"
-                + prompt
-            )
+            prompt = CREATE_BLOG_WP_GET_EVIDENCE_PROMPT + prompt
             bing_handler.send_prompt(prompt=prompt)
 
     logger.info("convert html to md")
-    if GET_CONTENT_METHOD == "html":
-        html_file_name = CREATE_BLOG_WP_GET_EVIDENCE_BING_FILE_NAME + ".html"
+    if GET_CONTENT_METHOD == GET_CONTENT_METHOD_HTML:
+        html_file_name = CREATE_BLOG_WP_GET_EVIDENCE_BING_FILE_NAME + EXTENSION_HTML
         edge_handler.ui_save_html(html_file_name)
         bing_html_path = DOWNLOAD_FOLDER_DIR_FULL_PATH + html_file_name
         if file_handler.exists(bing_html_path):
             bing_html = file_reader.read_file(bing_html_path)
         results = html_parser.find_elements_with_attributes(
             content=bing_html,
-            tag="div",
-            class_name="space-y-3",
-            attributes={"data-content": "ai-message"},
+            tag=CREATE_BLOG_WP_GET_EVIDENCE_TAG,
+            class_name=CREATE_BLOG_WP_GET_EVIDENCE_CLASSES,
+            attributes={
+                CREATE_BLOG_WP_GET_EVIDENCE_ATTRIBUTE_KEY: CREATE_BLOG_WP_GET_EVIDENCE_ATTRIBUTE_VALUE
+            },
         )
         direction_count = excel_manager.cell_handler.count_nonempty_cells_in_range(
             column=columns["direction"],
@@ -69,20 +68,17 @@ def generate_and_process_prompts(start_row, columns):
         folder_remover.remove_folder(
             DOWNLOAD_FOLDER_DIR_FULL_PATH
             + CREATE_BLOG_WP_GET_EVIDENCE_BING_FILE_NAME
-            + "_files"
+            + DOWNLOAD_HTML_FOLDER_SUFFIX
         )
 
     logger.info("update cells in excel")
-    if GET_CONTENT_METHOD == "html":
+    if GET_CONTENT_METHOD == GET_CONTENT_METHOD_HTML:
         print(columns["evidence"])
         for i, content in enumerate(md_contents):
             excel_manager.cell_handler.update_cell(
                 row=start_row + i, column=columns["evidence"], value=content
             )
     excel_manager.file_handler.save()
-
-
-SEARCH_STRINGS = ["flag", "theme", "direction", "evidence"]
 
 
 def main():
@@ -93,7 +89,7 @@ def main():
 
     columns = excel_manager.search_handler.find_and_map_column_indices(
         index=CREATE_BLOG_WP_EXCEL_INDEX_ROW,
-        search_strings=SEARCH_STRINGS,
+        search_strings=CREATE_BLOG_WP_EXCEL_INDEX_STRINGS,
     )
     if value_validator.any_invalid(columns):
         return
