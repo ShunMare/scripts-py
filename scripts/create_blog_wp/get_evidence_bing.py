@@ -33,10 +33,13 @@ def generate_and_process_prompts(start_row, columns):
     logger.info("sent direction")
     for direction in directions:
         if value_validator.is_valid(direction):
+            prompt_head = prompt_generator.replace_marker(
+                prompt=CREATE_BLOG_WP_GET_EVIDENCE_PROMPT, theme=theme, heading=""
+            )
             prompt = prompt_generator.replace_marker(
                 prompt=direction, theme=theme, heading=""
             )
-            prompt = CREATE_BLOG_WP_GET_EVIDENCE_PROMPT + prompt
+            prompt = prompt_head + prompt
             bing_handler.send_prompt(prompt=prompt)
 
     logger.info("convert html to md")
@@ -54,16 +57,15 @@ def generate_and_process_prompts(start_row, columns):
                 CREATE_BLOG_WP_GET_EVIDENCE_ATTRIBUTE_KEY: CREATE_BLOG_WP_GET_EVIDENCE_ATTRIBUTE_VALUE
             },
         )
-        direction_count = excel_manager.cell_handler.count_nonempty_cells_in_range(
-            column=columns["direction"],
-            start_row=start_row,
-            end_row=start_row + CREATE_BLOG_WP_EXCEL_GROUP_SIZE - 1,
-        )
-        if len(results) == direction_count:
-            md_contents = []
-            for i in range(direction_count):
-                md_content = text_converter.convert_to_markdown(results[i])
-                md_contents.append(md_content)
+        # direction_count = excel_manager.cell_handler.count_nonempty_cells_in_range(
+        #     column=columns["direction"],
+        #     start_row=start_row,
+        #     end_row=start_row + CREATE_BLOG_WP_EXCEL_GROUP_SIZE - 1,
+        # )
+        md_contents = []
+        for i in range(len(results)):
+            md_content = text_converter.convert_to_markdown(results[i])
+            md_contents.append(md_content)
         file_handler.delete_file(bing_html_path)
         folder_remover.remove_folder(
             DOWNLOAD_FOLDER_DIR_FULL_PATH
