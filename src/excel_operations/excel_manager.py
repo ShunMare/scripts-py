@@ -4,7 +4,7 @@ from .cell_handler import ExcelCellHandler
 from .search_handler import ExcelSearchHandler
 from .pandas_handler import ExcelPandasHandler
 from .data_processor import ExcelDataProcessor
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 
 
 class ExcelManager:
@@ -17,7 +17,7 @@ class ExcelManager:
         """
         ExcelManagerの初期化
         """
-        self.logger = setup_logger(__name__)
+        self.logger = CustomLogger(__name__)
         self.sheet_handler = ExcelSheetHandler()
         self.cell_handler = ExcelCellHandler()
         self.search_handler = ExcelSearchHandler()

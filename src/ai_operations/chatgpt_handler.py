@@ -5,11 +5,11 @@ from typing import Optional
 
 from src.input_operations.keyboard_handler import KeyboardHandler
 from src.web_operations.edge_handler import EdgeHandler
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 
 keyboard_handler = KeyboardHandler()
 edge_handler = EdgeHandler()
-logger = setup_logger(__name__)
+logger = CustomLogger(__name__)
 
 
 class ChatGPTHandler:

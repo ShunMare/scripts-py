@@ -2,9 +2,9 @@ import pyperclip
 import pandas as pd
 
 from src.text_operations.text_replacer import TextReplacer
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 
-logger = setup_logger(__name__)
+logger = CustomLogger(__name__)
 text_replacer = TextReplacer()
 
 

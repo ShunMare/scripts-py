@@ -1,5 +1,5 @@
 from typing import List, Dict, Optional
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 
 
 class ExcelSearchHandler:
@@ -7,7 +7,7 @@ class ExcelSearchHandler:
         """
         ExcelSearchHandlerの初期化
         """
-        self.logger = setup_logger(__name__)
+        self.logger = CustomLogger(__name__)
         self.worksheet = None
 
     def set_worksheet(self, worksheet):

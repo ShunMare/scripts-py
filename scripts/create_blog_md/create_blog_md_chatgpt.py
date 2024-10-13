@@ -18,11 +18,11 @@ def generate_and_process_prompts(target_row, columns):
     if not value_validator.is_valid(prompt):
         return
 
-    logger.debug("getting short md content")
+    logger.info("getting short md content")
     chatgpt_handler.send_prompt_and_generate_content(prompt, repeat_count=1)
     md_content = chatgpt_handler.get_generated_content()
 
-    logger.debug("update md")
+    logger.info("update md")
     folder_name = excel_manager.cell_handler.get_cell_value(
         target_row, columns["folder_name"]
     )

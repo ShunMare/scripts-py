@@ -1,10 +1,10 @@
 import pandas as pd
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 
 
 class ExcelPandasHandler:
     def __init__(self):
-        self.logger = setup_logger(__name__)
+        self.logger = CustomLogger(__name__)
         self.file_path = None
         self.df = None
 

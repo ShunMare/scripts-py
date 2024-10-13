@@ -88,25 +88,6 @@ class GoogleSearchAnalyzer:
         logger.debug(f"Found {len(suggestions)} related keywords")
         return suggestions
 
-    def get_related_keywords_string(
-        self, keyword: str, related_keywords: List[str]
-    ) -> str:
-        """
-        関連キーワードを文字列として返す
-
-        :param keyword: 元のキーワード
-        :param related_keywords: 関連キーワードのリスト
-        :return: フォーマットされた関連キーワードの文字列
-        """
-        result = f"\nRelated search keywords for '{keyword}':\n"
-        if related_keywords:
-            for i, related_keyword in enumerate(related_keywords, 1):
-                result += f"{i}. {related_keyword}\n"
-        else:
-            result += "No related keywords found.\n"
-
-        return result
-
     def extract_headings(
         self, keyword: str, heading_types: List[str] = ["h2", "h3"]
     ) -> List[str]:
@@ -191,36 +172,3 @@ class GoogleSearchAnalyzer:
             logger.error(f"Error fetching search results for '{keyword}': {e}")
         return results
 
-    def print_heading_results(self, results: List[Dict[str, Union[str, List[str]]]]):
-        """
-        見出し抽出結果を整形して表示
-
-        :param results: URL、h2見出し、h3見出しを含む辞書のリスト
-        """
-        for i, result in enumerate(results, 1):
-            print(f"\n記事 {i}:")
-            print(f"URL: {result['url']}")
-            print("h2見出し:")
-            for h2 in result["h2"]:
-                print(f"  - {h2}")
-            print("h3見出し:")
-            for h3 in result["h3"]:
-                print(f"  - {h3}")
-
-    def print_results(
-        self, results: Dict[str, List[str]], result_type: str = "関連検索ワード"
-    ):
-        """
-        結果を整形して表示
-
-        :param results: キーワードと結果のマッピング
-        :param result_type: 結果のタイプ（例: "関連検索ワード" や "見出し"）
-        """
-        print(f"\n{result_type}の結果:")
-        for keyword, items in results.items():
-            print(f"キーワード '{keyword}' の{result_type}:")
-            if items:
-                for i, item in enumerate(items, 1):
-                    print(f"{i}. {item}")
-            else:
-                print(f"{result_type}が見つかりませんでした。")

@@ -15,6 +15,7 @@ from scripts.initialize import (
 
 
 def get_title_in_md(columns):
+    logger.info("get title in md")
     for row, folder_name in excel_manager.cell_handler.iterate_column_values(
         column=columns["folder_name"],
         start_row=CREATE_BLOG_MD_EXCEL_START_ROW,
@@ -43,6 +44,7 @@ def get_title_in_md(columns):
 
 
 def separate_title_in_md(columns):
+    logger.info("separate title in md")
     for row, title_full in excel_manager.cell_handler.iterate_column_values(
         column=columns["title_full"],
         start_row=CREATE_BLOG_MD_EXCEL_START_ROW,

@@ -1,9 +1,9 @@
 import subprocess
 import sys
 import os
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 
-logger = setup_logger(__name__)
+logger = CustomLogger(__name__)
 
 
 class ScriptExecutor:
@@ -34,17 +34,19 @@ class ScriptExecutor:
             raise FileNotFoundError(f"Script not found: {script_path}")
 
         try:
-            logger.info(f"Starting execution of {script_path}")
+            script_name = os.path.splitext(os.path.basename(script_path))[0]
+
+            logger.highlighted_log(f"Starting execution of script: {script_name}")
             result = subprocess.run(
                 [self.python_executable, script_path],
                 check=True,
                 stdout=None,
                 stderr=None,
             )
-            logger.info(f"Script {script_path} executed successfully")
+            logger.info(f"Script {script_name} executed successfully")
             return result.returncode
         except subprocess.CalledProcessError as e:
-            logger.error(f"Error executing {script_path}")
+            logger.error(f"Error executing script: {script_name}")
             raise
 
     def run_script_with_args(self, script_path, args):

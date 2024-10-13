@@ -2,6 +2,7 @@ from initialize import *
 from scripts.load_env import *
 from scripts.constants import *
 from scripts.initialize import (
+    logger,
     excel_manager,
     value_validator,
     file_handler,
@@ -27,12 +28,14 @@ def main():
         column=columns["folder_name"],
         start_row=CREATE_BLOG_MD_EXCEL_START_ROW,
     )
+    logger.info("remove nan from list")
     folder_names = excel_manager.data_processor.remove_nan_from_list(folder_names)
     folder_names = [
         str(name)
         for item in folder_names
         for name in (item if isinstance(item, list) else [item])
     ]
+    logger.info("create folders")
     folder_creator.create_folders(CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH, folder_names)
     for folder_name in folder_names:
         folder_path = folder_path_handler.join_path(

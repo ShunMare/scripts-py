@@ -1,5 +1,5 @@
 import pandas as pd
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 
 
 class ExcelDataProcessor:
@@ -7,7 +7,7 @@ class ExcelDataProcessor:
         """
         ExcelDataProcessorの初期化
         """
-        self.logger = setup_logger(__name__)
+        self.logger = CustomLogger(__name__)
 
     def remove_nan_from_list(self, text_list):
         original_length = len(text_list)

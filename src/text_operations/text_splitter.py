@@ -1,7 +1,7 @@
 from typing import List
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 
-logger = setup_logger(__name__)
+logger = CustomLogger(__name__)
 
 
 class TextSplitter:

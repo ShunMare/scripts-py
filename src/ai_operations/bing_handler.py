@@ -4,9 +4,9 @@ import time
 import pyperclip
 
 from src.web_operations.edge_handler import EdgeHandler
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 
-logger = setup_logger(__name__)
+logger = CustomLogger(__name__)
 edge_handler = EdgeHandler()
 
 

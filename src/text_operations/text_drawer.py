@@ -1,8 +1,8 @@
 from typing import Tuple, List
 from PIL import ImageDraw, ImageFont
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 
-logger = setup_logger(__name__)
+logger = CustomLogger(__name__)
 
 LINE_SPACING = 50
 

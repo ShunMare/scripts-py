@@ -25,28 +25,28 @@ def update_gas_content(start_row, columns):
         start_row, columns["post_content"]
     )
     if not post_content:
-        logger.debug(f"Empty post_content found at row {start_row}")
+        logger.info(f"Empty post_content found at row {start_row}")
         return
 
     try:
-        logger.debug(f"Attempting to update GAS with content: {post_content[:100]}...")
+        logger.info(f"Attempting to update GAS with content: {post_content[:100]}...")
         gas_manager.update_gas_content(
             CREATE_SNS_SPREADSHEET_ID, CREATE_SNS_SPREADSHEET_SHEET_NAME, post_content
         )
-        logger.debug(
+        logger.info(
             f"Successfully updated GAS spreadsheet with content from row {start_row}"
         )
     except Exception as e:
         logger.error(f"Error updating GAS spreadsheet: {str(e)}", exc_info=True)
         if "invalid_grant" in str(e):
-            logger.debug("Token might be invalid. Attempting to regenerate...")
+            logger.info("Token might be invalid. Attempting to regenerate...")
             try:
                 gas_manager.update_gas_content(
                     CREATE_SNS_SPREADSHEET_ID,
                     CREATE_SNS_SPREADSHEET_SHEET_NAME,
                     post_content,
                 )
-                logger.debug(
+                logger.info(
                     f"Successfully updated GAS spreadsheet after token regeneration"
                 )
             except Exception as e2:

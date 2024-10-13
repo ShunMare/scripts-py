@@ -1,11 +1,11 @@
 import os
 import json
 from typing import Callable, List, Dict, Optional
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 import time
 import glob
 
-logger = setup_logger(__name__)
+logger = CustomLogger(__name__)
 
 
 class FileHandler:

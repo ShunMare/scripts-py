@@ -22,11 +22,11 @@ def get_blog_slugs():
             if not slugs:
                 break
             all_slugs.extend(slugs)
-            logger.debug(f"Retrieved {len(slugs)} slugs from page {page}")
+            logger.info(f"Retrieved {len(slugs)} slugs from page {page}")
             if len(slugs) < per_page:
                 break
             page += 1
-        logger.debug(f"Retrieved a total of {len(all_slugs)} slugs from WordPress")
+        logger.info(f"Retrieved a total of {len(all_slugs)} slugs from WordPress")
         return all_slugs
     except Exception as e:
         logger.error(f"Error retrieving slugs: {str(e)}")

@@ -1,8 +1,8 @@
 from openpyxl.utils.exceptions import IllegalCharacterError
 import pandas as pd
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 
-logger = setup_logger(__name__)
+logger = CustomLogger(__name__)
 
 
 class ExcelCellHandler:
@@ -10,7 +10,7 @@ class ExcelCellHandler:
         """
         ExcelCellHandlerの初期化
         """
-        self.logger = setup_logger(__name__)
+        self.logger = CustomLogger(__name__)
         self.worksheet = None
 
     def set_worksheet(self, worksheet):

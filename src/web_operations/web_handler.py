@@ -2,10 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from typing import List, Optional, Dict, Any
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 from src.file_operations.file_processor import FileHandler
 
-logger = setup_logger(__name__)
+logger = CustomLogger(__name__)
 file_handler = FileHandler()
 
 

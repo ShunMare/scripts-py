@@ -30,7 +30,7 @@ def generate_and_process_prompts(start_row, columns):
     edge_handler.open_url_in_browser(BING_URL)
     bing_handler.press_new_chat_button()
 
-    logger.debug("sent direction")
+    logger.info("sent direction")
     for direction in directions:
         if value_validator.is_valid(direction):
             prompt_head = prompt_generator.replace_marker(
@@ -42,7 +42,7 @@ def generate_and_process_prompts(start_row, columns):
             prompt = prompt_head + prompt
             bing_handler.send_prompt(prompt=prompt)
 
-    logger.debug("convert html to md")
+    logger.info("convert html to md")
     if GET_CONTENT_METHOD == GET_CONTENT_METHOD_HTML:
         html_file_name = CREATE_BLOG_WP_GET_EVIDENCE_BING_FILE_NAME + EXTENSION_HTML
         edge_handler.ui_save_html(html_file_name)
@@ -73,7 +73,7 @@ def generate_and_process_prompts(start_row, columns):
             + DOWNLOAD_HTML_FOLDER_SUFFIX
         )
 
-    logger.debug("update cells in excel")
+    logger.info("update cells in excel")
     if GET_CONTENT_METHOD == GET_CONTENT_METHOD_HTML:
         for i, content in enumerate(md_contents):
             excel_manager.cell_handler.update_cell(

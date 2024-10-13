@@ -4,10 +4,10 @@ import pyperclip
 import pyautogui
 import webbrowser
 
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 from src.input_operations.keyboard_handler import KeyboardHandler
 
-logger = setup_logger(__name__)
+logger = CustomLogger(__name__)
 
 
 class EdgeHandler:

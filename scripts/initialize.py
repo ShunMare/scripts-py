@@ -26,7 +26,7 @@ from src.text_operations.text_remover import TextRemover
 from src.text_operations.text_replacer import TextReplacer
 from src.text_operations.text_finder import TextFinder
 from src.text_operations.text_manager import TextManager
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 from src.folder_operations.folder_processor import (
     FolderRemover,
     FolderPathHandler,
@@ -50,7 +50,7 @@ from src.text_operations.text_drawer import TextDrawer
 from src.array_operations.array_combiner import ArrayCombiner, ArrayRemover, ArrayKeeper
 from src.gas_operations.gas_manager import GasManager
 
-logger = setup_logger(__name__)
+logger = CustomLogger(__name__)
 excel_manager = ExcelManager()
 edge_handler = EdgeHandler()
 keyboard_handler = KeyboardHandler(short_wait_time=KEYBOARD_ACTION_SHORT_DELAY)

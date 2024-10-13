@@ -1,12 +1,12 @@
 import openpyxl
 import time
 
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 
 
 class ExcelFileHandler:
     def __init__(self):
-        self.logger = setup_logger(__name__)
+        self.logger = CustomLogger(__name__)
         self.file_path = None
         self.workbook = None
 

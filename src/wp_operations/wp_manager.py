@@ -1,9 +1,9 @@
 import requests
 from requests.auth import HTTPBasicAuth
-from src.log_operations.log_handlers import setup_logger
+from src.log_operations.log_handlers import CustomLogger
 from typing import List, Optional
 
-logger = setup_logger(__name__)
+logger = CustomLogger(__name__)
 
 
 class WordPressAPI:
