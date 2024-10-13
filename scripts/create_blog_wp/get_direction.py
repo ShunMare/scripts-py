@@ -1,3 +1,4 @@
+import math
 from initialize import *
 from scripts.load_env import *
 from scripts.constants import *
@@ -18,7 +19,7 @@ def get_direction(start_row, columns):
         heading_list, CREATE_BLOG_WP_GET_DIRECTION_REMOVE_TEXT
     )
     split_num = len(heading_list) / CREATE_BLOG_WP_EXCEL_GROUP_SIZE
-    split_num = round(split_num) + 1
+    split_num = math.ceil(split_num)
     if split_num < CREATE_BLOG_WP_GET_DIRECTION_SPLIT_NUM:
         split_num = CREATE_BLOG_WP_GET_DIRECTION_SPLIT_NUM
     heading_list = array_combiner.merge_elements(heading_list, split_num, "\n")
