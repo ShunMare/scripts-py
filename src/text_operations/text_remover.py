@@ -18,7 +18,7 @@ class TextRemover:
         :return: 処理後の文字列、contentがNoneの場合はNone
         """
         if content is None or search_string is None:
-            logger.warning("Content is None in remove_content_after method")
+            logger.debug("Content is None in remove_content_after method")
             return content
 
         index = content.find(search_string)
@@ -36,7 +36,7 @@ class TextRemover:
         :return: 処理後の文字列、contentがNoneの場合はNone
         """
         if content is None:
-            logger.warning("Content is None in remove_pattern method")
+            logger.debug("Content is None in remove_pattern method")
             return None
 
         try:

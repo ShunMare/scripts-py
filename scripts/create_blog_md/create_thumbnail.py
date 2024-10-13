@@ -88,9 +88,9 @@ def read_excel_data():
                     "folder_name": folder_name,
                 }
             )
-            logger.info(f"Row {i} added to processing list")
+            logger.debug(f"Row {i} added to processing list")
         else:
-            logger.info(f"Row {i} skipped due to missing data")
+            logger.debug(f"Row {i} skipped due to missing data")
     return data
 
 
@@ -160,7 +160,7 @@ def create_image(title: str, subtitle: str, setting_path: str) -> Any:
 def main():
     excel_data_list = read_excel_data()
     for index, excel_data in enumerate(excel_data_list):
-        logger.info(
+        logger.debug(
             f"Processing item {index}/{len(excel_data_list)}: {excel_data['folder_name']}"
         )
         image = create_image(
@@ -176,8 +176,8 @@ def main():
         output_full_path = file_path_handler.join_and_normalize_path(
             output_path_elements
         )
-        logger.info("output_full_path")
-        logger.info(output_full_path)
+        logger.debug("output_full_path")
+        logger.debug(output_full_path)
         image.save(output_full_path)
 
 

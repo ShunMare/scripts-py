@@ -32,7 +32,7 @@ def generate_and_process_prompts(start_row, columns):
 
     edge_handler.open_url_in_browser(CHATGPT_DEFAULT_URL)
 
-    logger.info("getting md content")
+    logger.debug("getting md content")
     initial_prompt = file_reader.read_file(CREATE_BLOG_WP_PROMPT_TEMPLATE_FULL_PATH)
     for i, evidence in enumerate(evidences):
         if evidence is not None:
@@ -54,7 +54,7 @@ def generate_and_process_prompts(start_row, columns):
     if GET_CONTENT_METHOD == GET_CONTENT_METHOD_CLIPBOARD:
         md_content = chatgpt_handler.get_generated_content()
 
-    logger.info("getting title content")
+    logger.debug("getting title content")
     title_prompt = prompt_generator.replace_marker(
         prompt=CREATE_BLOG_WP_TITLE_PROMPT, theme=theme, heading=""
     )
@@ -62,33 +62,33 @@ def generate_and_process_prompts(start_row, columns):
     if GET_CONTENT_METHOD == GET_CONTENT_METHOD_CLIPBOARD:
         title_content = chatgpt_handler.get_generated_content()
 
-    logger.info("sent long description content")
+    logger.debug("sent long description content")
     chatgpt_handler.send_prompt_and_generate_content(
         CREATE_BLOG_WP_LONG_DESCRIPTION_PROMPT, repeat_count=0
     )
 
-    logger.info("getting short description content")
+    logger.debug("getting short description content")
     chatgpt_handler.send_prompt_and_generate_content(
         CREATE_BLOG_WP_SHORT_DESCRIPTION_PROMPT, repeat_count=0
     )
     if GET_CONTENT_METHOD == GET_CONTENT_METHOD_CLIPBOARD:
         description_content = chatgpt_handler.get_generated_content()
 
-    logger.info("getting keywords content")
+    logger.debug("getting keywords content")
     chatgpt_handler.send_prompt_and_generate_content(
         CREATE_BLOG_WP_KEYWORDS_PROMPT, repeat_count=0
     )
     if GET_CONTENT_METHOD == GET_CONTENT_METHOD_CLIPBOARD:
         keywords_content = chatgpt_handler.get_generated_content()
 
-    logger.info("getting permalink content")
+    logger.debug("getting permalink content")
     chatgpt_handler.send_prompt_and_generate_content(
         CREATE_BLOG_WP_PERMALINK_PROMPT, repeat_count=0
     )
     if GET_CONTENT_METHOD == GET_CONTENT_METHOD_CLIPBOARD:
         link_content = chatgpt_handler.get_generated_content()
 
-    logger.info("getting image content")
+    logger.debug("getting image content")
     if CREATE_BLOG_WP_IS_IMAGE_GENERATION_ENABLED:
         chatgpt_handler.send_prompt_and_generate_content(
             CREATE_BLOG_WP_IMAGE_PROMPT, repeat_count=0
@@ -97,7 +97,7 @@ def generate_and_process_prompts(start_row, columns):
             CREATE_BLOG_WP_THUMBNAIL_IMAGE_PROMPT, repeat_count=0
         )
 
-    logger.info("convert html to md")
+    logger.debug("convert html to md")
     if GET_CONTENT_METHOD != GET_CONTENT_METHOD_CLIPBOARD:
         html_file_name = (
             CREATE_BLOG_WP_CREATE_BLOG_WP_CHATGPT_FILE_NAME + EXTENSION_HTML
@@ -152,7 +152,7 @@ def generate_and_process_prompts(start_row, columns):
             + DOWNLOAD_HTML_FOLDER_SUFFIX
         )
 
-    logger.info("update cells in excel")
+    logger.debug("update cells in excel")
     if GET_CONTENT_METHOD != GET_CONTENT_METHOD_CLIPBOARD:
         for i, content in enumerate(html_contents):
             excel_manager.cell_handler.update_cell(

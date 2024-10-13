@@ -12,13 +12,13 @@ class ExcelFileHandler:
 
     def set_file_path(self, file_path):
         self.file_path = file_path
-        self.logger.info("file_path has been set successfully.")
+        self.logger.debug("file_path has been set successfully.")
 
     def load(self):
         try:
             workbook = openpyxl.load_workbook(self.file_path)
             self.workbook = workbook
-            self.logger.info(f"Successfully loaded Excel file: {self.file_path}")
+            self.logger.debug(f"Successfully loaded Excel file: {self.file_path}")
             return workbook
         except Exception as e:
             self.logger.error(f"Failed to load Excel file {self.file_path}: {str(e)}")
@@ -28,10 +28,10 @@ class ExcelFileHandler:
         for attempt in range(max_retries):
             try:
                 self.workbook.save(self.file_path)
-                self.logger.info(f"Excel file {self.file_path} saved successfully.")
+                self.logger.debug(f"Excel file {self.file_path} saved successfully.")
                 return True
             except PermissionError:
-                self.logger.warning(
+                self.logger.debug(
                     f"PermissionError: Attempt {attempt + 1} of {max_retries} to save {self.file_path}. Retrying in 5 seconds..."
                 )
                 time.sleep(5)

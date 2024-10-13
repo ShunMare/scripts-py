@@ -13,7 +13,7 @@ def get_blog_title(start_row, columns):
     try:
         slug = excel_manager.cell_handler.get_cell_value(start_row, columns["slug"])
         if not slug:
-            logger.warning(f"Empty slug found at row {start_row}")
+            logger.debug(f"Empty slug found at row {start_row}")
             return None
 
         url = f"{CREATE_BLOG_WP_WP_URL}/{slug}"
@@ -22,7 +22,7 @@ def get_blog_title(start_row, columns):
         if results and results["title"]:
             return results["title"]
         else:
-            logger.warning(f"No title found for URL: {url}")
+            logger.debug(f"No title found for URL: {url}")
             return None
     except Exception as e:
         logger.error(f"Error in get_blog_title for row {start_row}: {str(e)}")
@@ -56,12 +56,12 @@ def main():
                     start_row, columns["title"], title
                 )
             else:
-                logger.warning(
+                logger.debug(
                     f"Skipping update for row {start_row} due to missing title"
                 )
 
     excel_manager.file_handler.save()
-    logger.info("Workbook saved successfully")
+    logger.debug("Workbook saved successfully")
 
 
 if __name__ == "__main__":

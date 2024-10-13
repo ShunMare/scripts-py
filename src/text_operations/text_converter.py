@@ -17,7 +17,7 @@ class TextConverter:
         :param element: 変換するBeautifulSoupのTagオブジェクト
         :return: 変換されたMarkdown文字列
         """
-        logger.info("HTMLエレメントのMarkdown変換を開始します。")
+        logger.debug("HTMLエレメントのMarkdown変換を開始します。")
         markdown = cls._process_element(element)
         markdown = re.sub(r"\n{3,}", "\n\n", markdown)
         markdown = re.sub(r"<[^>]+>", "", markdown)
@@ -108,7 +108,7 @@ class TextConverter:
             else:
                 html_str = str(html_content)
             html_str = html.unescape(html_str)
-            logger.info("HTMLコンテンツを正常に変換しました。")
+            logger.debug("HTMLコンテンツを正常に変換しました。")
 
         except Exception as e:
             logger.error(f"HTMLコンテンツの変換中にエラーが発生しました: {str(e)}")
@@ -124,10 +124,10 @@ class TextConverter:
         :param content: 分割する文字列
         :return: 行のリスト
         """
-        logger.info("Splitting string into lines")
+        logger.debug("Splitting string into lines")
         try:
             lines = content.splitlines()
-            logger.info(f"Successfully split string into {len(lines)} lines")
+            logger.debug(f"Successfully split string into {len(lines)} lines")
             return lines
         except Exception as e:
             logger.error(f"Error occurred while splitting string: {e}")

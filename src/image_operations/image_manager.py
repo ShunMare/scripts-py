@@ -12,7 +12,7 @@ class ImageManager:
         """
         try:
             image = Image.open(image_path)
-            logger.info(f"Image loaded successfully: {image_path}")
+            logger.debug(f"Image loaded successfully: {image_path}")
             return image
         except IOError:
             logger.error(f"Failed to load image: {image_path}")
@@ -32,7 +32,7 @@ class ImageManager:
         """
         draw = ImageManager.get_draw(image)
         draw.text(position, text, font=font, fill=fill)
-        logger.info(f"Text drawn at position {position}")
+        logger.debug(f"Text drawn at position {position}")
         return image
 
     @staticmethod
@@ -42,7 +42,7 @@ class ImageManager:
         """
         try:
             image.save(save_path)
-            logger.info(f"Image saved successfully: {save_path}")
+            logger.debug(f"Image saved successfully: {save_path}")
         except IOError:
             logger.error(f"Failed to save image: {save_path}")
             raise
@@ -53,5 +53,5 @@ class ImageManager:
         Create a new blank image with the specified size and background color.
         """
         image = Image.new("RGB", size, color)
-        logger.info(f"Created new blank image with size {size}")
+        logger.debug(f"Created new blank image with size {size}")
         return image

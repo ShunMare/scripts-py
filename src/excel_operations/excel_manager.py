@@ -35,17 +35,17 @@ class ExcelManager:
         if file_path:
             self.file_handler.set_file_path(file_path)
             self.pandas_handler.set_file_path(file_path)
-            self.logger.info(f"Setting file path: {file_path}")
+            self.logger.debug(f"Setting file path: {file_path}")
 
         if not self.file_handler:
             self.logger.error("File path not set. Please set a file path first.")
             return False
 
-        self.logger.info("Loading workbook")
+        self.logger.debug("Loading workbook")
         self.workbook = self.file_handler.load()
         if self.workbook:
             self.sheet_handler.set_workbook(self.workbook)
-            self.logger.info("Workbook loaded successfully")
+            self.logger.debug("Workbook loaded successfully")
         else:
             self.logger.error("Failed to load workbook")
         return self.workbook is not None
@@ -55,12 +55,12 @@ class ExcelManager:
         指定されたシートをアクティブにする
         :param sheet_name: アクティブにするシートの名前
         """
-        self.logger.info(f"Setting active sheet: {sheet_name}")
+        self.logger.debug(f"Setting active sheet: {sheet_name}")
         self.worksheet = self.sheet_handler.set_active_sheet(sheet_name)
         self.search_handler.set_worksheet(self.worksheet)
         self.cell_handler.set_worksheet(self.worksheet)
         if self.worksheet:
-            self.logger.info(f"Sheet '{sheet_name}' set as active")
+            self.logger.debug(f"Sheet '{sheet_name}' set as active")
         else:
             self.logger.error(f"Failed to set sheet '{sheet_name}' as active")
         return self.worksheet is not None

@@ -2,10 +2,9 @@ import requests
 import string
 import time
 import logging
-from typing import List, Dict, Tuple, Union
+from typing import List, Dict, Union
 from bs4 import BeautifulSoup
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -56,7 +55,7 @@ class GoogleSearchAnalyzer:
                 logger.debug(f"Received suggestions: {suggestions}")
                 return suggestions
             else:
-                logger.warning(f"Received non-200 status code: {response.status_code}")
+                logger.debug(f"Received non-200 status code: {response.status_code}")
         except requests.RequestException as e:
             logger.error(f"Error fetching suggestions for '{keyword}': {e}")
         except Exception as e:
@@ -89,19 +88,24 @@ class GoogleSearchAnalyzer:
         logger.debug(f"Found {len(suggestions)} related keywords")
         return suggestions
 
-    def print_related_keywords(self, keyword: str, related_keywords: List[str]):
+    def get_related_keywords_string(
+        self, keyword: str, related_keywords: List[str]
+    ) -> str:
         """
-        関連キーワードを表示する
+        関連キーワードを文字列として返す
 
         :param keyword: 元のキーワード
         :param related_keywords: 関連キーワードのリスト
+        :return: フォーマットされた関連キーワードの文字列
         """
-        print(f"\n'{keyword}' の関連検索ワード:")
+        result = f"\nRelated search keywords for '{keyword}':\n"
         if related_keywords:
             for i, related_keyword in enumerate(related_keywords, 1):
-                print(f"{i}. {related_keyword}")
+                result += f"{i}. {related_keyword}\n"
         else:
-            print("関連検索ワードが見つかりませんでした。")
+            result += "No related keywords found.\n"
+
+        return result
 
     def extract_headings(
         self, keyword: str, heading_types: List[str] = ["h2", "h3"]
@@ -131,7 +135,7 @@ class GoogleSearchAnalyzer:
                     )
                 return headings
         except requests.RequestException as e:
-            print(f"Error fetching search results for '{keyword}': {e}")
+            logger.error(f"Error fetching search results for '{keyword}': {e}")
         return []
 
     def extract_heading(
@@ -181,10 +185,10 @@ class GoogleSearchAnalyzer:
                                     {"url": url, "h2": h2_headings, "h3": h3_headings}
                                 )
                         except requests.RequestException:
-                            print(f"Error fetching content from {url}")
+                            logger.debug(f"Error fetching content from {url}")
                         time.sleep(1)
         except requests.RequestException as e:
-            print(f"Error fetching search results for '{keyword}': {e}")
+            logger.error(f"Error fetching search results for '{keyword}': {e}")
         return results
 
     def print_heading_results(self, results: List[Dict[str, Union[str, List[str]]]]):

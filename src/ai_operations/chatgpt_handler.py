@@ -41,7 +41,7 @@ class ChatGPTHandler:
         self.wait_time_after_prompt_long = wait_time_after_prompt_long
         self.model_type = model_type
         self.short_wait_time = short_wait_time
-        logger.info(f"ChatGPTHandler initialized with model type: {model_type}")
+        logger.debug(f"ChatGPTHandler initialized with model type: {model_type}")
 
     def press_hotkey(self, key_combination, duration=0.5):
         """
@@ -61,7 +61,7 @@ class ChatGPTHandler:
             self.press_hotkey(["shift", "tab"])
             time.sleep(self.short_wait_time)
         time.sleep(self.short_wait_time)
-        logger.info("Moved to generate button")
+        logger.debug("Moved to generate button")
 
     def move_to_copy_button(self):
         """プロンプトのコピーボタンに移動する"""
@@ -77,7 +77,7 @@ class ChatGPTHandler:
 
         for _ in range(repeat_count):
             self.press_hotkey(["shift", "tab"])
-        logger.info("Moved to copy button")
+        logger.debug("Moved to copy button")
 
     def paste_and_send_message(self):
         """クリップボードの内容を貼り付け、送信する"""
@@ -86,7 +86,7 @@ class ChatGPTHandler:
         pyautogui.press("tab")
         time.sleep(self.short_wait_time)
         pyautogui.press("enter")
-        logger.info("Message pasted and sent")
+        logger.debug("Message pasted and sent")
 
     def get_generated_content(self):
         """
@@ -98,7 +98,7 @@ class ChatGPTHandler:
         self.move_to_copy_button()
         self.press_hotkey(["enter"])
         generated_content = pyperclip.paste()
-        logger.info("Generated content copied from clipboard")
+        logger.debug("Generated content copied from clipboard")
         return generated_content
 
     def send_prompt_and_generate_content(
@@ -117,12 +117,12 @@ class ChatGPTHandler:
 
         pyperclip.copy(prompt)
         self.paste_and_send_message()
-        logger.info("Prompt sent and message generation initiated")
+        logger.debug("Prompt sent and message generation initiated")
         time.sleep(self.wait_time_after_prompt_long)
 
         for i in range(repeat_count):
             edge_handler.activate_edge()
             self.move_to_generate_button()
             self.press_hotkey(["enter"])
-            logger.info(f"Generation button pressed (iteration {i+1}/{repeat_count})")
+            logger.debug(f"Generation button pressed (iteration {i+1}/{repeat_count})")
             time.sleep(self.wait_time_after_prompt_medium)

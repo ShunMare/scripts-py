@@ -34,7 +34,7 @@ class FileHandler:
         """
         try:
             os.remove(file_path)
-            logger.info(f"File deleted: {file_path}")
+            logger.debug(f"File deleted: {file_path}")
             return True
         except Exception as e:
             logger.error(f"Error occurred while deleting file {file_path}: {e}")
@@ -49,7 +49,7 @@ class FileHandler:
         """
         result = os.path.exists(file_path)
         if not result:
-            logger.info(f"File not found: {file_path}")
+            logger.debug(f"File not found: {file_path}")
         return result
 
     def wait_for_file(
@@ -66,11 +66,11 @@ class FileHandler:
         start_time = time.time()
         while time.time() - start_time < timeout:
             if os.path.exists(file_path):
-                logger.info(f"File found: {file_path}")
+                logger.debug(f"File found: {file_path}")
                 return True
             time.sleep(check_interval)
 
-        logger.warning(f"File not found within {timeout} seconds: {file_path}")
+        logger.debug(f"File not found within {timeout} seconds: {file_path}")
         return False
 
     @staticmethod
@@ -86,18 +86,18 @@ class FileHandler:
         :return: ファイルが見つかった場合はTrue、そうでない場合はFalse
         """
         for attempt in range(max_attempts):
-            logger.info(
+            logger.debug(
                 f"Attempt {attempt + 1}/{max_attempts}: Waiting {interval} seconds before checking for file: {file_path}"
             )
             time.sleep(interval)
 
             if os.path.exists(file_path):
-                logger.info(f"File found after {attempt + 1} attempts: {file_path}")
+                logger.debug(f"File found after {attempt + 1} attempts: {file_path}")
                 return True
 
-            logger.info(f"File not found on attempt {attempt + 1}: {file_path}")
+            logger.debug(f"File not found on attempt {attempt + 1}: {file_path}")
 
-        logger.warning(f"File not found after {max_attempts} attempts: {file_path}")
+        logger.debug(f"File not found after {max_attempts} attempts: {file_path}")
         return False
 
     @staticmethod
@@ -108,7 +108,7 @@ class FileHandler:
         :param file_names: 作成するファイル名のリスト
         """
         if not os.path.exists(folder_path):
-            logger.info(f"Creating folder as it doesn't exist: {folder_path}")
+            logger.debug(f"Creating folder as it doesn't exist: {folder_path}")
             os.makedirs(folder_path)
 
         for file_name in file_names:
@@ -116,7 +116,7 @@ class FileHandler:
             try:
                 with open(file_path, "w") as f:
                     pass
-                logger.info(f"Created empty file: {file_path}")
+                logger.debug(f"Created empty file: {file_path}")
             except Exception as e:
                 logger.error(f"Failed to create file {file_path}: {e}")
 
@@ -149,11 +149,11 @@ class FileReader:
         :param encoding: ファイルのエンコーディング（デフォルトはUTF-8）
         :return: ファイルの内容（行のリスト）。エラーの場合はNone
         """
-        logger.info(f"Reading file '{file_path}'")
+        logger.debug(f"Reading file '{file_path}'")
         try:
             with open(file_path, "r", encoding=encoding) as file:
                 lines = file.readlines()
-            logger.info(f"Successfully read file '{file_path}'")
+            logger.debug(f"Successfully read file '{file_path}'")
             return lines
         except FileNotFoundError:
             logger.error(f"File '{file_path}' not found")
@@ -241,9 +241,9 @@ class FileValidator:
         """
         try:
             content = FileHandler.read_file(token_path)
-            print(f"Token file content: {content}")
+            logger.debug(f"Token file content: {content}")
             json.loads(content)
-            logger.info(f"Token file is valid JSON: {token_path}")
+            logger.debug(f"Token file is valid JSON: {token_path}")
             return True
         except FileNotFoundError:
             logger.error(f"Token file not found: {token_path}")
@@ -299,13 +299,13 @@ class FileProcessor:
             # Check if the file is processable
             file_name = os.path.basename(file_path)
             if not self.file_validator.is_processable_file(file_name, file_path):
-                logger.info(f"Skipped non-processable file: {file_path}")
+                logger.debug(f"Skipped non-processable file: {file_path}")
                 return False
             content = self.file_handler.read_file(file_path)
             processed_content = process_function(content)
             if processed_content != content:
                 self.file_handler.write_file(file_path, processed_content)
-                logger.info(f"File updated: {file_path}")
+                logger.debug(f"File updated: {file_path}")
                 return True
             return False
         except Exception as e:
@@ -343,9 +343,9 @@ class FileProcessor:
                         updated_files += 1
                     processed_files += 1
                 else:
-                    logger.info(f"Skipped file (not processable): {file}")
+                    logger.debug(f"Skipped file (not processable): {file}")
         else:
-            logger.warning(
+            logger.debug(
                 f"Skipped folder (missing required files): {os.path.basename(root)}"
             )
 
@@ -371,9 +371,9 @@ class FileProcessor:
         :param required_files: 必要なファイルリスト
         :return: 処理結果を示すディクショナリ
         """
-        logger.info(f"Starting search in folder: {folder_path}")
-        logger.info(f"Folder prefix: {folder_prefix}")
-        logger.info(f"Required files: {', '.join(required_files)}")
+        logger.debug(f"Starting search in folder: {folder_path}")
+        logger.debug(f"Folder prefix: {folder_prefix}")
+        logger.debug(f"Required files: {', '.join(required_files)}")
 
         total_processed_files = 0
         total_updated_files = 0
@@ -389,10 +389,10 @@ class FileProcessor:
                 total_updated_files += results["updated_files"]
                 total_error_files += results["error_files"]
             else:
-                logger.info(f"Skipped folder (prefix doesn't match): {folder_name}")
+                logger.debug(f"Skipped folder (prefix doesn't match): {folder_name}")
 
         if total_processed_files == 0:
-            logger.warning(
+            logger.debug(
                 f"Warning: No processable files found in folders starting with '{folder_prefix}'."
             )
 
@@ -426,12 +426,12 @@ class FilePathHandler:
         :return: 結合された正規化されたパス
         """
         if not path_elements:
-            logger.warning("空のパス要素リストが提供されました")
+            logger.debug("An empty list of path elements was provided.")
             return ""
 
         joined_path = os.path.join(*path_elements)
         normalized_path = os.path.normpath(joined_path)
-        logger.info(f"パスを結合し正規化しました: {normalized_path}")
+        logger.debug(f"Path has been joined and normalized: {normalized_path}")
         return normalized_path
 
     @staticmethod
@@ -444,7 +444,7 @@ class FilePathHandler:
         """
         search_pattern = os.path.join(base_path, wildcard_pattern)
         matched_files = glob.glob(search_pattern)
-        logger.info(f"Found {len(matched_files)} files matching '{search_pattern}'")
+        logger.debug(f"Found {len(matched_files)} files matching '{search_pattern}'")
         return matched_files
 
 
@@ -460,10 +460,10 @@ class FileWriter:
         :param new_content: ファイルに書き込む新しい内容
         :return: ファイルの更新が成功した場合はTrue、失敗した場合はFalse
         """
-        logger.info(f"Replacing content of file '{file_path}'")
+        logger.debug(f"Replacing content of file '{file_path}'")
         try:
             self.file_handler.write_file(file_path, new_content)
-            logger.info(f"Successfully replaced content of file '{file_path}'")
+            logger.debug(f"Successfully replaced content of file '{file_path}'")
             return True
         except Exception as e:
             logger.error(

@@ -18,7 +18,7 @@ class ScriptExecutor:
         :param python_executable: 使用するPythonインタープリタのパス。デフォルトは現在のPythonインタープリタ。
         """
         self.python_executable = python_executable
-        logger.info(
+        logger.debug(
             f"ScriptExecutor initialized with Python executable: {self.python_executable}"
         )
 
@@ -38,15 +38,13 @@ class ScriptExecutor:
             result = subprocess.run(
                 [self.python_executable, script_path],
                 check=True,
-                capture_output=True,
-                text=True,
+                stdout=None,
+                stderr=None,
             )
             logger.info(f"Script {script_path} executed successfully")
-            logger.info(f"Output: {result.stdout}")
-            return result.stdout
+            return result.returncode
         except subprocess.CalledProcessError as e:
             logger.error(f"Error executing {script_path}")
-            logger.error(f"Error message: {e.stderr}")
             raise
 
     def run_script_with_args(self, script_path, args):
@@ -64,15 +62,13 @@ class ScriptExecutor:
         try:
             logger.info(f"Starting execution of {script_path} with args: {args}")
             result = subprocess.run(
-                [self.python_executable, script_path] + args,
+                [self.python_executable, "-u", script_path] + args,
                 check=True,
-                capture_output=True,
-                text=True,
+                stdout=None,
+                stderr=None,
             )
             logger.info(f"Script {script_path} executed successfully with args: {args}")
-            logger.info(f"Output: {result.stdout}")
-            return result.stdout
+            return result.returncode
         except subprocess.CalledProcessError as e:
             logger.error(f"Error executing {script_path} with args: {args}")
-            logger.error(f"Error message: {e.stderr}")
             raise

@@ -33,7 +33,7 @@ class BingHandler:
         """プロンプトの生成ボタンに移動する"""
         for _ in range(3):
             self.press_hotkey(["shift", "tab"])
-        logger.info("Moved to generate button")
+        logger.debug("Moved to generate button")
 
     def press_new_chat_button(self):
         for _ in range(2):
@@ -49,7 +49,7 @@ class BingHandler:
             time.sleep(self.short_wait_time)
         pyautogui.press("enter")
         time.sleep(self.wait_time_after_prompt_short)
-        logger.info("Pressed new chat button")
+        logger.debug("Pressed new chat button")
 
     def press_sign_in_button(self):
         """サインインボタンを押す"""
@@ -58,7 +58,7 @@ class BingHandler:
             time.sleep(self.short_wait_time)
         pyautogui.press("space")
         time.sleep(self.wait_time_after_reload)
-        logger.info("Pressed sign-in button")
+        logger.debug("Pressed sign-in button")
 
     def press_conversation_style_button(self):
         """会話スタイルボタンを押す"""
@@ -67,26 +67,26 @@ class BingHandler:
             time.sleep(self.short_wait_time)
         pyautogui.press("space")
         time.sleep(self.short_wait_time)
-        logger.info("Pressed conversation style button")
+        logger.debug("Pressed conversation style button")
 
     def move_to_copy_button(self):
         """プロンプトのコピーボタンに移動する"""
         for _ in range(7):
             self.press_hotkey(["shift", "tab"])
-        logger.info("Moved to copy button")
+        logger.debug("Moved to copy button")
 
     def move_to_inout_box(self):
         """プロンプトのインプットに移動する"""
         for _ in range(8):
             self.press_hotkey(["tab"])
-        logger.info("Moved to input box")
+        logger.debug("Moved to input box")
 
     def paste_and_send_message(self):
         """クリップボードの内容を貼り付け、送信する"""
         pyautogui.hotkey("ctrl", "v")
         time.sleep(self.short_wait_time)
         pyautogui.press("enter")
-        logger.info("Pasted and sent message")
+        logger.debug("Pasted and sent message")
 
     def get_generated_content(self):
         """生成されたコンテンツをコピーして返す"""
@@ -94,7 +94,7 @@ class BingHandler:
         self.move_to_copy_button()
         self.press_hotkey(["space"])
         generated_content = pyperclip.paste()
-        logger.info("Generated content copied from clipboard")
+        logger.debug("Generated content copied from clipboard")
         return generated_content
 
     def send_prompt(self, prompt):
@@ -102,13 +102,13 @@ class BingHandler:
         edge_handler.activate_edge()
         pyperclip.copy(prompt)
         self.paste_and_send_message()
-        logger.info(f"Prompt sent")
+        logger.debug(f"Prompt sent")
         time.sleep(self.wait_time_after_prompt_long)
-        logger.info(f"Waited for {self.wait_time_after_prompt_long} seconds")
+        logger.debug(f"Waited for {self.wait_time_after_prompt_long} seconds")
 
     def get_content(self, prompt):
         """プロンプトを送信し、生成されたコンテンツを返す"""
         self.send_prompt(prompt)
         content = self.get_generated_content()
-        logger.info("Content retrieved")
+        logger.debug("Content retrieved")
         return content

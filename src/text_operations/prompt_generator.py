@@ -12,7 +12,7 @@ class PromptGenerator:
     def __init__(self, wait_time_after_prompt_short, wait_time_after_prompt_long):
         self.wait_time_after_prompt_short = wait_time_after_prompt_short
         self.wait_time_after_prompt_long = wait_time_after_prompt_long
-        logger.info("PromptGenerator initialized")
+        logger.debug("PromptGenerator initialized")
 
     def create_initial_prompt(self, theme, heading, evidence, initial_prompt):
         initial_prompt = self.replace_marker(initial_prompt, theme, heading)
@@ -20,7 +20,7 @@ class PromptGenerator:
             evidence_text = f"参照内容：\n{evidence}"
         initial_prompt += evidence_text
         pyperclip.copy(initial_prompt)
-        logger.info("Initial prompt created and copied to clipboard")
+        logger.debug("Initial prompt created and copied to clipboard")
         return initial_prompt
 
     def create_additional_prompt(self, evidence):
@@ -29,7 +29,7 @@ class PromptGenerator:
             f"下記の内容を参考にして、もれなく文章をまとめて。他の内容は参照しないで。リストは極力使わずに、リストで書くのではなく見出しにして。\n{evidence}"
         )
         pyperclip.copy(additional_prompt)
-        logger.info("Additional prompt created and copied to clipboard")
+        logger.debug("Additional prompt created and copied to clipboard")
         return additional_prompt
 
     def replace_marker(self, prompt, theme, heading):

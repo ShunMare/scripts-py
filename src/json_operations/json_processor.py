@@ -1,5 +1,8 @@
 import json
 from typing import Any, Dict, Union
+from src.log_operations.log_handlers import setup_logger
+
+logger = setup_logger(__name__)
 
 
 class JSONProcessor:
@@ -23,7 +26,7 @@ class JSONProcessor:
         try:
             return json.dumps(sanitized_data, ensure_ascii=False)
         except Exception as e:
-            print(f"Error serializing to JSON: {e}")
+            logger.debug(f"Error serializing to JSON: {e}")
             return str(sanitized_data)
 
     @staticmethod
@@ -31,7 +34,7 @@ class JSONProcessor:
         try:
             return json.loads(json_str)
         except json.JSONDecodeError as e:
-            print(f"Error deserializing JSON: {e}")
+            logger.debug(f"Error deserializing JSON: {e}")
             return None
 
 
@@ -89,5 +92,5 @@ class JSONParser:
             with open(config_path, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
-            print(f"設定ファイルの読み込みに失敗しました: {e}")
+            logger.debug(f"設定ファイルの読み込みに失敗しました: {e}")
             return None

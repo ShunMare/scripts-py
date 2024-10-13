@@ -16,7 +16,7 @@ class WordPressAPI:
         """
         self.base_url = f"{url}/wp-json/wp/v2"
         self.auth = HTTPBasicAuth(username, app_password)
-        logger.info(f"WordPress API initialized for {url}")
+        logger.debug(f"WordPress API initialized for {url}")
 
     def create_post(
         self,
@@ -76,7 +76,7 @@ class WordPressAPI:
             response = requests.post(endpoint, json=data, auth=self.auth)
             response.raise_for_status()
             post_id = response.json().get("id")
-            logger.info(f"Post created successfully. Post ID: {post_id}")
+            logger.debug(f"Post created successfully. Post ID: {post_id}")
             return post_id
         except requests.RequestException as e:
             logger.error(f"Failed to create post: {str(e)}")
@@ -135,7 +135,7 @@ class WordPressAPI:
         try:
             response = requests.post(endpoint, json=data, auth=self.auth)
             response.raise_for_status()
-            logger.info(f"Post {post_id} updated successfully")
+            logger.debug(f"Post {post_id} updated successfully")
             return True
         except requests.RequestException as e:
             logger.error(f"Failed to update post {post_id}: {str(e)}")
@@ -153,7 +153,7 @@ class WordPressAPI:
             response = requests.get(endpoint, auth=self.auth)
             response.raise_for_status()
             post = response.json()
-            logger.info(f"Retrieved post {post_id}")
+            logger.debug(f"Retrieved post {post_id}")
             logger.debug(f"Get post response: {post}")
             return post
         except requests.RequestException as e:
@@ -178,9 +178,9 @@ class WordPressAPI:
                 categories = response.json()
                 if categories:
                     category_ids.append(categories[0]["id"])
-                    logger.info(f"Category '{name}' found. ID: {categories[0]['id']}")
+                    logger.debug(f"Category '{name}' found. ID: {categories[0]['id']}")
                 else:
-                    logger.warning(f"Category '{name}' not found")
+                    logger.debug(f"Category '{name}' not found")
             except requests.RequestException as e:
                 logger.error(f"Failed to retrieve category '{name}': {str(e)}")
         return category_ids
@@ -203,9 +203,9 @@ class WordPressAPI:
                 tags = response.json()
                 if tags:
                     tag_ids.append(tags[0]["id"])
-                    logger.info(f"Tag '{name}' found. ID: {tags[0]['id']}")
+                    logger.debug(f"Tag '{name}' found. ID: {tags[0]['id']}")
                 else:
-                    logger.warning(f"Tag '{name}' not found")
+                    logger.debug(f"Tag '{name}' not found")
             except requests.RequestException as e:
                 logger.error(f"Failed to retrieve tag '{name}': {str(e)}")
         return tag_ids
@@ -215,16 +215,16 @@ class WordPressAPI:
         投稿の詳細情報をログに出力する
         :param post: 投稿データ
         """
-        logger.info(f"Post ID: {post['id']}")
-        logger.info(f"Title: {post['title']['rendered']}")
-        logger.info(f"Slug: {post['slug']}")
-        logger.info(
+        logger.debug(f"Post ID: {post['id']}")
+        logger.debug(f"Title: {post['title']['rendered']}")
+        logger.debug(f"Slug: {post['slug']}")
+        logger.debug(
             f"Meta Description: {post['meta'].get('the_page_meta_description', [''])[0] if 'meta' in post else 'Not set'}"
         )
-        logger.info(
+        logger.debug(
             f"Meta Keywords: {post['meta'].get('the_page_meta_keywords', [''])[0] if 'meta' in post else 'Not set'}"
         )
-        logger.info(
+        logger.debug(
             f"SEO Title: {post['meta'].get('the_page_seo_title', [''])[0] if 'meta' in post else 'Not set'}"
         )
 
@@ -243,7 +243,7 @@ class WordPressAPI:
             posts = response.json()
             slugs = [post["slug"] for post in posts]
 
-            logger.info(f"Retrieved {len(slugs)} slugs for {post_type} on page {page}")
+            logger.debug(f"Retrieved {len(slugs)} slugs for {post_type} on page {page}")
             return slugs
         except requests.RequestException as e:
             logger.error(

@@ -13,7 +13,7 @@ from scripts.initialize import (
 def get_content(start_row, columns):
     slug = excel_manager.cell_handler.get_cell_value(start_row, columns["slug"])
     if not slug:
-        logger.warning(f"Empty slug found at row {start_row}")
+        logger.debug(f"Empty slug found at row {start_row}")
         return None
 
     url = f"{CREATE_BLOG_WP_WP_URL}/{slug}"

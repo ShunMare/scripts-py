@@ -21,11 +21,11 @@ class FontManager:
         if font_key not in FontManager._fonts:
             try:
                 font = ImageFont.truetype(font_path, size)
-                logger.info(
+                logger.debug(
                     f"Successfully loaded custom font (size {size}) from {font_path}"
                 )
             except IOError:
-                logger.warning(
+                logger.debug(
                     f"Failed to load custom font (size {size}) from {font_path}. Using default system font."
                 )
                 font = ImageFont.load_default()
@@ -50,4 +50,4 @@ class FontManager:
         Clear the font cache to free up memory.
         """
         FontManager._fonts.clear()
-        logger.info("Font cache has been cleared")
+        logger.debug("Font cache has been cleared")

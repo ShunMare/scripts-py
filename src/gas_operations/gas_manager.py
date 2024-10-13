@@ -55,7 +55,7 @@ class GasManager:
         with open(self.token_path, "w") as token:
             token.write(creds.to_json())
 
-        logger.info(f"新しいトークンが生成され、{self.token_path} に保存されました。")
+        logger.debug(f"新しいトークンが生成され、{self.token_path} に保存されました。")
 
     def get_google_sheets_service(self):
         """Google Sheets API サービスを取得します。"""
@@ -104,7 +104,7 @@ class GasManager:
         )
         values = result.get("values", [])
         last_row = len(values)
-        logger.info(f"Last row of sheet '{range_name}': {last_row}")
+        logger.debug(f"Last row of sheet '{range_name}': {last_row}")
         return last_row
 
     def get_last_column(self, sheet_id: str, range_name: str) -> int:
@@ -123,7 +123,7 @@ class GasManager:
         )
         values = result.get("values", [])
         last_column = len(values[0]) if values else 0
-        logger.info(f"Last column of sheet '{range_name}': {last_column}")
+        logger.debug(f"Last column of sheet '{range_name}': {last_column}")
         return last_column
 
     def get_values(self, sheet_id: str, range_name: str) -> List[List[Any]]:
@@ -141,7 +141,7 @@ class GasManager:
             .execute()
         )
         values = result.get("values", [])
-        logger.info(
+        logger.debug(
             f"Retrieved {len(values)}x{len(values[0]) if values else 0} values from range '{range_name}'"
         )
         return values
@@ -166,7 +166,7 @@ class GasManager:
             )
             .execute()
         )
-        logger.info(
+        logger.debug(
             f"Updated {result.get('updatedCells')} cells in range '{range_name}'"
         )
 
@@ -198,7 +198,7 @@ class GasManager:
             existing_content = result.get("values", [])
 
             if any(row[0] == post_content for row in existing_content):
-                logger.info("Content already exists. Skipping update.")
+                logger.debug("Content already exists. Skipping update.")
                 return
 
             new_row_content = [[last_row, post_content, 0]]
@@ -209,7 +209,7 @@ class GasManager:
                 body={"values": new_row_content},
             ).execute()
 
-            logger.info(f"Successfully updated GAS spreadsheet with new content")
+            logger.debug(f"Successfully updated GAS spreadsheet with new content")
         except Exception as e:
             logger.error(f"Error updating GAS spreadsheet: {str(e)}")
             raise

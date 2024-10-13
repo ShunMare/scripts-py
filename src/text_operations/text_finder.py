@@ -16,13 +16,13 @@ class TextFinder:
         :param start_string: 検索する行の開始文字列
         :return: 見つかった行の内容（開始文字列を除く）。見つからない場合はNone
         """
-        logger.info(f"'{start_string}' で始まる行を検索します")
+        logger.debug(f"'{start_string}' で始まる行を検索します")
         for line in lines:
             if line.startswith(start_string):
                 content = line.split(start_string)[1].strip()
-                logger.info(f"'{start_string}' で始まる行を見つけました: {content}")
+                logger.debug(f"'{start_string}' で始まる行を見つけました: {content}")
                 return content
-        logger.warning(f"'{start_string}' で始まる行が見つかりませんでした")
+        logger.debug(f"'{start_string}' で始まる行が見つかりませんでした")
         return None
 
     @staticmethod
@@ -47,5 +47,5 @@ class TextFinder:
         :return: 部分文字列の出現回数
         """
         count = text.count(substring)
-        logger.info(f"'{substring}' は '{text}' 内に {count} 回出現しました")
+        logger.debug(f"'{substring}' は '{text}' 内に {count} 回出現しました")
         return count

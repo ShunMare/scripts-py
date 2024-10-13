@@ -14,7 +14,10 @@ def get_themes(start_row, columns):
     theme = excel_manager.cell_handler.get_cell_value(start_row, columns["theme"])
 
     related_keywords = google_search_analyzer.get_related_keyword(theme)
-    google_search_analyzer.print_related_keywords(theme, related_keywords)
+    related_keywords_string = google_search_analyzer.get_related_keywords_string(
+        theme, related_keywords
+    )
+    logger.info(related_keywords_string)
 
     for i, related_keyword in enumerate(
         related_keywords[:CREATE_BLOG_WP_EXCEL_GROUP_SIZE], 1

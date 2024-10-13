@@ -20,7 +20,7 @@ class ArrayCombiner:
             return []
 
         if not arr:
-            logger.warning("Input array is empty")
+            logger.debug("Input array is empty")
             return []
 
         result = []
@@ -35,7 +35,7 @@ class ArrayCombiner:
         if temp:
             result.append("".join(temp) + suffix)
 
-        logger.info(f"Merged {len(arr)} elements into {len(result)} groups with suffix '{suffix}'")
+        logger.debug(f"Merged {len(arr)} elements into {len(result)} groups with suffix '{suffix}'")
         return result
 
 class ArrayRemover:
@@ -49,11 +49,11 @@ class ArrayRemover:
         :return: フィルタリングされた新しい配列
         """
         if not main_array:
-            logger.warning("main_array is empty")
+            logger.debug("main_array is empty")
             return []
 
         if not elements_to_remove:
-            logger.info("elements_to_remove is empty, returning original array")
+            logger.debug("elements_to_remove is empty, returning original array")
             return main_array.copy()
 
         filtered_array = []
@@ -65,7 +65,7 @@ class ArrayRemover:
             else:
                 removed_count += 1
 
-        logger.info(f"Removed {removed_count} elements from the array")
+        logger.debug(f"Removed {removed_count} elements from the array")
         return filtered_array
 
 class ArrayKeeper:
@@ -79,11 +79,11 @@ class ArrayKeeper:
         :return: フィルタリングされた新しい配列
         """
         if not main_array:
-            logger.warning("main_array is empty")
+            logger.debug("main_array is empty")
             return []
 
         if not elements_to_keep:
-            logger.warning("elements_to_keep is empty, returning empty array")
+            logger.debug("elements_to_keep is empty, returning empty array")
             return []
 
         filtered_array = []
@@ -94,5 +94,5 @@ class ArrayKeeper:
                 filtered_array.append(item)
                 kept_count += 1
 
-        logger.info(f"Kept {kept_count} elements in the array")
+        logger.debug(f"Kept {kept_count} elements in the array")
         return filtered_array

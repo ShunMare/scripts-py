@@ -41,16 +41,16 @@ class EdgeHandler:
             edge_window = edge_windows[0]
             if not edge_window.isActive:
                 edge_window.activate()
-            logger.info("Edge window activated")
+            logger.debug("Edge window activated")
             time.sleep(self.wait_time_after_switch)
         else:
-            logger.warning("No Edge window found")
+            logger.debug("No Edge window found")
 
     def open_url_in_browser(self, url):
         """システムのデフォルトブラウザで指定されたURLを開く"""
         try:
             webbrowser.open(url)
-            logger.info(f"URL opened in default browser: {url}")
+            logger.debug(f"URL opened in default browser: {url}")
             time.sleep(self.wait_time_after_switch)
         except Exception as e:
             logger.error(f"Error opening URL in default browser: {e}")
@@ -70,7 +70,7 @@ class EdgeHandler:
     def switch_to_default_content(self):
         """デフォルトのコンテンツに戻る"""
         self.driver.switch_to.default_content()
-        logger.info("Switched back to default content")
+        logger.debug("Switched back to default content")
 
     def ui_save_html(self, filename):
         """
@@ -86,4 +86,4 @@ class EdgeHandler:
         time.sleep(self.wait_time_after_prompt_short)
         pyautogui.press("enter")
         time.sleep(self.wait_time_after_prompt_long)
-        logger.info(f"save {filename} as html in downloads")
+        logger.debug(f"save {filename} as html in downloads")

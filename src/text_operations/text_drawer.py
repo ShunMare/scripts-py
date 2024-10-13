@@ -35,7 +35,7 @@ class TextDrawer:
         :param horizontal_align: Horizontal alignment ('left', 'center', 'right')
         :param vertical_align: Vertical alignment ('top', 'middle', 'bottom')
         """
-        logger.info(f"Drawing multiline text: '{text[:20]}...'")
+        logger.debug(f"Drawing multiline text: '{text[:20]}...'")
 
         lines = text.split("\n")
         line_heights = self._get_line_heights(draw, lines, font)
