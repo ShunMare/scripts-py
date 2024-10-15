@@ -117,6 +117,40 @@ class FolderCreator:
     """フォルダを作成するクラス"""
 
     @staticmethod
+    def create_folder(folder_path: str) -> bool:
+        """
+        指定されたパスに単一のフォルダを作成します。
+
+        :param folder_path: 作成するフォルダのパス
+        :return: フォルダの作成が成功した場合はTrue、既に存在する場合やエラーが発生した場合はFalse
+        """
+        try:
+            if not os.path.exists(folder_path):
+                os.makedirs(folder_path)
+                logger.info(f"Created folder: {folder_path}")
+                return True
+            else:
+                logger.info(f"Folder already exists: {folder_path}")
+                return False
+        except OSError as e:
+            logger.error(f"Error occurred while creating folder {folder_path}: {e}")
+            return False
+
+    @staticmethod
+    def create_folder_if_not_exists(folder_path: str) -> bool:
+        """
+        指定されたパスにフォルダが存在しない場合のみ、フォルダを作成します。
+
+        :param folder_path: 作成するフォルダのパス
+        :return: フォルダが正常に作成されたか既に存在する場合はTrue、エラーが発生した場合はFalse
+        """
+        if not os.path.exists(folder_path):
+            return FolderCreator.create_folder(folder_path)
+        else:
+            logger.info(f"Folder already exists: {folder_path}")
+            return True
+
+    @staticmethod
     def create_folders(base_folder_path: str, folder_names: List[str]):
         """
         指定されたベースフォルダ内に複数のフォルダを作成します。
@@ -124,7 +158,9 @@ class FolderCreator:
         :param folder_names: 作成するフォルダ名のリスト
         """
         if not os.path.exists(base_folder_path):
-            logger.debug(f"Creating base folder as it doesn't exist: {base_folder_path}")
+            logger.debug(
+                f"Creating base folder as it doesn't exist: {base_folder_path}"
+            )
             os.makedirs(base_folder_path)
 
         for folder_name in folder_names:

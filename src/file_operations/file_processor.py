@@ -4,6 +4,7 @@ from typing import Callable, List, Dict, Optional
 from src.log_operations.log_handlers import CustomLogger
 import time
 import glob
+import shutil
 
 logger = CustomLogger(__name__)
 
@@ -124,6 +125,69 @@ class FileHandler:
     def read_file(file_path: str, encoding: str = "utf-8") -> str:
         with open(file_path, "r", encoding=encoding) as file:
             return file.read()
+
+    @staticmethod
+    def move_file(source_path: str, destination_path: str) -> bool:
+        """
+        ファイルを指定された場所から別の場所に移動します。
+
+        :param source_path: 移動元のファイルのフルパス
+        :param destination_path: 移動先のファイルのフルパス
+        :return: 移動が成功した場合はTrue、失敗した場合はFalse
+        """
+        try:
+            shutil.move(source_path, destination_path)
+            logger.debug(f"File moved from {source_path} to {destination_path}")
+            return True
+        except Exception as e:
+            logger.error(
+                f"Error occurred while moving file from {source_path} to {destination_path}: {e}"
+            )
+            return False
+
+    @staticmethod
+    def get_files_with_extension(folder_path: str, extension: str) -> list:
+        """
+        指定されたフォルダ内の特定の拡張子を持つファイルのリストを取得します。
+
+        :param folder_path: 検索するフォルダのパス
+        :param extension: 検索する拡張子（例: '.webp'）
+        :return: 指定された拡張子を持つファイルの完全パスのリスト
+        """
+        matching_files = []
+        for root, dirs, files in os.walk(folder_path):
+            for file in files:
+                if file.endswith(extension):
+                    matching_files.append(os.path.join(root, file))
+        logger.debug(
+            f"Found {len(matching_files)} files with extension {extension} in {folder_path}"
+        )
+        return matching_files
+
+    @staticmethod
+    def move_files_with_name(
+        source_folder: str, dest_folder: str, name_contains: str
+    ) -> int:
+        """
+        指定された名前を含むファイルをソースフォルダから宛先フォルダに移動します。
+
+        :param source_folder: ソースフォルダのパス
+        :param dest_folder: 宛先フォルダのパス
+        :param name_contains: ファイル名に含まれる文字列
+        :return: 移動したファイルの数
+        """
+        moved_count = 0
+        for root, dirs, files in os.walk(source_folder):
+            for file in files:
+                if name_contains in file:
+                    source_path = os.path.join(root, file)
+                    dest_path = os.path.join(dest_folder, file)
+                    if FileHandler.move_file(source_path, dest_path):
+                        moved_count += 1
+        logger.debug(
+            f"Moved {moved_count} files containing '{name_contains}' from {source_folder} to {dest_folder}"
+        )
+        return moved_count
 
 
 class FileReader:
@@ -253,6 +317,8 @@ class FileValidator:
         except Exception as e:
             logger.error(f"Error reading token file: {str(e)}")
         return False
+
+
 class FolderFilter:
     """
     FolderFilter クラスは、特定のフォルダプレフィックスに基づいて、

@@ -13,6 +13,8 @@ from scripts.initialize import (
     value_validator,
     google_search_analyzer,
     text_formatter,
+    folder_remover,
+    folder_creator,
 )
 
 
@@ -58,6 +60,21 @@ def get_heading(start_row, columns):
         if len(results) == 1:
             heading_content = text_converter.convert_to_markdown(results[0])
         file_handler.delete_file(chatgpt_html_path)
+        source_folder_full_path = folder_path_handler.join_path(
+            [
+                DOWNLOAD_FOLDER_DIR_FULL_PATH,
+                CREATE_BLOG_WP_GET_HEADING_GOOGLE_FILE_NAME,
+                DOWNLOAD_HTML_FOLDER_SUFFIX,
+            ]
+        )
+        destination_folder_full_path = folder_path_handler.join_path(
+            [source_folder_full_path, theme]
+        )
+        folder_creator.create_folder(destination_folder_full_path)
+        file_handler.move_files_with_name(
+            source_folder_full_path, destination_folder_full_path, EXTENSION_WEBP
+        )
+        folder_remover.remove_folder(source_folder_full_path)
 
     excel_manager.cell_handler.update_cell(
         row=start_row,

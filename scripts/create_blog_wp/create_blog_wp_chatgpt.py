@@ -15,6 +15,7 @@ from scripts.initialize import (
     folder_remover,
     text_replacer,
     value_validator,
+    folder_creator,
 )
 
 
@@ -145,12 +146,24 @@ def generate_and_process_prompts(start_row, columns):
             link_content = text_converter.convert_to_markdown(
                 results[evidence_count + 4]
             )
+
+        logger.info("delete unnecessary file and directory")
         file_handler.delete_file(chatgpt_html_path)
-        folder_remover.remove_folder(
-            DOWNLOAD_FOLDER_DIR_FULL_PATH
-            + CREATE_BLOG_WP_CREATE_BLOG_WP_CHATGPT_FILE_NAME
-            + DOWNLOAD_HTML_FOLDER_SUFFIX
+        source_folder_full_path = folder_path_handler.join_path(
+            [
+                DOWNLOAD_FOLDER_DIR_FULL_PATH,
+                CREATE_BLOG_WP_CREATE_BLOG_WP_CHATGPT_FILE_NAME,
+                DOWNLOAD_HTML_FOLDER_SUFFIX,
+            ]
         )
+        destination_folder_full_path = folder_path_handler.join_path(
+            [source_folder_full_path, theme]
+        )
+        folder_creator.create_folder(destination_folder_full_path)
+        file_handler.move_files_with_name(
+            source_folder_full_path, destination_folder_full_path, EXTENSION_WEBP
+        )
+        folder_remover.remove_folder(source_folder_full_path)
 
     logger.info("update cells in excel")
     if GET_CONTENT_METHOD != GET_CONTENT_METHOD_CLIPBOARD:

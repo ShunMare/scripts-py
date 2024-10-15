@@ -9,6 +9,7 @@ from scripts.initialize import (
 # ===========================
 # extension and prefix
 EXTENSION_HTML = ".html"
+EXTENSION_WEBP = ".webp"
 DOWNLOAD_HTML_FOLDER_SUFFIX = "_files"
 GET_CONTENT_METHOD_CLIPBOARD = "clipboard"
 GET_CONTENT_METHOD_HTML = "html"
