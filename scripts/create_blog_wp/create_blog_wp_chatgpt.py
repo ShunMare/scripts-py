@@ -28,7 +28,8 @@ def generate_and_process_prompts(start_row, columns):
         columns["evidence"],
         CREATE_BLOG_WP_EXCEL_GROUP_SIZE,
     )
-    if not value_validator.any_invalid(evidences):
+    if not value_validator.any_valid(evidences):
+        logger.warning("evidence don't have any values")
         return
 
     edge_handler.open_url_in_browser(CHATGPT_DEFAULT_URL)
