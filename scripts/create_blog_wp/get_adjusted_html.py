@@ -97,7 +97,7 @@ def generate_and_process_prompts(start_row, columns):
             [
                 DOWNLOAD_FOLDER_DIR_FULL_PATH,
                 CREATE_BLOG_WP_GET_ADJUSTED_HTML_FILE_NAME,
-                DOWNLOAD_HTML_FOLDER_SUFFIX,
+                + DOWNLOAD_HTML_FOLDER_SUFFIX,
             ]
         )
         destination_folder_full_path = folder_path_handler.join_and_normalize_path(

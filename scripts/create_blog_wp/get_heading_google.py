@@ -63,8 +63,8 @@ def get_heading(start_row, columns):
         source_folder_full_path = folder_path_handler.join_and_normalize_path(
             [
                 DOWNLOAD_FOLDER_DIR_FULL_PATH,
-                CREATE_BLOG_WP_GET_HEADING_GOOGLE_FILE_NAME,
-                DOWNLOAD_HTML_FOLDER_SUFFIX,
+                CREATE_BLOG_WP_GET_HEADING_GOOGLE_FILE_NAME
+                + DOWNLOAD_HTML_FOLDER_SUFFIX,
             ]
         )
         destination_folder_full_path = folder_path_handler.join_and_normalize_path(

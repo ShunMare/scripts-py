@@ -105,9 +105,9 @@ def generate_and_process_prompts(start_row, columns):
             CREATE_BLOG_WP_CREATE_BLOG_WP_CHATGPT_FILE_NAME + EXTENSION_HTML
         )
         edge_handler.ui_save_html(html_file_name)
-        chatgpt_html_path = DOWNLOAD_FOLDER_DIR_FULL_PATH + html_file_name
-        if file_handler.exists(chatgpt_html_path):
-            chatgpt_html = file_reader.read_file(chatgpt_html_path)
+        html_file_full_path = DOWNLOAD_FOLDER_DIR_FULL_PATH + html_file_name
+        if file_handler.exists(html_file_full_path):
+            chatgpt_html = file_reader.read_file(html_file_full_path)
         results = web_scraper.find_elements(
             chatgpt_html,
             tag_name=CHATGPT_OUTPUT_TAG,
@@ -152,16 +152,16 @@ def generate_and_process_prompts(start_row, columns):
         edge_handler.close_tab()
 
         logger.info("delete unnecessary file and directory")
-        file_handler.delete_file(chatgpt_html_path)
+        file_handler.delete_file(html_file_full_path)
         source_folder_full_path = folder_path_handler.join_and_normalize_path(
             [
                 DOWNLOAD_FOLDER_DIR_FULL_PATH,
-                CREATE_BLOG_WP_CREATE_BLOG_WP_CHATGPT_FILE_NAME,
-                DOWNLOAD_HTML_FOLDER_SUFFIX,
+                CREATE_BLOG_WP_CREATE_BLOG_WP_CHATGPT_FILE_NAME
+                + DOWNLOAD_HTML_FOLDER_SUFFIX,
             ]
         )
         destination_folder_full_path = folder_path_handler.join_and_normalize_path(
-            [source_folder_full_path, theme]
+            [DOWNLOAD_FOLDER_DIR_FULL_PATH, theme]
         )
         folder_creator.create_folder(destination_folder_full_path)
         file_handler.move_files_with_name(
