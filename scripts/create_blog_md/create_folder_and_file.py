@@ -35,10 +35,11 @@ def main():
         for item in folder_names
         for name in (item if isinstance(item, list) else [item])
     ]
+
     logger.info("create folders")
     folder_creator.create_folders(CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH, folder_names)
     for folder_name in folder_names:
-        folder_path = folder_path_handler.join_path(
+        folder_path = folder_path_handler.join_and_normalize_path(
             CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH, folder_name
         )
         file_handler.create_empty_files(

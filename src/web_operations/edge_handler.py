@@ -87,3 +87,10 @@ class EdgeHandler:
         pyautogui.press("enter")
         time.sleep(self.wait_time_after_prompt_long)
         logger.debug(f"save {filename} as html in downloads")
+
+    def close_tab(self):
+        self.activate_edge()
+        time.sleep(self.wait_time_after_prompt_short)
+        pyautogui.hotkey("ctrl", "w")
+        time.sleep(self.wait_time_after_prompt_short)
+        logger.debug("close tab")

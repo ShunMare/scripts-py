@@ -21,7 +21,7 @@ def get_title_in_md(columns):
         if folder_name is None:
             continue
 
-        folder_path = folder_path_handler.join_path(
+        folder_path = folder_path_handler.join_and_normalize_path(
             STANDALONE_GET_TITLE_IN_MD_TARGET_DIR_FULL_PATH, folder_name
         )
         index_files = file_path_handler.find_files_with_wildcard(

@@ -35,7 +35,7 @@ def generate_and_process_prompts(start_row, columns):
 
     initial_prompt = file_reader.read_file(CREATE_BLOG_WP_PROMPT_TEMPLATE_FULL_PATH)
     for i, evidence in enumerate(evidences):
-        logger.info(f"getting md and html content : {i}/{len(evidences)}")
+        logger.info(f"getting md and html content : {i+1}/{len(evidences)}")
         if evidence is not None:
             evidence = text_manager.text_remover.remove_content_after(
                 evidence, BING_SOURCE_COPILOT_CONVERSATION
@@ -147,16 +147,19 @@ def generate_and_process_prompts(start_row, columns):
                 results[evidence_count + 4]
             )
 
+        logger.info("close tab")
+        edge_handler.close_tab()
+
         logger.info("delete unnecessary file and directory")
         file_handler.delete_file(chatgpt_html_path)
-        source_folder_full_path = folder_path_handler.join_path(
+        source_folder_full_path = folder_path_handler.join_and_normalize_path(
             [
                 DOWNLOAD_FOLDER_DIR_FULL_PATH,
                 CREATE_BLOG_WP_CREATE_BLOG_WP_CHATGPT_FILE_NAME,
                 DOWNLOAD_HTML_FOLDER_SUFFIX,
             ]
         )
-        destination_folder_full_path = folder_path_handler.join_path(
+        destination_folder_full_path = folder_path_handler.join_and_normalize_path(
             [source_folder_full_path, theme]
         )
         folder_creator.create_folder(destination_folder_full_path)

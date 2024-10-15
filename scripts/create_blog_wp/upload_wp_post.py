@@ -14,15 +14,21 @@ from scripts.initialize import (
 
 def upload_wp_post(start_row, columns):
     title = excel_manager.cell_handler.get_cell_value(start_row, columns["title"])
-    html_array = excel_manager.cell_handler.get_range_values(
-        start_row,
-        columns["html"],
-        CREATE_BLOG_WP_EXCEL_GROUP_SIZE,
+    adjusted_html = excel_manager.cell_handler.get_cell_value(
+        start_row, columns["adjusted_html"]
     )
-    html_array = array_combiner.merge_elements(
-        html_array, CREATE_BLOG_WP_EXCEL_GROUP_SIZE, ""
-    )
-    html = html_array[0]
+    if adjusted_html is not None:
+        html = adjusted_html
+    else:
+        html_array = excel_manager.cell_handler.get_range_values(
+            start_row,
+            columns["html"],
+            CREATE_BLOG_WP_EXCEL_GROUP_SIZE,
+        )
+        html_array = array_combiner.merge_elements(
+            html_array, CREATE_BLOG_WP_EXCEL_GROUP_SIZE, ""
+        )
+        html = html_array[0]
     h2_count = text_finder.count_occurrences(html, "<h2>")
     html = text_replacer.replace(html, "<b>", "")
     html = text_replacer.replace(html, "</b>", "")

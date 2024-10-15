@@ -51,7 +51,7 @@ def check_folders():
         start_row=CREATE_BLOG_MD_EXCEL_START_ROW,
     ):
         if folder_name:
-            folder_path = folder_path_handler.join_path(
+            folder_path = folder_path_handler.join_and_normalize_path(
                 CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH, folder_name
             )
             result = folder_checker.check_folder_exists(folder_path)

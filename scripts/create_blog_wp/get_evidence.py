@@ -93,6 +93,9 @@ def generate_and_process_prompts(start_row, columns):
             + DOWNLOAD_HTML_FOLDER_SUFFIX
         )
 
+    logger.info("close tab")
+    edge_handler.close_tab()
+
     logger.info("update cells in excel")
     if GET_CONTENT_METHOD == GET_CONTENT_METHOD_HTML:
         for i, content in enumerate(md_contents):

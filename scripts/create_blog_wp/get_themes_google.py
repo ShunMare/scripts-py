@@ -17,7 +17,6 @@ def get_themes(start_row, columns):
     logger.log_related_keywords(
         theme, related_keywords
     )
-    # logger.info(related_keywords_string)
 
     for i, related_keyword in enumerate(
         related_keywords[:CREATE_BLOG_WP_EXCEL_GROUP_SIZE], 1
