@@ -17,7 +17,7 @@ def main():
                 script_executor.run_script(CREATE_BLOG_WP_GET_HEADING_FILE_FULL_PATH)
             if EXECUTE_CREATE_BLOG_WP_GET_DIRECTION:
                 script_executor.run_script(CREATE_BLOG_WP_GET_DIRECTION_FILE_FULL_PATH)
-            if EXECUTE_CREATE_BLOG_WP_GET_EVIDENCE_BING:
+            if EXECUTE_CREATE_BLOG_WP_GET_EVIDENCE:
                 script_executor.run_script(CREATE_BLOG_WP_GET_EVIDENCE_FILE_FULL_PATH)
             if EXECUTE_CREATE_BLOG_WP_CREATE_BLOG_WP_CHATGPT:
                 script_executor.run_script(CREATE_BLOG_WP_CREATE_BLOG_WP_FILE_FULL_PATH)

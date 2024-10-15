@@ -32,9 +32,9 @@ def generate_and_process_prompts(start_row, columns):
 
     edge_handler.open_url_in_browser(CHATGPT_DEFAULT_URL)
 
-    logger.info("getting md content")
     initial_prompt = file_reader.read_file(CREATE_BLOG_WP_PROMPT_TEMPLATE_FULL_PATH)
     for i, evidence in enumerate(evidences):
+        logger.info(f"getting md and html content : {i}/{len(evidences)}")
         if evidence is not None:
             evidence = text_manager.text_remover.remove_content_after(
                 evidence, BING_SOURCE_COPILOT_CONVERSATION
@@ -108,7 +108,7 @@ def generate_and_process_prompts(start_row, columns):
             chatgpt_html = file_reader.read_file(chatgpt_html_path)
         results = web_scraper.find_elements(
             chatgpt_html,
-            tag_name=CHATGPT_OUTPUT_ELEMENT,
+            tag_name=CHATGPT_OUTPUT_TAG,
             class_list=CHATGPT_OUTPUT_CLASS_LIST,
         )
         evidence_count = excel_manager.cell_handler.count_nonempty_cells_in_range(

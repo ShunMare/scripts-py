@@ -12,7 +12,9 @@ from scripts.initialize import (
     html_parser,
     text_converter,
     bing_handler,
+    chatgpt_handler,
     value_validator,
+    web_scraper,
 )
 
 
@@ -27,49 +29,67 @@ def generate_and_process_prompts(start_row, columns):
     if not value_validator.any_valid(directions):
         return
 
-    edge_handler.open_url_in_browser(BING_URL)
-    bing_handler.press_new_chat_button()
+    logger.info("open browser")
+    if CREATE_BLOG_WP_GET_EVIDENCE_METHOD == AI_TOOL_BING:
+        edge_handler.open_url_in_browser(BING_URL)
+        bing_handler.press_new_chat_button()
+    elif CREATE_BLOG_WP_GET_EVIDENCE_METHOD == AI_TOOL_CHATGPT:
+        edge_handler.open_url_in_browser(CHATGPT_GPTS_BROWSER_URL)
 
-    logger.info("sent direction")
+    logger.info("send direction")
     for direction in directions:
         if value_validator.is_valid(direction):
-            prompt_head = prompt_generator.replace_marker(
-                prompt=CREATE_BLOG_WP_GET_EVIDENCE_PROMPT, theme=theme, heading=""
-            )
+            if CREATE_BLOG_WP_GET_EVIDENCE_METHOD == AI_TOOL_BING:
+                prompt_head = prompt_generator.replace_marker(
+                    prompt=CREATE_BLOG_WP_GET_EVIDENCE_BING_PROMPT,
+                    theme=theme,
+                    heading="",
+                )
+            elif CREATE_BLOG_WP_GET_EVIDENCE_METHOD == AI_TOOL_CHATGPT:
+                prompt_head = prompt_generator.replace_marker(
+                    prompt=CREATE_BLOG_WP_GET_EVIDENCE_CHATGPT_PROMPT,
+                    theme=theme,
+                    heading="",
+                )
             prompt = prompt_generator.replace_marker(
                 prompt=direction, theme=theme, heading=""
             )
             prompt = prompt_head + prompt
-            bing_handler.send_prompt(prompt=prompt)
+            if CREATE_BLOG_WP_GET_EVIDENCE_METHOD == AI_TOOL_BING:
+                bing_handler.send_prompt(prompt=prompt)
+            elif CREATE_BLOG_WP_GET_EVIDENCE_METHOD == AI_TOOL_CHATGPT:
+                chatgpt_handler.send_prompt_and_generate_content(
+                    prompt, repeat_count=0, is_reload=True
+                )
 
     logger.info("convert html to md")
     if GET_CONTENT_METHOD == GET_CONTENT_METHOD_HTML:
-        html_file_name = CREATE_BLOG_WP_GET_EVIDENCE_BING_FILE_NAME + EXTENSION_HTML
+        html_file_name = CREATE_BLOG_WP_GET_EVIDENCE_FILE_NAME + EXTENSION_HTML
         edge_handler.ui_save_html(html_file_name)
-        bing_html_path = DOWNLOAD_FOLDER_DIR_FULL_PATH + html_file_name
-        if file_handler.exists(bing_html_path):
-            bing_html = file_reader.read_file(bing_html_path)
-        results = html_parser.find_elements_with_attributes(
-            content=bing_html,
-            tag=CREATE_BLOG_WP_GET_EVIDENCE_TAG,
-            class_name=CREATE_BLOG_WP_GET_EVIDENCE_CLASSES,
-            attributes={
-                CREATE_BLOG_WP_GET_EVIDENCE_ATTRIBUTE_KEY: CREATE_BLOG_WP_GET_EVIDENCE_ATTRIBUTE_VALUE
-            },
-        )
-        # direction_count = excel_manager.cell_handler.count_nonempty_cells_in_range(
-        #     column=columns["direction"],
-        #     start_row=start_row,
-        #     end_row=start_row + CREATE_BLOG_WP_EXCEL_GROUP_SIZE - 1,
-        # )
+        html_file_full_path = DOWNLOAD_FOLDER_DIR_FULL_PATH + html_file_name
+        if file_handler.exists(html_file_full_path):
+            html_content = file_reader.read_file(html_file_full_path)
+        if CREATE_BLOG_WP_GET_EVIDENCE_METHOD == AI_TOOL_BING:
+            results = html_parser.find_elements_with_attributes(
+                content=html_content,
+                tag=BING_OUTPUT_TAG,
+                class_name=BING_OUTPUT_CLASS_LIST,
+                attributes={BING_OUTPUT_ATTRIBUTE_KEY: BING_OUTPUT_ATTRIBUTE_VALUE},
+            )
+        elif CREATE_BLOG_WP_GET_EVIDENCE_METHOD == AI_TOOL_CHATGPT:
+            results = web_scraper.find_elements(
+                html_content,
+                tag_name=CHATGPT_OUTPUT_TAG,
+                class_list=CHATGPT_OUTPUT_CLASS_LIST,
+            )
         md_contents = []
         for i in range(len(results)):
             md_content = text_converter.convert_to_markdown(results[i])
             md_contents.append(md_content)
-        file_handler.delete_file(bing_html_path)
+        file_handler.delete_file(html_file_full_path)
         folder_remover.remove_folder(
             DOWNLOAD_FOLDER_DIR_FULL_PATH
-            + CREATE_BLOG_WP_GET_EVIDENCE_BING_FILE_NAME
+            + CREATE_BLOG_WP_GET_EVIDENCE_FILE_NAME
             + DOWNLOAD_HTML_FOLDER_SUFFIX
         )
 

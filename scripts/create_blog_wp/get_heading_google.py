@@ -52,7 +52,7 @@ def get_heading(start_row, columns):
             chatgpt_html = file_reader.read_file(chatgpt_html_path)
         results = web_scraper.find_elements(
             chatgpt_html,
-            tag_name=CHATGPT_OUTPUT_ELEMENT,
+            tag_name=CHATGPT_OUTPUT_TAG,
             class_list=CHATGPT_OUTPUT_CLASS_LIST,
         )
         if len(results) == 1:
