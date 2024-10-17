@@ -73,6 +73,8 @@ def main():
                 script_executor.run_script(STANDALONE_GET_TITLE_IN_MD_FILE_FULL_PATH)
             if EXECUTE_STANDALONE_GET_TITLE_IN_HTML:
                 script_executor.run_script(STANDALONE_GET_TITLE_IN_HTML_FILE_FULL_PATH)
+            if EXECUTE_STANDALONE_REPLACE_FOLDER_NAME:
+                script_executor.run_script(STANDALONE_REPLACE_FOLDER_NAME_FILE_FULL_PATH)
 
     except Exception as e:
         logger.error(

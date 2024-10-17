@@ -203,7 +203,7 @@ class ExcelCellHandler:
         try:
             for i, value in enumerate(data):
                 row = start_row + i
-                ExcelCellHandler.update_cell(self.worksheet, row, start_column, value)
+                self.update_cell(row, start_column, value)
 
             logger.debug(
                 f"Successfully inserted {len(data)} values column-wise starting from row {start_row}, column {start_column}"
@@ -249,7 +249,7 @@ class ExcelCellHandler:
         try:
             for i, value in enumerate(data):
                 column = start_column + i
-                ExcelCellHandler.update_cell(self.worksheet, row, column, value)
+                self.update_cell(row, column, value)
 
             logger.debug(
                 f"Successfully inserted {len(data)} values row-wise starting from row {row}, column {start_column}"
@@ -270,7 +270,7 @@ class ExcelCellHandler:
         try:
             for i, value in enumerate(data):
                 row = start_row + i
-                ExcelCellHandler.update_cell(self.worksheet, row, column, value)
+                self.update_cell(row, column, value)
 
             logger.debug(
                 f"Successfully inserted {len(data)} values vertically starting from row {start_row}, column {column}"

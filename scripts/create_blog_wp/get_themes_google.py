@@ -14,9 +14,7 @@ def get_themes(start_row, columns):
     theme = excel_manager.cell_handler.get_cell_value(start_row, columns["theme"])
 
     related_keywords = google_search_analyzer.get_related_keyword(theme)
-    logger.log_related_keywords(
-        theme, related_keywords
-    )
+    logger.log_related_keywords(theme, related_keywords)
 
     for i, related_keyword in enumerate(
         related_keywords[:CREATE_BLOG_WP_EXCEL_GROUP_SIZE], 1
@@ -26,11 +24,12 @@ def get_themes(start_row, columns):
             column=columns["theme_suggestions"],
             value=related_keyword,
         )
-    excel_manager.cell_handler.update_cell(
-        row=start_row,
-        column=columns["theme"],
-        value=related_keywords[0],
-    )
+    if related_keywords and len(related_keywords) > 0:
+        excel_manager.cell_handler.update_cell(
+            row=start_row,
+            column=columns["theme"],
+            value=related_keywords[0],
+        )
 
     excel_manager.file_handler.save()
 

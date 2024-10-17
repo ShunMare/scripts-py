@@ -35,6 +35,7 @@ from src.folder_operations.folder_processor import (
     FolderChecker,
     FolderMover,
     FolderLister,
+    FolderRenamer
 )
 from src.wp_operations.wp_manager import WordPressAPI
 from src.ai_operations.bing_handler import BingHandler
@@ -111,3 +112,4 @@ array_remover = ArrayRemover()
 array_keeper = ArrayKeeper()
 gas_manager = GasManager()
 web_fetcher = WebFetcher()
+folder_renamer = FolderRenamer()

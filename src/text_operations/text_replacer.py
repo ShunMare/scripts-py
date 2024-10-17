@@ -1,5 +1,5 @@
 import re
-from typing import Optional
+from typing import Optional, Union
 from src.log_operations.log_handlers import CustomLogger
 
 logger = CustomLogger(__name__)
@@ -173,7 +173,9 @@ class TextReplacer:
             text = ""
 
         if replacement_text is None:
-            logger.debug("Replacement text is None. Using empty string for replacement.")
+            logger.debug(
+                "Replacement text is None. Using empty string for replacement."
+            )
             replacement_text = ""
 
         pattern = re.compile(re.escape(target_text))
@@ -184,7 +186,9 @@ class TextReplacer:
                 f"Replaced '{target_text}' with '{replacement_text}' in the provided text"
             )
         else:
-            logger.debug(f"No replacements made. '{target_text}' not found in the text.")
+            logger.debug(
+                f"No replacements made. '{target_text}' not found in the text."
+            )
 
         return result
 
@@ -255,3 +259,35 @@ class TextReplacer:
         logger.debug(f"Final result (first 50 chars): {result[:50]}...")
 
         return result
+
+    @staticmethod
+    def replace_first_occurrence(
+        content: Union[str, int], target_text: str, replacement_text: str
+    ) -> str:
+        """
+        文字列内の最初に出現するターゲットテキストのみを置換します。
+        整数が渡された場合は文字列に変換します。
+
+        :param content: 置換を行う元のテキスト（文字列または整数）
+        :param target_text: 置換対象のテキスト
+        :param replacement_text: 置換後のテキスト
+        :return: 置換後のテキスト
+        """
+        if not isinstance(content, str):
+            logger.warning(
+                f"Non-string input detected. Converting {type(content)} to string."
+            )
+            content = str(content)
+
+        index = content.find(target_text)
+        if index != -1:
+            result = (
+                content[:index] + replacement_text + content[index + len(target_text) :]
+            )
+            logger.debug(
+                f"Replaced first occurrence of '{target_text}' with '{replacement_text}'"
+            )
+            return result
+        else:
+            logger.debug(f"No occurrence of '{target_text}' found in the content")
+            return content

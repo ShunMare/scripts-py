@@ -284,3 +284,47 @@ class FolderPathHandler:
         normalized_path = os.path.normpath(joined_path)
         logger.debug(f"パスを結合し正規化しました: {normalized_path}")
         return normalized_path
+
+
+class FolderRenamer:
+    """フォルダの名前を変更するクラス"""
+
+    @staticmethod
+    def rename_folder(old_name: str, new_name: str) -> bool:
+        """
+        指定されたフォルダの名前を変更します。
+
+        :param old_name: 変更前のフォルダ名（パスを含む）
+        :param new_name: 変更後のフォルダ名（パスを含む）
+        :return: 名前の変更が成功した場合は True、それ以外は False を返す
+        """
+        try:
+            if os.path.exists(old_name):
+                os.rename(old_name, new_name)
+                logger.debug(f"Folder renamed from '{old_name}' to '{new_name}'")
+                return True
+            else:
+                logger.warning(f"Folder does not exist: {old_name}")
+                return False
+        except OSError as e:
+            logger.error(
+                f"Error occurred while renaming folder from '{old_name}' to '{new_name}': {e}"
+            )
+            return False
+
+    @staticmethod
+    def rename_folder_in_directory(
+        directory: str, old_name: str, new_name: str
+    ) -> bool:
+        """
+        指定されたディレクトリ内のフォルダの名前を変更します。
+
+        :param directory: フォルダが存在するディレクトリのパス
+        :param old_name: 変更前のフォルダ名
+        :param new_name: 変更後のフォルダ名
+        :return: 名前の変更が成功した場合は True、それ以外は False を返す
+        """
+        old_path = os.path.join(directory, old_name)
+        new_path = os.path.join(directory, new_name)
+        return FolderRenamer.rename_folder(old_path, new_path)
+

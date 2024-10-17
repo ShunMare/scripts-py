@@ -127,6 +127,9 @@ STANDALONE_GET_TITLE_IN_MD_FILE_FULL_PATH = file_path_handler.join_path(
 STANDALONE_GET_TITLE_IN_HTML_FILE_FULL_PATH = file_path_handler.join_path(
     STANDALONE_DIR_FULL_PATH, STANDALONE_GET_ELEM_IN_HTML_FILE_NAME
 )
+STANDALONE_REPLACE_FOLDER_NAME_FILE_FULL_PATH = file_path_handler.join_path(
+    STANDALONE_DIR_FULL_PATH, STANDALONE_REPLACE_FOLDER_NAME_FILE_NAME
+)
 # ----------------------------
 # get title in md variables
 # ----------------------------
@@ -148,6 +151,26 @@ STANDALONE_GET_TITLE_IN_MD_EXCEL_FILE_FULL_PATH = (
             PROJECT_DIR_FULL_PATH,
             DATA_DIR_NAME,
             STANDALONE_GET_TITLE_IN_MD_EXCEL_FILE_NAME,
+        ]
+    )
+)
+# ----------------------------
+# get elem in html variables
+# ----------------------------
+STANDALONE_REPLACE_FOLDER_NAME_EXCEL_FILE_FULL_PATH = (
+    file_path_handler.join_and_normalize_path(
+        [
+            PROJECT_DIR_FULL_PATH,
+            DATA_DIR_NAME,
+            STANDALONE_GET_TITLE_IN_MD_EXCEL_FILE_NAME,
+        ]
+    )
+)
+STANDALONE_REPLACE_FOLDER_NAME_TARGET_FOLDER_FULL_PATH = (
+    file_path_handler.join_and_normalize_path(
+        [
+            STANDALONE_REPLACE_FOLDER_NAME_TARGET_FOLDER_PATH,
+            STANDALONE_REPLACE_FOLDER_NAME_TARGET_TAG_NAME,
         ]
     )
 )

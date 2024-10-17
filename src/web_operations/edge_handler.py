@@ -22,6 +22,7 @@ class EdgeHandler:
         :param wait_time_after_switch: ウィンドウ切り替え後の待機時間（秒）
         """
         self.wait_time_after_prompt_short = 1
+        self.wait_time_after_prompt_medium = 5
         self.wait_time_after_prompt_long = 100
         self.wait_time_after_switch = 2
 
@@ -30,6 +31,9 @@ class EdgeHandler:
 
     def set_wait_time_after_prompt_long(self, wait_time_after_prompt_long):
         self.wait_time_after_prompt_long = wait_time_after_prompt_long
+
+    def set_wait_time_after_prompt_medium(self, wait_time_after_prompt_medium):
+        self.wait_time_after_prompt_medium = wait_time_after_prompt_medium
 
     def wait_time_after_switch(self, wait_time_after_switch):
         self.wait_time_after_switch = wait_time_after_switch
@@ -78,12 +82,12 @@ class EdgeHandler:
         :param filename: 保存するファイルの名前（パスを含む）
         """
         self.activate_edge()
-        time.sleep(self.wait_time_after_prompt_short)
+        time.sleep(self.wait_time_after_prompt_medium)
         pyautogui.hotkey("ctrl", "s")
-        time.sleep(self.wait_time_after_prompt_short)
+        time.sleep(self.wait_time_after_prompt_medium)
         pyperclip.copy(filename)
         pyautogui.hotkey("ctrl", "v")
-        time.sleep(self.wait_time_after_prompt_short)
+        time.sleep(self.wait_time_after_prompt_medium)
         pyautogui.press("enter")
         time.sleep(self.wait_time_after_prompt_long)
         logger.debug(f"save {filename} as html in downloads")
