@@ -22,7 +22,7 @@ class EdgeHandler:
         :param wait_time_after_switch: ウィンドウ切り替え後の待機時間（秒）
         """
         self.wait_time_after_prompt_short = 1
-        self.wait_time_after_prompt_medium = 5
+        self.wait_time_after_prompt_medium = 10
         self.wait_time_after_prompt_long = 100
         self.wait_time_after_switch = 2
 

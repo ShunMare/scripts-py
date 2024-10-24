@@ -1,5 +1,6 @@
 import logging
 from typing import Optional, List
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -49,3 +50,42 @@ class TextFinder:
         count = text.count(substring)
         logger.debug(f"'{substring}' は '{text}' 内に {count} 回出現しました")
         return count
+
+    @staticmethod
+    def extract_pattern(text: str, pattern: str) -> Optional[str]:
+        """
+        指定されたパターンに一致する部分を文字列から抽出します。
+
+        :param text: 解析対象の文字列
+        :param pattern: 抽出に使用する正規表現パターン
+        :return: 抽出された文字列。抽出できない場合はNone
+        """
+        logger.debug(f"テキストからパターンを抽出します: {text}")
+        logger.debug(f"使用するパターン: {pattern}")
+
+        match = re.search(pattern, text)
+
+        if match:
+            extracted = match.group(1)
+            logger.debug(f"パターンに一致する文字列を抽出しました: {extracted}")
+            return extracted
+        else:
+            logger.debug("パターンに一致する文字列の抽出に失敗しました")
+            return None
+
+    @staticmethod
+    def extract_segments(text: str, segment_pattern: str = r"/([^/]+)") -> List[str]:
+        """
+        指定されたパターンに一致するセグメントをすべて抽出します。
+
+        :param text: 解析対象の文字列
+        :param segment_pattern: セグメントを抽出するための正規表現パターン
+        :return: 抽出されたセグメントのリスト
+        """
+        logger.debug(f"テキストからセグメントを抽出します: {text}")
+        logger.debug(f"使用するセグメントパターン: {segment_pattern}")
+
+        matches = re.findall(segment_pattern, text)
+
+        logger.debug(f"抽出されたセグメント: {matches}")
+        return matches

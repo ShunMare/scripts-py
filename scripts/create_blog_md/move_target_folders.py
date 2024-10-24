@@ -18,7 +18,7 @@ def move_folder():
         CREATE_BLOG_MD_TARGET_PNG_FILE_NAME,
     ]
     folder_processor.folder_path = CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH
-    folder_processor.folder_prefix = CREATE_BLOG_MD_TARGET_TAG_NAME
+    folder_processor.folder_prefix = ""
 
     def move_folder_if_files_exist(folder_path: str) -> bool:
         """
@@ -52,7 +52,7 @@ def check_folders():
     ):
         if folder_name:
             folder_path = folder_path_handler.join_and_normalize_path(
-                CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH, folder_name
+                [CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH, folder_name]
             )
             result = folder_checker.check_folder_exists(folder_path)
             if result == False:

@@ -76,6 +76,10 @@ def main():
             if EXECUTE_STANDALONE_REPLACE_FOLDER_NAME:
                 script_executor.run_script(STANDALONE_REPLACE_FOLDER_NAME_FILE_FULL_PATH)
 
+        if EXECUTE_STACKOVERFLOW:
+            if EXECUTE_STACKOVERFLOW_GET_SLUG:
+                script_executor.run_script(STACKOVERFLOW_GET_SLUG_FILE_FULL_PATH)
+
     except Exception as e:
         logger.error(
             f"An error occurred during the blog content generation process: {str(e)}"

@@ -17,7 +17,7 @@ from scripts.initialize import (
 
 
 def main():
-    folder_prefix = CREATE_BLOG_MD_TARGET_TAG_NAME
+    folder_prefix = ""
 
     target_text = CREATE_BLOG_MD_PNG_TAG_NAME
     replacement_text = "`" + CREATE_BLOG_MD_PNG_TAG_NAME + "`"
@@ -121,16 +121,16 @@ def main():
         ("【", "`"),
         ("】", "`"),
         (
-            "# `" + CREATE_BLOG_MD_PNG_CONFIG_NAME + "`",
-            "# " + CREATE_BLOG_MD_PNG_CONFIG_NAME,
+            "# `" + CREATE_BLOG_MD_PNG_TAG_NAME + "`",
+            "# " + CREATE_BLOG_MD_PNG_TAG_NAME,
         ),
         (
-            "title: `" + CREATE_BLOG_MD_PNG_CONFIG_NAME + "`",
-            "title: 【" + CREATE_BLOG_MD_PNG_CONFIG_NAME + "】",
+            "title: `" + CREATE_BLOG_MD_PNG_TAG_NAME + "`",
+            "title: 【" + CREATE_BLOG_MD_PNG_TAG_NAME + "】",
         ),
         (
-            "title: `" + CREATE_BLOG_MD_PNG_CONFIG_NAME,
-            "title: 【" + CREATE_BLOG_MD_PNG_CONFIG_NAME + "】",
+            "title: `" + CREATE_BLOG_MD_PNG_TAG_NAME,
+            "title: 【" + CREATE_BLOG_MD_PNG_TAG_NAME + "】",
         ),
     ]
 

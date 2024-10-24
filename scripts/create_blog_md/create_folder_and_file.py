@@ -40,7 +40,7 @@ def main():
     folder_creator.create_folders(CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH, folder_names)
     for folder_name in folder_names:
         folder_path = folder_path_handler.join_and_normalize_path(
-            CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH, folder_name
+            [CREATE_BLOG_MD_TARGET_FOLDER_FULL_PATH, folder_name]
         )
         file_handler.create_empty_files(
             folder_path, [CREATE_BLOG_MD_TARGET_MDX_FILE_NAME]

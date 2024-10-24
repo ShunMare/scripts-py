@@ -19,7 +19,7 @@ def generate_and_process_prompts(target_row, columns):
         return
 
     logger.info("getting short md content")
-    chatgpt_handler.send_prompt_and_generate_content(prompt, repeat_count=1)
+    chatgpt_handler.send_prompt_and_generate_content(prompt, repeat_count=0)
     md_content = chatgpt_handler.get_generated_content()
 
     logger.info("update md")

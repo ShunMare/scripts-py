@@ -38,9 +38,7 @@ def main():
     replacement_folder_list = folder_list.copy()
     for i in range(len(replacement_folder_list)):
         folder_name = replacement_folder_list[i]
-        new_folder_name = text_replacer.replace_first_occurrence(
-            folder_name, STANDALONE_REPLACE_FOLDER_NAME_TARGET_TAG_NAME + "-", ""
-        )
+        new_folder_name = STANDALONE_REPLACE_FOLDER_NAME_TARGET_TAG_NAME + "-" + folder_name
         replacement_folder_list[i] = new_folder_name
 
     excel_manager.cell_handler.insert_array_column_wise(
@@ -55,12 +53,12 @@ def main():
     )
     excel_manager.file_handler.save()
 
-    for i in range(len(replacement_folder_list)):
-        folder_renamer.rename_folder_in_directory(
-            directory=STANDALONE_REPLACE_FOLDER_NAME_TARGET_FOLDER_FULL_PATH,
-            old_name=folder_list[i],
-            new_name=replacement_folder_list[i],
-        )
+    # for i in range(len(replacement_folder_list)):
+    #     folder_renamer.rename_folder_in_directory(
+    #         directory=STANDALONE_REPLACE_FOLDER_NAME_TARGET_FOLDER_FULL_PATH,
+    #         old_name=folder_list[i],
+    #         new_name=replacement_folder_list[i],
+    #     )
 
 
 if __name__ == "__main__":

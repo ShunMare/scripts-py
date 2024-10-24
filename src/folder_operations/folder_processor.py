@@ -127,10 +127,10 @@ class FolderCreator:
         try:
             if not os.path.exists(folder_path):
                 os.makedirs(folder_path)
-                logger.info(f"Created folder: {folder_path}")
+                logger.debug(f"Created folder: {folder_path}")
                 return True
             else:
-                logger.info(f"Folder already exists: {folder_path}")
+                logger.debug(f"Folder already exists: {folder_path}")
                 return False
         except OSError as e:
             logger.error(f"Error occurred while creating folder {folder_path}: {e}")

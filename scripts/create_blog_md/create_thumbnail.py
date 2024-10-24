@@ -77,7 +77,7 @@ def read_excel_data():
                 text=title,
                 keyword=CREATE_BLOG_MD_CREATE_THUMBNAIL_SEPARATE_TEXT,
                 split_char="",
-                max_line_length=25,
+                max_line_length=15,
                 max_lines=3,
             )
             # else:

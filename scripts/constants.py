@@ -174,3 +174,25 @@ STANDALONE_REPLACE_FOLDER_NAME_TARGET_FOLDER_FULL_PATH = (
         ]
     )
 )
+
+# ===========================
+# Create stackoverflow variables
+# ===========================
+STACKOVERFLOW_DIR_FULL_PATH = folder_path_handler.join_and_normalize_path(
+    [PROJECT_DIR_FULL_PATH, SCRIPTS_DIR_NAME, STACKOVERFLOW_DIR_NAME]
+)
+STACKOVERFLOW_GET_SLUG_FILE_FULL_PATH = file_path_handler.join_path(
+    STACKOVERFLOW_DIR_FULL_PATH, STACKOVERFLOW_GET_SLUG_FILE_NAME
+)
+# ----------------------------
+# get slug variables
+# ----------------------------
+STACKOVERFLOW_GET_SLUG_EXCEL_FILE_FULL_PATH = (
+    file_path_handler.join_and_normalize_path(
+        [
+            PROJECT_DIR_FULL_PATH,
+            DATA_DIR_NAME,
+            STACKOVERFLOW_GET_SLUG_EXCEL_FILE_NAME,
+        ]
+    )
+)
