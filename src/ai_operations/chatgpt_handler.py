@@ -83,8 +83,9 @@ class ChatGPTHandler:
         """クリップボードの内容を貼り付け、送信する"""
         pyautogui.hotkey("ctrl", "v")
         time.sleep(self.short_wait_time)
-        pyautogui.press("tab")
-        time.sleep(self.short_wait_time)
+        for _ in range(4):
+            pyautogui.press("tab")
+            time.sleep(self.short_wait_time)
         pyautogui.press("enter")
         logger.debug("Message pasted and sent")
 
