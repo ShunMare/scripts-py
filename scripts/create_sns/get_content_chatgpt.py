@@ -50,6 +50,15 @@ def main():
     flag_end_row = excel_manager.cell_handler.get_last_row_of_column(
         column=columns["flag"]
     )
+
+    chatgpt_handler.set_info(
+        wait_time_after_prompt_long=WAIT_TIME_AFTER_PROMPT_LONG,
+        wait_time_after_prompt_medium=WAIT_TIME_AFTER_PROMPT_MEDIUM,
+        wait_time_after_prompt_short=WAIT_TIME_AFTER_PROMPT_SHORT,
+        wait_time_after_reload=WAIT_TIME_AFTER_RELOAD,
+        short_wait_time=KEYBOARD_ACTION_SHORT_DELAY,
+        model_type=MODEL_TYPE_4O,
+    )
     for start_row in range(CREATE_SNS_EXCEL_START_ROW, flag_end_row + 1):
         flag = excel_manager.cell_handler.get_cell_value(start_row, columns["flag"])
         if value_validator.is_valid(flag):

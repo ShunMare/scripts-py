@@ -11,6 +11,10 @@ keyboard_handler = KeyboardHandler()
 edge_handler = EdgeHandler()
 logger = CustomLogger(__name__)
 
+# model type
+MODEL_TYPE_4O = "4o"
+MODEL_TYPE_4OMINI = "4omini"
+MODEL_TYPE_GPTS = "gpts"
 
 class ChatGPTHandler:
     """
@@ -18,15 +22,7 @@ class ChatGPTHandler:
     Edgeブラウザ上でのChatGPTの操作を管理します。
     """
 
-    def __init__(
-        self,
-        wait_time_after_reload,
-        wait_time_after_prompt_short,
-        wait_time_after_prompt_medium,
-        wait_time_after_prompt_long,
-        model_type="4o",
-        short_wait_time=0.5,
-    ):
+    def __init__(self):
         """
         ChatGPTHandlerの初期化
         :param wait_time_after_reload: ページリロード後の待機時間
@@ -35,13 +31,20 @@ class ChatGPTHandler:
         :param model_type: 使用するChatGPTのモデルタイプ（'4o'または'4omini'）
         :param short_wait_time: 短い操作間の待機時間
         """
+        self.wait_time_after_reload = 0
+        self.wait_time_after_prompt_short = 0
+        self.wait_time_after_prompt_medium = 0
+        self.wait_time_after_prompt_long = 0
+        self.model_type = MODEL_TYPE_4O
+        self.short_wait_time = 0
+
+    def set_info(self, wait_time_after_reload, wait_time_after_prompt_short, wait_time_after_prompt_medium, wait_time_after_prompt_long, model_type, short_wait_time):
         self.wait_time_after_reload = wait_time_after_reload
         self.wait_time_after_prompt_short = wait_time_after_prompt_short
         self.wait_time_after_prompt_medium = wait_time_after_prompt_medium
         self.wait_time_after_prompt_long = wait_time_after_prompt_long
         self.model_type = model_type
         self.short_wait_time = short_wait_time
-        logger.debug(f"ChatGPTHandler initialized with model type: {model_type}")
 
     def press_hotkey(self, key_combination, duration=0.5):
         """
@@ -57,7 +60,17 @@ class ChatGPTHandler:
 
     def move_to_generate_button(self):
         """プロンプトの生成ボタンに移動する"""
-        for _ in range(3):
+        if self.model_type == MODEL_TYPE_4O:
+            tab_count = 4
+        elif self.model_type == MODEL_TYPE_4OMINI:
+            tab_count = 3
+        elif self.model_type == MODEL_TYPE_GPTS:
+            tab_count = 3
+        else:
+            logger.error(f"Invalid ChatGPT model type: {self.model_type}")
+            raise ValueError(f"Invalid ChatGPT model type: {self.model_type}")
+
+        for _ in range(tab_count):
             self.press_hotkey(["shift", "tab"])
             time.sleep(self.short_wait_time)
         time.sleep(self.short_wait_time)
@@ -65,11 +78,11 @@ class ChatGPTHandler:
 
     def move_to_copy_button(self):
         """プロンプトのコピーボタンに移動する"""
-        if self.model_type == "4o":
+        if self.model_type == MODEL_TYPE_4O:
             repeat_count = 6
-        elif self.model_type == "4omini":
+        elif self.model_type == MODEL_TYPE_4OMINI:
             repeat_count = 5
-        elif self.model_type == "gpts":
+        elif self.model_type == MODEL_TYPE_GPTS:
             repeat_count = 5
         else:
             logger.error(f"Invalid ChatGPT model type: {self.model_type}")

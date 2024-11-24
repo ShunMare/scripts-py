@@ -16,6 +16,10 @@ GET_CONTENT_METHOD_HTML = "html"
 # ai tool
 AI_TOOL_CHATGPT = "chatgpt"
 AI_TOOL_BING = "bing"
+# model type
+MODEL_TYPE_4O = "4o"
+MODEL_TYPE_4OMINI = "4omini"
+MODEL_TYPE_GPTS = "gpts"
 
 # ===========================
 # Create blog wp variables

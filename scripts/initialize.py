@@ -55,14 +55,7 @@ logger = CustomLogger(__name__)
 excel_manager = ExcelManager()
 edge_handler = EdgeHandler()
 keyboard_handler = KeyboardHandler(short_wait_time=KEYBOARD_ACTION_SHORT_DELAY)
-chatgpt_handler = ChatGPTHandler(
-    wait_time_after_reload=WAIT_TIME_AFTER_RELOAD,
-    wait_time_after_prompt_short=WAIT_TIME_AFTER_PROMPT_SHORT,
-    wait_time_after_prompt_medium=WAIT_TIME_AFTER_PROMPT_MEDIUM,
-    wait_time_after_prompt_long=WAIT_TIME_AFTER_PROMPT_LONG,
-    short_wait_time=KEYBOARD_ACTION_SHORT_DELAY,
-    model_type=CREATE_BLOG_WP_CHATGPT_MODEL_TYPE,
-)
+chatgpt_handler = ChatGPTHandler()
 prompt_generator = PromptGenerator(
     WAIT_TIME_AFTER_PROMPT_SHORT,
     WAIT_TIME_AFTER_PROMPT_LONG,
