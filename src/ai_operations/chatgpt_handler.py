@@ -37,7 +37,7 @@ class ChatGPTHandler:
         self.wait_time_after_prompt_short = 0
         self.wait_time_after_prompt_medium = 0
         self.wait_time_after_prompt_long = 0
-        self.model_type = MODEL_TYPE_4O
+        self.model_type = ""
         self.short_wait_time = 0
 
     def set_info(
@@ -89,11 +89,11 @@ class ChatGPTHandler:
     def move_to_copy_button(self):
         """プロンプトのコピーボタンに移動する"""
         if self.model_type == MODEL_TYPE_4O:
-            repeat_count = 6
+            repeat_count = 4
         elif self.model_type == MODEL_TYPE_4OMINI:
-            repeat_count = 5
-        elif self.model_type == "gpts":
-            repeat_count = 5
+            repeat_count = 3
+        elif self.model_type == MODEL_TYPE_GPTS:
+            repeat_count = 3
         else:
             logger.error(f"Invalid ChatGPT model type: {self.model_type}")
             raise ValueError(f"Invalid ChatGPT model type: {self.model_type}")
@@ -106,7 +106,18 @@ class ChatGPTHandler:
         """クリップボードの内容を貼り付け、送信する"""
         pyautogui.hotkey("ctrl", "v")
         time.sleep(self.short_wait_time)
-        for _ in range(0):
+
+        if self.model_type == MODEL_TYPE_4O:
+            tab_count = 4
+        elif self.model_type == MODEL_TYPE_4OMINI:
+            tab_count = 3
+        elif self.model_type == MODEL_TYPE_GPTS:
+            tab_count = 3
+        else:
+            logger.error(f"Invalid ChatGPT model type: {self.model_type}")
+            raise ValueError(f"Invalid ChatGPT model type: {self.model_type}")
+
+        for _ in range(tab_count):
             pyautogui.press("tab")
             time.sleep(self.short_wait_time)
         pyautogui.press("enter")

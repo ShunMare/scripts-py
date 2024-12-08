@@ -127,8 +127,8 @@ def main():
         wait_time_after_prompt_medium=WAIT_TIME_AFTER_PROMPT_MEDIUM,
         wait_time_after_prompt_short=WAIT_TIME_AFTER_PROMPT_SHORT,
         wait_time_after_reload=WAIT_TIME_AFTER_RELOAD,
-        short_wait_time=KEYBOARD_ACTION_SHORT_DELAY,
         model_type=MODEL_TYPE_GPTS,
+        short_wait_time=KEYBOARD_ACTION_SHORT_DELAY,
     )
     for i in range(flag_end_row):
         start_row = i * CREATE_BLOG_WP_EXCEL_GROUP_SIZE + CREATE_BLOG_WP_EXCEL_START_ROW

@@ -17,7 +17,7 @@ def get_content(start_row, columns):
         return None
 
     url = f"{CREATE_BLOG_WP_WP_URL}/{slug}"
-    prompt = CREATE_SNS_PROMPT + url
+    prompt = url + CREATE_SNS_PROMPT
     edge_handler.open_url_in_browser(CHATGPT_GPTS_SNS_URL)
     chatgpt_handler.send_prompt_and_generate_content(prompt, repeat_count=0)
     content = chatgpt_handler.get_generated_content()
@@ -57,7 +57,7 @@ def main():
         wait_time_after_prompt_short=WAIT_TIME_AFTER_PROMPT_SHORT,
         wait_time_after_reload=WAIT_TIME_AFTER_RELOAD,
         short_wait_time=KEYBOARD_ACTION_SHORT_DELAY,
-        model_type=MODEL_TYPE_4O,
+        model_type=MODEL_TYPE_GPTS,
     )
     for start_row in range(CREATE_SNS_EXCEL_START_ROW, flag_end_row + 1):
         flag = excel_manager.cell_handler.get_cell_value(start_row, columns["flag"])
