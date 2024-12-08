@@ -5,12 +5,6 @@ from scripts.initialize import (
     logger,
     excel_manager,
     value_validator,
-    file_reader,
-    file_path_handler,
-    folder_path_handler,
-    folder_lister,
-    text_finder,
-    text_replacer,
     folder_renamer,
 )
 
@@ -28,37 +22,32 @@ def main():
     if value_validator.any_invalid(columns):
         return
 
-    folder_list = list(
-        folder_lister.list_folders_with_prefix(
-            folder_path=STANDALONE_REPLACE_FOLDER_NAME_TARGET_FOLDER_FULL_PATH,
-            folder_prefix="",
+    folder_list = []
+    for row, folder_name in excel_manager.cell_handler.iterate_column_values(
+        column=columns["folder_name"],
+        start_row=STANDALONE_REPLACE_FOLDER_NAME_EXCEL_START_ROW,
+    ):
+        folder_list.append(
+            excel_manager.cell_handler.get_cell_value(row, columns["folder_name"])
         )
-    )
 
-    replacement_folder_list = folder_list.copy()
+    replacement_folder_list = []
+    for row, folder_name in excel_manager.cell_handler.iterate_column_values(
+        column=columns["new_folder_name"],
+        start_row=STANDALONE_REPLACE_FOLDER_NAME_EXCEL_START_ROW,
+    ):
+        replacement_folder_list.append(
+            excel_manager.cell_handler.get_cell_value(row, columns["new_folder_name"])
+        )
+
     for i in range(len(replacement_folder_list)):
-        folder_name = replacement_folder_list[i]
-        new_folder_name = STANDALONE_REPLACE_FOLDER_NAME_TARGET_TAG_NAME + "-" + folder_name
-        replacement_folder_list[i] = new_folder_name
-
-    excel_manager.cell_handler.insert_array_column_wise(
-        start_row=STANDALONE_REPLACE_FOLDER_NAME_EXCEL_START_ROW,
-        start_column=columns["folder_name"],
-        data=folder_list,
-    )
-    excel_manager.cell_handler.insert_array_column_wise(
-        start_row=STANDALONE_REPLACE_FOLDER_NAME_EXCEL_START_ROW,
-        start_column=columns["new_folder_name"],
-        data=replacement_folder_list,
-    )
-    excel_manager.file_handler.save()
-
-    # for i in range(len(replacement_folder_list)):
-    #     folder_renamer.rename_folder_in_directory(
-    #         directory=STANDALONE_REPLACE_FOLDER_NAME_TARGET_FOLDER_FULL_PATH,
-    #         old_name=folder_list[i],
-    #         new_name=replacement_folder_list[i],
-    #     )
+        logger.info(folder_list[i])
+        logger.info(replacement_folder_list[i])
+        folder_renamer.rename_folder_in_directory(
+            directory=STANDALONE_REPLACE_FOLDER_NAME_TARGET_FOLDER_FULL_PATH,
+            old_name=folder_list[i],
+            new_name=replacement_folder_list[i],
+        )
 
 
 if __name__ == "__main__":

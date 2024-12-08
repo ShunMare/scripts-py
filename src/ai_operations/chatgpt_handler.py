@@ -1,11 +1,12 @@
 import time
-import pyautogui
-import pyperclip
 from typing import Optional
 
+import pyautogui
+import pyperclip
+
 from src.input_operations.keyboard_handler import KeyboardHandler
-from src.web_operations.edge_handler import EdgeHandler
 from src.log_operations.log_handlers import CustomLogger
+from src.web_operations.edge_handler import EdgeHandler
 
 keyboard_handler = KeyboardHandler()
 edge_handler = EdgeHandler()
@@ -15,6 +16,7 @@ logger = CustomLogger(__name__)
 MODEL_TYPE_4O = "4o"
 MODEL_TYPE_4OMINI = "4omini"
 MODEL_TYPE_GPTS = "gpts"
+
 
 class ChatGPTHandler:
     """
@@ -38,7 +40,15 @@ class ChatGPTHandler:
         self.model_type = MODEL_TYPE_4O
         self.short_wait_time = 0
 
-    def set_info(self, wait_time_after_reload, wait_time_after_prompt_short, wait_time_after_prompt_medium, wait_time_after_prompt_long, model_type, short_wait_time):
+    def set_info(
+        self,
+        wait_time_after_reload,
+        wait_time_after_prompt_short,
+        wait_time_after_prompt_medium,
+        wait_time_after_prompt_long,
+        model_type,
+        short_wait_time,
+    ):
         self.wait_time_after_reload = wait_time_after_reload
         self.wait_time_after_prompt_short = wait_time_after_prompt_short
         self.wait_time_after_prompt_medium = wait_time_after_prompt_medium
@@ -82,7 +92,7 @@ class ChatGPTHandler:
             repeat_count = 6
         elif self.model_type == MODEL_TYPE_4OMINI:
             repeat_count = 5
-        elif self.model_type == MODEL_TYPE_GPTS:
+        elif self.model_type == "gpts":
             repeat_count = 5
         else:
             logger.error(f"Invalid ChatGPT model type: {self.model_type}")
@@ -96,7 +106,7 @@ class ChatGPTHandler:
         """クリップボードの内容を貼り付け、送信する"""
         pyautogui.hotkey("ctrl", "v")
         time.sleep(self.short_wait_time)
-        for _ in range(4):
+        for _ in range(0):
             pyautogui.press("tab")
             time.sleep(self.short_wait_time)
         pyautogui.press("enter")
