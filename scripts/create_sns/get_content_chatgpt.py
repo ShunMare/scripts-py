@@ -19,6 +19,7 @@ def get_content(start_row, columns):
     url = f"{CREATE_BLOG_WP_WP_URL}/{slug}"
     prompt = url + CREATE_SNS_PROMPT
     edge_handler.open_url_in_browser(CHATGPT_GPTS_SNS_URL)
+    chatgpt_handler.focus_chat_input()
     chatgpt_handler.send_prompt_and_generate_content(prompt, repeat_count=0)
     content = chatgpt_handler.get_generated_content()
     excel_manager.cell_handler.update_cell(

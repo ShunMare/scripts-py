@@ -59,6 +59,9 @@ def main():
         wait_time_after_reload=WAIT_TIME_AFTER_RELOAD,
         short_wait_time=KEYBOARD_ACTION_SHORT_DELAY,
         model_type=MODEL_TYPE_GPTS,
+        tab_count_4o=TAB_COUNT_4O,
+        tab_count_4omini=TAB_COUNT_4OMINI,
+        tab_count_gpts=TAB_COUNT_GPTS,
     )
     count = 0
     for i in range(flag_end_row):
@@ -66,6 +69,11 @@ def main():
         flag = excel_manager.cell_handler.get_cell_value(target_row, columns["flag"])
         if value_validator.is_valid(flag):
             if count % 20 == 0:
+                if not count == 0:
+                    logger.info("close tab")
+                    if CHATGPT_IS_DELETE_CHAT:
+                        chatgpt_handler.delete_chat()
+                    edge_handler.close_tab()
                 edge_handler.open_url_in_browser(CHATGPT_GPTS_BLOG_MASTER_URL)
             count += 1
             logger.prominent_log(f"Processing group starting at row {target_row}")

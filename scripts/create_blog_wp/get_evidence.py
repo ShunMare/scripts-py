@@ -30,78 +30,60 @@ def generate_and_process_prompts(start_row, columns):
         return
 
     logger.info("open browser")
-    if CREATE_BLOG_WP_GET_EVIDENCE_METHOD == AI_TOOL_BING:
-        edge_handler.open_url_in_browser(BING_URL)
-        bing_handler.press_new_chat_button()
-    elif CREATE_BLOG_WP_GET_EVIDENCE_METHOD == AI_TOOL_CHATGPT:
-        edge_handler.open_url_in_browser(CHATGPT_GPTS_BROWSER_URL)
+    edge_handler.open_url_in_browser(CHATGPT_GPTS_BROWSER_URL)
 
     logger.info("send direction")
-    for direction in directions:
+    for i, direction in enumerate(directions):
         if value_validator.is_valid(direction):
-            if CREATE_BLOG_WP_GET_EVIDENCE_METHOD == AI_TOOL_BING:
-                prompt_head = prompt_generator.replace_marker(
-                    prompt=CREATE_BLOG_WP_GET_EVIDENCE_BING_PROMPT,
-                    theme=theme,
-                    heading="",
-                )
-            elif CREATE_BLOG_WP_GET_EVIDENCE_METHOD == AI_TOOL_CHATGPT:
-                prompt_head = prompt_generator.replace_marker(
-                    prompt=CREATE_BLOG_WP_GET_EVIDENCE_CHATGPT_PROMPT,
-                    theme=theme,
-                    heading="",
-                )
-            prompt = prompt_generator.replace_marker(
-                prompt=direction, theme=theme, heading=""
+            prompt_head = prompt_generator.replace_marker(
+                prompt=CREATE_BLOG_WP_GET_EVIDENCE_CHATGPT_PROMPT,
+                theme=theme,
             )
-            prompt = prompt_head + prompt
-            if CREATE_BLOG_WP_GET_EVIDENCE_METHOD == AI_TOOL_BING:
-                bing_handler.send_prompt(prompt=prompt)
-            elif CREATE_BLOG_WP_GET_EVIDENCE_METHOD == AI_TOOL_CHATGPT:
-                chatgpt_handler.send_prompt_and_generate_content(
-                    prompt, repeat_count=0, is_reload=True
-                )
+            prompt = prompt_generator.replace_marker(prompt=direction, theme=theme)
+            chatgpt_handler.send_prompt_and_generate_content(prompt_head + prompt)
+            match GET_CONTENT_METHOD:
+                case GetContentMethod.SHORTCUT:
+                    content = chatgpt_handler.get_generated_content()
+                    excel_manager.cell_handler.update_cell(
+                        row=start_row + i, column=columns["evidence"], value=content
+                    )
 
-    logger.info("convert html to md")
-    if GET_CONTENT_METHOD == GET_CONTENT_METHOD_HTML:
-        html_file_name = CREATE_BLOG_WP_GET_EVIDENCE_FILE_NAME + EXTENSION_HTML
-        edge_handler.ui_save_html(html_file_name)
-        html_file_full_path = DOWNLOAD_FOLDER_DIR_FULL_PATH + html_file_name
-        if file_handler.exists(html_file_full_path):
-            html_content = file_reader.read_file(html_file_full_path)
-        if CREATE_BLOG_WP_GET_EVIDENCE_METHOD == AI_TOOL_BING:
-            results = html_parser.find_elements_with_attributes(
-                content=html_content,
-                tag=BING_OUTPUT_TAG,
-                class_name=BING_OUTPUT_CLASS_LIST,
-                attributes={BING_OUTPUT_ATTRIBUTE_KEY: BING_OUTPUT_ATTRIBUTE_VALUE},
-            )
-        elif CREATE_BLOG_WP_GET_EVIDENCE_METHOD == AI_TOOL_CHATGPT:
+    match GET_CONTENT_METHOD:
+        case GetContentMethod.HTML:
+            logger.info("convert html to md")
+            html_file_name = CREATE_BLOG_WP_GET_EVIDENCE_FILE_NAME + EXTENSION_HTML
+            edge_handler.ui_save_html(html_file_name)
+            html_file_full_path = DOWNLOAD_FOLDER_DIR_FULL_PATH + html_file_name
+            if file_handler.exists(html_file_full_path):
+                html_content = file_reader.read_file(html_file_full_path)
             results = web_scraper.find_elements(
                 html_content,
                 tag_name=CHATGPT_OUTPUT_TAG,
                 class_list=CHATGPT_OUTPUT_CLASS_LIST,
             )
-        md_contents = []
-        for i in range(len(results)):
-            md_content = text_converter.convert_to_markdown(results[i])
-            md_contents.append(md_content)
-        file_handler.delete_file(html_file_full_path)
-        folder_remover.remove_folder(
-            DOWNLOAD_FOLDER_DIR_FULL_PATH
-            + CREATE_BLOG_WP_GET_EVIDENCE_FILE_NAME
-            + DOWNLOAD_HTML_FOLDER_SUFFIX
-        )
+            md_contents = []
+            for i in range(len(results)):
+                md_content = text_converter.convert_to_markdown(results[i])
+                md_contents.append(md_content)
+            file_handler.delete_file(html_file_full_path)
+            folder_remover.remove_folder(
+                DOWNLOAD_FOLDER_DIR_FULL_PATH
+                + CREATE_BLOG_WP_GET_EVIDENCE_FILE_NAME
+                + DOWNLOAD_HTML_FOLDER_SUFFIX
+            )
 
     logger.info("close tab")
+    if CHATGPT_IS_DELETE_CHAT:
+        chatgpt_handler.delete_chat()
     edge_handler.close_tab()
 
-    logger.info("update cells in excel")
-    if GET_CONTENT_METHOD == GET_CONTENT_METHOD_HTML:
-        for i, content in enumerate(md_contents):
-            excel_manager.cell_handler.update_cell(
-                row=start_row + i, column=columns["evidence"], value=content
-            )
+    match GET_CONTENT_METHOD:
+        case GetContentMethod.HTML:
+            logger.info("update cells in excel")
+            for i, content in enumerate(md_contents):
+                excel_manager.cell_handler.update_cell(
+                    row=start_row + i, column=columns["evidence"], value=content
+                )
     excel_manager.file_handler.save()
 
 
@@ -127,8 +109,11 @@ def main():
         wait_time_after_prompt_medium=WAIT_TIME_AFTER_PROMPT_MEDIUM,
         wait_time_after_prompt_short=WAIT_TIME_AFTER_PROMPT_SHORT,
         wait_time_after_reload=WAIT_TIME_AFTER_RELOAD,
-        model_type=MODEL_TYPE_GPTS,
         short_wait_time=KEYBOARD_ACTION_SHORT_DELAY,
+        model_type=MODEL_TYPE_GPTS,
+        tab_count_4o=TAB_COUNT_4O,
+        tab_count_4omini=TAB_COUNT_4OMINI,
+        tab_count_gpts=TAB_COUNT_GPTS,
     )
     for i in range(flag_end_row):
         start_row = i * CREATE_BLOG_WP_EXCEL_GROUP_SIZE + CREATE_BLOG_WP_EXCEL_START_ROW

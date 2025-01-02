@@ -7,40 +7,45 @@ from scripts.initialize import (
     wp_manager,
     value_validator,
     array_combiner,
+    array_joiner,
     text_finder,
     text_replacer,
 )
 
 
 def upload_wp_post(start_row, columns):
+    match GET_CONTENT_METHOD:
+        case GetContentMethod.HTML:
+            html_array = excel_manager.cell_handler.get_range_values(
+                start_row,
+                columns["html"],
+                CREATE_BLOG_WP_EXCEL_GROUP_SIZE,
+            )
+            html_array = array_combiner.merge_elements(
+                html_array, CREATE_BLOG_WP_EXCEL_GROUP_SIZE
+            )
+            html = html_array[0]
+            h2_count = text_finder.count_occurrences(html, "<h2>")
+            html = text_replacer.replace(html, "<b>", "")
+            html = text_replacer.replace(html, "</b>", "")
+            html = text_replacer.replace(html, "<strong>", "")
+            html = text_replacer.replace(html, "</strong>", "")
+            if h2_count < 3:
+                html = text_replacer.replace(html, "<h3>", "<h2>")
+                html = text_replacer.replace(html, "</h3>", "</h2>")
+                html = text_replacer.replace(html, "<h4>", "<h4>")
+                html = text_replacer.replace(html, "</h4>", "</h3>")
+                html = text_replacer.replace(html, "<h5>", "<h4>")
+                html = text_replacer.replace(html, "</h5>", "</h4>")
+        case GetContentMethod.SHORTCUT:
+            html_array = excel_manager.cell_handler.get_range_values(
+                start_row,
+                columns["html"],
+                CREATE_BLOG_WP_EXCEL_GROUP_SIZE,
+            )
+            html = array_joiner.join_to_string(html_array)
+
     title = excel_manager.cell_handler.get_cell_value(start_row, columns["title"])
-    adjusted_html = excel_manager.cell_handler.get_cell_value(
-        start_row, columns["adjusted_html"]
-    )
-    if adjusted_html is not None:
-        html = adjusted_html
-    else:
-        html_array = excel_manager.cell_handler.get_range_values(
-            start_row,
-            columns["html"],
-            CREATE_BLOG_WP_EXCEL_GROUP_SIZE,
-        )
-        html_array = array_combiner.merge_elements(
-            html_array, CREATE_BLOG_WP_EXCEL_GROUP_SIZE, ""
-        )
-        html = html_array[0]
-    h2_count = text_finder.count_occurrences(html, "<h2>")
-    html = text_replacer.replace(html, "<b>", "")
-    html = text_replacer.replace(html, "</b>", "")
-    html = text_replacer.replace(html, "<strong>", "")
-    html = text_replacer.replace(html, "</strong>", "")
-    if h2_count < 3:
-        html = text_replacer.replace(html, "<h3>", "<h2>")
-        html = text_replacer.replace(html, "</h3>", "</h2>")
-        html = text_replacer.replace(html, "<h4>", "<h4>")
-        html = text_replacer.replace(html, "</h4>", "</h3>")
-        html = text_replacer.replace(html, "<h5>", "<h4>")
-        html = text_replacer.replace(html, "</h5>", "</h4>")
     description = excel_manager.cell_handler.get_cell_value(
         start_row, columns["description"]
     )

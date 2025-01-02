@@ -35,7 +35,7 @@ from src.folder_operations.folder_processor import (
     FolderChecker,
     FolderMover,
     FolderLister,
-    FolderRenamer
+    FolderRenamer,
 )
 from src.wp_operations.wp_manager import WordPressAPI
 from src.ai_operations.bing_handler import BingHandler
@@ -48,7 +48,12 @@ from src.font_operations.font_manager import FontManager
 from src.image_operations.image_manager import ImageManager
 from src.json_operations.json_processor import JSONParser
 from src.text_operations.text_drawer import TextDrawer
-from src.array_operations.array_combiner import ArrayCombiner, ArrayRemover, ArrayKeeper
+from src.array_operations.array_combiner import (
+    ArrayCombiner,
+    ArrayRemover,
+    ArrayKeeper,
+    ArrayJoiner,
+)
 from src.gas_operations.gas_manager import GasManager
 
 logger = CustomLogger(__name__)
@@ -101,6 +106,7 @@ image_manager = ImageManager()
 json_parser = JSONParser()
 text_drawer = TextDrawer()
 array_combiner = ArrayCombiner()
+array_joiner = ArrayJoiner()
 array_remover = ArrayRemover()
 array_keeper = ArrayKeeper()
 gas_manager = GasManager()

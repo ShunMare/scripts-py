@@ -1,3 +1,4 @@
+from enum import Enum
 from scripts.load_env import *
 from scripts.initialize import (
     folder_path_handler,
@@ -11,8 +12,14 @@ from scripts.initialize import (
 EXTENSION_HTML = ".html"
 EXTENSION_WEBP = ".webp"
 DOWNLOAD_HTML_FOLDER_SUFFIX = "_files"
-GET_CONTENT_METHOD_CLIPBOARD = "clipboard"
-GET_CONTENT_METHOD_HTML = "html"
+
+
+class GetContentMethod(str, Enum):
+    CLIPBOARD = "clipboard"
+    HTML = "html"
+    SHORTCUT = "shortcut"
+
+
 # ai tool
 AI_TOOL_CHATGPT = "chatgpt"
 AI_TOOL_BING = "bing"
@@ -44,9 +51,6 @@ CREATE_BLOG_WP_GET_EVIDENCE_FILE_FULL_PATH = file_path_handler.join_path(
 )
 CREATE_BLOG_WP_CREATE_BLOG_WP_FILE_FULL_PATH = file_path_handler.join_path(
     CREATE_BLOG_WP_DIR_FULL_PATH, CREATE_BLOG_WP_CREATE_BLOG_WP_CHATGPT_FILE_NAME
-)
-CREATE_BLOG_WP_GET_ADJUSTED_HTML_FILE_FULL_PATH = file_path_handler.join_path(
-    CREATE_BLOG_WP_DIR_FULL_PATH, CREATE_BLOG_WP_GET_ADJUSTED_HTML_FILE_NAME
 )
 CREATE_BLOG_WP_POST_WP_FILE_FULL_PATH = file_path_handler.join_path(
     CREATE_BLOG_WP_DIR_FULL_PATH, CREATE_BLOG_WP_UPLOAD_WP_POST_FILE_NAME
@@ -191,12 +195,10 @@ STACKOVERFLOW_GET_SLUG_FILE_FULL_PATH = file_path_handler.join_path(
 # ----------------------------
 # get slug variables
 # ----------------------------
-STACKOVERFLOW_GET_SLUG_EXCEL_FILE_FULL_PATH = (
-    file_path_handler.join_and_normalize_path(
-        [
-            PROJECT_DIR_FULL_PATH,
-            DATA_DIR_NAME,
-            STACKOVERFLOW_GET_SLUG_EXCEL_FILE_NAME,
-        ]
-    )
+STACKOVERFLOW_GET_SLUG_EXCEL_FILE_FULL_PATH = file_path_handler.join_and_normalize_path(
+    [
+        PROJECT_DIR_FULL_PATH,
+        DATA_DIR_NAME,
+        STACKOVERFLOW_GET_SLUG_EXCEL_FILE_NAME,
+    ]
 )

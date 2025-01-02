@@ -6,7 +6,7 @@ from typing import List
 
 class ArrayCombiner:
     @staticmethod
-    def merge_elements(arr: List[str], merge_count: int, suffix: str = '') -> List[str]:
+    def merge_elements(arr: List[str], merge_count: int, suffix: str = "") -> List[str]:
         """
         配列の要素を指定された数だけ結合し、各グループの末尾に指定された文字列を追加して新しい配列を返します。
 
@@ -35,12 +35,17 @@ class ArrayCombiner:
         if temp:
             result.append("".join(temp) + suffix)
 
-        logger.debug(f"Merged {len(arr)} elements into {len(result)} groups with suffix '{suffix}'")
+        logger.debug(
+            f"Merged {len(arr)} elements into {len(result)} groups with suffix '{suffix}'"
+        )
         return result
+
 
 class ArrayRemover:
     @staticmethod
-    def remove_elements(main_array: List[str], elements_to_remove: List[str]) -> List[str]:
+    def remove_elements(
+        main_array: List[str], elements_to_remove: List[str]
+    ) -> List[str]:
         """
         main_arrayから、elements_to_removeに含まれる文字列を部分一致で含む要素を削除した新しい配列を返します。
 
@@ -67,6 +72,7 @@ class ArrayRemover:
 
         logger.debug(f"Removed {removed_count} elements from the array")
         return filtered_array
+
 
 class ArrayKeeper:
     @staticmethod
@@ -96,3 +102,25 @@ class ArrayKeeper:
 
         logger.debug(f"Kept {kept_count} elements in the array")
         return filtered_array
+
+
+class ArrayJoiner:
+    @staticmethod
+    def join_to_string(arr: List[str], delimiter: str = "") -> str:
+        """
+        配列の全要素を1つの文字列として結合し、要素間に指定された区切り文字を挿入します。
+        :param arr: 結合する配列
+        :param delimiter: 要素間に挿入する区切り文字 (デフォルトは空文字列)
+        :return: 結合された文字列
+        """
+        if not arr:
+            logger.debug("Input array is empty")
+            return ""
+
+        filtered_arr = [str(item) for item in arr if item is not None]
+
+        result = delimiter.join(filtered_arr)
+        logger.debug(
+            f"Joined {len(filtered_arr)} elements with delimiter '{delimiter}'"
+        )
+        return result

@@ -37,46 +37,52 @@ def get_heading(start_row, columns):
         )
         results_str.append(result_str)
 
-    combined_results = "\n".join(results_str)
-    combined_results = CREATE_BLOG_WP_HEADING_PROMPT + "\n" + combined_results
+    prompt = CREATE_BLOG_WP_HEADING_PROMPT + "\n\n".join(results_str)
     edge_handler.open_url_in_browser(CHATGPT_DEFAULT_URL)
-    prompt = combined_results
-    chatgpt_handler.send_prompt_and_generate_content(prompt, repeat_count=0)
+    chatgpt_handler.focus_chat_input()
+    chatgpt_handler.send_prompt_and_generate_content(prompt)
 
     heading_content = ""
-    if GET_CONTENT_METHOD == GET_CONTENT_METHOD_CLIPBOARD:
-        heading_content = chatgpt_handler.get_generated_content()
-    else:
-        html_file_name = CREATE_BLOG_WP_GET_HEADING_GOOGLE_FILE_NAME + EXTENSION_HTML
-        edge_handler.ui_save_html(html_file_name)
-        chatgpt_html_path = DOWNLOAD_FOLDER_DIR_FULL_PATH + html_file_name
-        if file_handler.exists(chatgpt_html_path):
-            chatgpt_html = file_reader.read_file(chatgpt_html_path)
-        results = web_scraper.find_elements(
-            chatgpt_html,
-            tag_name=CHATGPT_OUTPUT_TAG,
-            class_list=CHATGPT_OUTPUT_CLASS_LIST,
-        )
-        if len(results) == 1:
-            heading_content = text_converter.convert_to_markdown(results[0])
-        file_handler.delete_file(chatgpt_html_path)
-        source_folder_full_path = folder_path_handler.join_and_normalize_path(
-            [
-                DOWNLOAD_FOLDER_DIR_FULL_PATH,
-                CREATE_BLOG_WP_GET_HEADING_GOOGLE_FILE_NAME
-                + DOWNLOAD_HTML_FOLDER_SUFFIX,
-            ]
-        )
-        destination_folder_full_path = folder_path_handler.join_and_normalize_path(
-            [source_folder_full_path, theme]
-        )
-        folder_creator.create_folder(destination_folder_full_path)
-        file_handler.move_files_with_name(
-            source_folder_full_path, destination_folder_full_path, EXTENSION_WEBP
-        )
-        folder_remover.remove_folder(source_folder_full_path)
+    match GET_CONTENT_METHOD:
+        case GetContentMethod.CLIPBOARD:
+            heading_content = chatgpt_handler.get_generated_content_copy_button()
+        case GetContentMethod.SHORTCUT:
+            heading_content = chatgpt_handler.get_generated_content()
+        case GetContentMethod.HTML:
+            html_file_name = (
+                CREATE_BLOG_WP_GET_HEADING_GOOGLE_FILE_NAME + EXTENSION_HTML
+            )
+            edge_handler.ui_save_html(html_file_name)
+            chatgpt_html_path = DOWNLOAD_FOLDER_DIR_FULL_PATH + html_file_name
+            if file_handler.exists(chatgpt_html_path):
+                chatgpt_html = file_reader.read_file(chatgpt_html_path)
+            results = web_scraper.find_elements(
+                chatgpt_html,
+                tag_name=CHATGPT_OUTPUT_TAG,
+                class_list=CHATGPT_OUTPUT_CLASS_LIST,
+            )
+            if len(results) == 1:
+                heading_content = text_converter.convert_to_markdown(results[0])
+            file_handler.delete_file(chatgpt_html_path)
+            source_folder_full_path = folder_path_handler.join_and_normalize_path(
+                [
+                    DOWNLOAD_FOLDER_DIR_FULL_PATH,
+                    CREATE_BLOG_WP_GET_HEADING_GOOGLE_FILE_NAME
+                    + DOWNLOAD_HTML_FOLDER_SUFFIX,
+                ]
+            )
+            destination_folder_full_path = folder_path_handler.join_and_normalize_path(
+                [source_folder_full_path, theme]
+            )
+            folder_creator.create_folder(destination_folder_full_path)
+            file_handler.move_files_with_name(
+                source_folder_full_path, destination_folder_full_path, EXTENSION_WEBP
+            )
+            folder_remover.remove_folder(source_folder_full_path)
 
     logger.info("close tab")
+    if CHATGPT_IS_DELETE_CHAT:
+        chatgpt_handler.delete_chat()
     edge_handler.close_tab()
 
     excel_manager.cell_handler.update_cell(
@@ -111,6 +117,9 @@ def main():
         wait_time_after_reload=WAIT_TIME_AFTER_RELOAD,
         short_wait_time=KEYBOARD_ACTION_SHORT_DELAY,
         model_type=MODEL_TYPE_4O,
+        tab_count_4o=TAB_COUNT_4O,
+        tab_count_4omini=TAB_COUNT_4OMINI,
+        tab_count_gpts=TAB_COUNT_GPTS,
     )
     for i in range(flag_end_row):
         start_row = i * CREATE_BLOG_WP_EXCEL_GROUP_SIZE + CREATE_BLOG_WP_EXCEL_START_ROW

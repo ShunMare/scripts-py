@@ -21,8 +21,6 @@ def main():
                 script_executor.run_script(CREATE_BLOG_WP_GET_EVIDENCE_FILE_FULL_PATH)
             if EXECUTE_CREATE_BLOG_WP_CREATE_BLOG_WP_CHATGPT:
                 script_executor.run_script(CREATE_BLOG_WP_CREATE_BLOG_WP_FILE_FULL_PATH)
-            if EXECUTE_CREATE_BLOG_WP_GET_ADJUSTED_HTML:
-                script_executor.run_script(CREATE_BLOG_WP_GET_ADJUSTED_HTML_FILE_FULL_PATH)
             if EXECUTE_CREATE_BLOG_WP_UPLOAD_WP_POST:
                 script_executor.run_script(CREATE_BLOG_WP_POST_WP_FILE_FULL_PATH)
 
@@ -74,7 +72,9 @@ def main():
             if EXECUTE_STANDALONE_GET_TITLE_IN_HTML:
                 script_executor.run_script(STANDALONE_GET_TITLE_IN_HTML_FILE_FULL_PATH)
             if EXECUTE_STANDALONE_REPLACE_FOLDER_NAME:
-                script_executor.run_script(STANDALONE_REPLACE_FOLDER_NAME_FILE_FULL_PATH)
+                script_executor.run_script(
+                    STANDALONE_REPLACE_FOLDER_NAME_FILE_FULL_PATH
+                )
 
         if EXECUTE_STACKOVERFLOW:
             if EXECUTE_STACKOVERFLOW_GET_SLUG:

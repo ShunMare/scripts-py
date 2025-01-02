@@ -25,14 +25,12 @@ class PromptGenerator:
 
     def create_additional_prompt(self, evidence):
         """追加の証拠を元にコンテンツを生成する"""
-        additional_prompt = (
-            f"下記の内容を参考にして、もれなく文章をまとめて。他の内容は参照しないで。リストは極力使わずに、リストで書くのではなく見出しにして。\n{evidence}"
-        )
+        additional_prompt = f"下記の内容を参考にして、もれなく文章をまとめて。他の内容は参照しないで。リストは極力使わずに、リストで書くのではなく見出しにして。\n{evidence}"
         pyperclip.copy(additional_prompt)
         logger.debug("Additional prompt created and copied to clipboard")
         return additional_prompt
 
-    def replace_marker(self, prompt, theme, heading):
+    def replace_marker(self, prompt, theme="", heading=""):
         """プロンプトの中のマーカーを置換する"""
         if prompt is None:
             prompt = ""
